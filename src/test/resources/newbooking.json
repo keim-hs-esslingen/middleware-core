@@ -1,0 +1,17 @@
+{
+	"state": "NEW",
+	"leg": {
+		"mode": "CAR",
+		"from": {"lat": 90, "lon":18.2},
+		"to": {"lat": 1.2, "lon":1.2},
+		"startTime": 1599900000000,
+		"endTime": 1599910000000,
+		"serviceId": "demo"
+	},
+	"customer": {
+		"id": "customer_id_001",
+		"firstname": "Max",
+		"lastname": "Mustermann",
+		"phone": "+4971112345678"
+	}
+}

@@ -1,2 +1,3 @@
-# middleware-core
-The middleware-library with core functionalities of the EFS project.
+# Middleware-Core
+
+More information will appear here soon.

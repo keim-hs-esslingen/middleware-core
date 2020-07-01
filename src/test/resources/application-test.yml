@@ -1,0 +1,9 @@
+efs:
+  mobility-service:
+    id: service-a
+    provider-name: Legendary Services GmbH
+    service-name: Legendary Service 1
+    service-url: http://legendary-service-1/api
+    service-area: City of Esslingen
+    mobility-type: FREE_RIDE
+    mode: BICYCLE

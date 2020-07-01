@@ -1,0 +1,43 @@
+{
+	"id": "booking_id_001",
+	"state": "BOOKED",
+	"leg": {
+		"mode": "CAR",
+		"from": {"lat": 90, "lon":18.2},
+		"to": {"lat": 1.2, "lon":1.2},
+		"startTime": 1599900000000,
+		"endTime": 1599910000000,
+		"serviceId": "demo"
+	},
+	"customer": {
+		"id": "customer_id_001",
+		"firstname": "Max",
+		"lastname": "Mustermann",
+		"phone": "+4971112345678"
+	},
+	"meta": {
+	    "typeID": "15",
+	    "name": "13994",
+	    "travelAbroad": false,
+	    "airconditioning": false,
+	    "assetClass": "CAR",
+	    "brand": "Demo",
+	    "cabrio": false,
+	    "colour": null,
+	    "cargo": null,
+	    "easyAccessibility": null,
+	    "gears": 0,
+	    "gearbox": null,
+	    "image": null,
+	    "infantseat": false,
+	    "persons": 1,
+	    "pets": false,
+	    "propulsion": "muscle",
+	    "smoking": false,
+	    "stateofcharge": 0,
+	    "towinghook": false,
+	    "undergroundparking": false,
+	    "wintertires": false,
+	    "other": null
+	}
+}
