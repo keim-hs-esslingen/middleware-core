@@ -24,6 +24,7 @@
 package de.hsesslingen.keim.efs.middleware.controller;
 
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -68,6 +70,7 @@ public interface IBilateralBookingApi {
      * Updates an existing {@link Booking} with new details.
      *
      * @param id the booking id
+     * @param action an action that might be requested for this booking.
      * @param booking the {@link Booking} object containing modified data
      * @param credentials Credential data as json content string
      * @return the modified {@link Booking} object
@@ -75,7 +78,9 @@ public interface IBilateralBookingApi {
     @PutMapping(value = "/bookings/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
-    public Booking modifyBooking(@PathVariable String id,
+    public Booking modifyBooking(
+            @PathVariable String id,
+            @RequestParam(required = false) BookingAction action,
             @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
 

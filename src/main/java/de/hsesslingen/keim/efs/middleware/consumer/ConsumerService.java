@@ -38,6 +38,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.Customer;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
@@ -79,7 +80,7 @@ public class ConsumerService {
     private static final String CREDENTIALS_PATH = "/credentials";
     private static final String BOOKINGS_PATH = "/bookings";
     private static final String OPTIONS_PATH = "/bookings/options";
-    
+
     private ConsumerCredentialsCollection extractConsumerCredentials(String credentials) {
         if (credentials == null || credentials.isEmpty()) {
             return ConsumerCredentialsCollection.empty();
@@ -246,13 +247,25 @@ public class ConsumerService {
      * Updates an existing {@link Booking} with new details
      *
      * @param id the booking id
+     * @param action an action that might be requested for a booking.
      * @param booking the {@link Booking} object containing modified data
      * @param credentials Credential data as json content string
      * @return the modified {@link Booking} object
      */
-    public Booking modifyBooking(@NotEmpty String id, @Valid Booking booking, String credentials) {
+    public Booking modifyBooking(@NotEmpty String id, @Nullable BookingAction action, @Valid Booking booking, String credentials) {
         String url = getBookingsUrlByServiceAndBookingId(booking.getLeg().getServiceId(), id);
-        return EfsRequest.put(url).credentials(credentials).body(booking).expect(Booking.class).go().getBody();
+        var request = EfsRequest.put(url)
+                .credentials(credentials)
+                .body(booking)
+                .expect(Booking.class);
+
+        if (action != null) {
+            request.query("action", action);
+        }
+
+        return request
+                .go()
+                .getBody();
     }
 
     private String getServiceUrl(String serviceId) {

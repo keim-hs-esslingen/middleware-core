@@ -29,6 +29,7 @@ import java.util.List;
 import de.hsesslingen.keim.efs.middleware.apis.IBookingService;
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
@@ -71,7 +72,7 @@ public class BookingService implements IBookingService {
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#modifyBooking(java.lang.String, de.hsesslingen.keim.efs.middleware.booking.Booking)
      */
     @Override
-    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking modifyBooking(String id, BookingAction action, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
         // TODO Auto-generated method stub
         return null;
     }

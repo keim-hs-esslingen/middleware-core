@@ -23,6 +23,8 @@
  */
 package de.hsesslingen.keim.efs.middleware.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
 import java.time.Instant;
 import java.util.List;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import de.hsesslingen.keim.efs.middleware.apis.IBookingService;
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
@@ -51,6 +54,7 @@ import java.lang.reflect.Field;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author boesch, K.Sivarasah
@@ -71,6 +75,8 @@ public class BookingApi implements IBookingApi {
 
     @Value("${efs.middleware.debug-credentials:false}")
     private boolean debugCredentials;
+    @Value("${efs.middleware.debug-input-objects:false}")
+    private boolean debugInputObjects;
 
     @Override
     public List<Options> getBookingOptions(String from, String to, Long startTime, Long endTime, Integer radius,
@@ -99,7 +105,11 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public Booking getBookingById(@PathVariable String id, String credentials) {
-        log.info("Received request to get a booking by id.");
+        if (!debugInputObjects) {
+            log.info("Received request to get a booking by id.");
+        } else {
+            log.info("Received request to get booking with id \"" + id + "\".");
+        }
 
         var creds = credentialsFactory.fromString(credentials);
         debugOutputCredentials(creds);
@@ -111,6 +121,10 @@ public class BookingApi implements IBookingApi {
     public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
             String credentials) {
         log.info("Received request to create a new booking.");
+
+        if (debugInputObjects) {
+            debugLogAsJson(newBooking);
+        }
 
         if (newBooking.getState() != BookingState.NEW) {
             log.warn("Received a NewBooking with booking state set to \"" + newBooking.getState() + "\". Setting it manually to \"NEW\".");
@@ -124,14 +138,22 @@ public class BookingApi implements IBookingApi {
     }
 
     @Override
-    public Booking modifyBooking(@PathVariable String id, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
+    public Booking modifyBooking(@PathVariable String id,
+            @RequestParam BookingAction action,
+            @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             String credentials) {
-        log.info("Received request to modify a booking.");
+
+        if (!debugInputObjects) {
+            log.info("Received request to modify a booking.");
+        } else {
+            log.info("Received request to modify booking with id \"" + id + "\" and action \"" + action + "\".");
+            debugLogAsJson(booking);
+        }
 
         var creds = credentialsFactory.fromString(credentials);
         debugOutputCredentials(creds);
 
-        return bookingService.modifyBooking(id, booking, creds);
+        return bookingService.modifyBooking(id, action, booking, creds);
     }
 
     /**
@@ -207,5 +229,28 @@ public class BookingApi implements IBookingApi {
         }
 
         return "***";
+    }
+
+    /**
+     * Used in {@link debugLogAsJson}, lazily loaded.
+     */
+    private ObjectMapper debugMapper;
+
+    /**
+     * Log objects on debug level for debugging purposes.
+     *
+     * @param o
+     */
+    private void debugLogAsJson(Object o) {
+        if (debugMapper == null) {
+            debugMapper = new ObjectMapper();
+        }
+
+        try {
+            log.debug(debugMapper.writeValueAsString(o));
+        } catch (JsonProcessingException ex) {
+            log.debug("Could not serialize input object. Exception occured.");
+            log.debug(ex);
+        }
     }
 }

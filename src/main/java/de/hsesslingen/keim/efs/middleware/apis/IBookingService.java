@@ -31,6 +31,7 @@ import org.springframework.lang.Nullable;
 
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
@@ -117,10 +118,11 @@ public interface IBookingService<C extends AbstractCredentials> {
      * Modifies a Booking using the given Booking object
      *
      * @param id The unique identifier of a Booking
+     * @param action An action that might be requested for this booking.
      * @param booking Booking object containing the update
      * @param credentials Credential data
      * @return The current Booking after update
      */
-    public Booking modifyBooking(String id, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
+    public Booking modifyBooking(String id, @Nullable BookingAction action, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
 
 }

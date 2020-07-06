@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
+import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
 import de.hsesslingen.keim.efs.middleware.booking.Customer;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
@@ -63,7 +64,7 @@ import org.apache.commons.logging.LogFactory;
 @Api(tags = {"Consumer Api"})
 @ConditionalOnProperty(name = "efs.middleware.consumer-api.enabled", havingValue = "true")
 public class ConsumerApi implements IConsumerApi {
-    
+
     private static final Log log = LogFactory.getLog(ConsumerApi.class);
 
     @Autowired
@@ -73,7 +74,7 @@ public class ConsumerApi implements IConsumerApi {
     public List<Options> getBookingOptions(String from, String to, Long startTime, Long endTime, Integer radius,
             Boolean share, Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds, String credentials) {
         log.info("Received request to get options from providers.");
-        
+
         return consumerService.getOptions(new OptionsRequest()
                 .setFrom(from).setTo(to)
                 .setStartTime(startTime == null ? null : Instant.ofEpochMilli(startTime))
@@ -104,10 +105,10 @@ public class ConsumerApi implements IConsumerApi {
     }
 
     @Override
-    public Booking modifyBooking(@PathVariable String id, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
+    public Booking modifyBooking(@PathVariable String id, @RequestParam BookingAction action, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             String credentials) {
         log.info("Received request to modify a booking at a specific provider.");
-        return consumerService.modifyBooking(id, booking, credentials);
+        return consumerService.modifyBooking(id, action, booking, credentials);
     }
 
     @Override
