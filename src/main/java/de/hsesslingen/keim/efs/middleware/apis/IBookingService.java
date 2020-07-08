@@ -124,5 +124,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @return The current Booking after update
      */
     public Booking modifyBooking(String id, @Nullable BookingAction action, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
+    
+    public Object performBookingAction(String bookingId, BookingAction action, Object actionPayload, @NonNull @Valid C credentials) throws AbstractEfsException;
 
 }
