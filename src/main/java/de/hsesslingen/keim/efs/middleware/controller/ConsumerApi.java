@@ -105,10 +105,16 @@ public class ConsumerApi implements IConsumerApi {
     }
 
     @Override
-    public Booking modifyBooking(@PathVariable String id, @RequestParam BookingAction action, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
+    public Booking modifyBooking(@PathVariable String id, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             String credentials) {
         log.info("Received request to modify a booking at a specific provider.");
-        return consumerService.modifyBooking(id, action, booking, credentials);
+        return consumerService.modifyBooking(id, booking, credentials);
+    }
+
+    @Override
+    public void performAction(String bookingId, BookingAction action, String serviceId, String assetId, String secret, String more, String credentials) {
+        log.info("Received request to perform an action on a booking");
+        consumerService.performAction(bookingId, action, serviceId, assetId, secret, more, credentials);
     }
 
     @Override

@@ -59,7 +59,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author k.sivarasah 17 Oct 2019
  */
 @EfsSwaggerApiResponseSupport
-@RequestMapping(value = "/consumer/api", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/consumer/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IConsumerApi extends IBilateralBookingApi {
 
     /**

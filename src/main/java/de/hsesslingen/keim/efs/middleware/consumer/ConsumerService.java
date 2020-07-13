@@ -51,8 +51,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -247,25 +249,63 @@ public class ConsumerService {
      * Updates an existing {@link Booking} with new details
      *
      * @param id the booking id
-     * @param action an action that might be requested for a booking.
      * @param booking the {@link Booking} object containing modified data
      * @param credentials Credential data as json content string
      * @return the modified {@link Booking} object
      */
-    public Booking modifyBooking(@NotEmpty String id, @Nullable BookingAction action, @Valid Booking booking, String credentials) {
+    public Booking modifyBooking(@NotEmpty String id, @Valid Booking booking, String credentials) {
         String url = getBookingsUrlByServiceAndBookingId(booking.getLeg().getServiceId(), id);
-        var request = EfsRequest.put(url)
+
+        return EfsRequest.put(url)
                 .credentials(credentials)
                 .body(booking)
-                .expect(Booking.class);
-
-        if (action != null) {
-            request.query("action", action);
-        }
-
-        return request
+                .expect(Booking.class)
                 .go()
                 .getBody();
+    }
+
+    /**
+     * Can be used to perform actions on bookings. This can be used to e.g.
+     * unlock the door of rented vehicles, or stamp tickets...
+     *
+     * @param bookingId The ID of the booking on which to perform the action.
+     * @param action The action that should be performed on the booking with the
+     * given bookingId.
+     * @param serviceId The ID of the service to which this booking belongs.
+     * @param assetId The ID of the asset on which to perform this action. If
+     * none specified, the service can choose how to handle this situation.
+     * @param secret A secret that might be required by some services to perform
+     * this action. (e.g. a PIN)
+     * @param more Additional information that might be required by some
+     * services in order to perform this action.
+     * @param credentials The credentials needed to authorize oneself to perform
+     * this action.
+     */
+    public void performAction(
+            @NonNull String bookingId,
+            @NonNull BookingAction action,
+            @NonNull String serviceId,
+            @Nullable String assetId,
+            @Nullable String secret,
+            @Nullable String more,
+            @NonNull String credentials
+    ) {
+        String bookingUrl = getBookingsUrlByServiceAndBookingId(serviceId, bookingId);
+
+        var request = EfsRequest.post(bookingUrl + "/action/" + action)
+                .credentials(credentials);
+
+        if (StringUtils.isNotBlank(assetId)) {
+            request.query("assetId", assetId);
+        }
+        if (StringUtils.isNotBlank(secret)) {
+            request.query("secret", secret);
+        }
+        if (StringUtils.isNotBlank(more)) {
+            request.query("more", more);
+        }
+
+        request.go();
     }
 
     private String getServiceUrl(String serviceId) {

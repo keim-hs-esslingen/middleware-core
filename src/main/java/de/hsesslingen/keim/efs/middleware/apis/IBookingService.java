@@ -118,13 +118,34 @@ public interface IBookingService<C extends AbstractCredentials> {
      * Modifies a Booking using the given Booking object
      *
      * @param id The unique identifier of a Booking
-     * @param action An action that might be requested for this booking.
      * @param booking Booking object containing the update
      * @param credentials Credential data
      * @return The current Booking after update
      */
-    public Booking modifyBooking(String id, @Nullable BookingAction action, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
-    
-    public Object performBookingAction(String bookingId, BookingAction action, Object actionPayload, @NonNull @Valid C credentials) throws AbstractEfsException;
+    public Booking modifyBooking(String id, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
 
+    /**
+     * Can be used to perform actions on bookings. This can be used to e.g.
+     * unlock the door of rented vehicles, or stamp tickets...
+     *
+     * @param bookingId The ID of the booking on which to perform the action.
+     * @param action The action that should be performed on the booking with the
+     * given bookingId.
+     * @param assetId The ID of the asset on which to perform this action. If
+     * none specified, the service can choose how to handle this situation.
+     * @param secret A secret that might be required by some services to perform
+     * this action. (e.g. a PIN)
+     * @param more Additional information that might be required by some
+     * services in order to perform this action.
+     * @param credentials The credentials needed to authorize oneself to perform
+     * this action.
+     */
+    public void performAction(
+            @NonNull String bookingId,
+            @NonNull BookingAction action,
+            @Nullable String assetId,
+            @Nullable String secret,
+            @Nullable String more,
+            @NonNull @Valid C credentials
+    );
 }

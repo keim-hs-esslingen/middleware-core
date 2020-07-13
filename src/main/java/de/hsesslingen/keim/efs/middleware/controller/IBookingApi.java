@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * @author k.sivarasah 17 Oct 2019
  */
 @EfsSwaggerApiResponseSupport
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IBookingApi extends IBilateralBookingApi {
 
     /**

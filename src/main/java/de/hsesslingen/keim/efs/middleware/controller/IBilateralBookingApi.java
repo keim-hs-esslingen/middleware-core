@@ -70,7 +70,6 @@ public interface IBilateralBookingApi {
      * Updates an existing {@link Booking} with new details.
      *
      * @param id the booking id
-     * @param action an action that might be requested for this booking.
      * @param booking the {@link Booking} object containing modified data
      * @param credentials Credential data as json content string
      * @return the modified {@link Booking} object
@@ -80,8 +79,39 @@ public interface IBilateralBookingApi {
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
     public Booking modifyBooking(
             @PathVariable String id,
-            @RequestParam(required = false) BookingAction action,
             @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
+
+    /**
+     * Can be used to perform actions on bookings. This can be used to e.g.
+     * unlock the door of rented vehicles, or stamp tickets...
+     *
+     * @param bookingId The ID of the booking on which to perform the action.
+     * @param action The action that should be performed on the booking with the
+     * given bookingId.
+     * @param serviceId The ID of the service to which this booking belongs to.
+     * This is only required if calling the consumer API of a middleware
+     * instance.
+     * @param assetId The ID of the asset on which to perform this action. If
+     * none specified, the service can choose how to handle this situation.
+     * @param secret A secret that might be required by some services to perform
+     * this action. (e.g. a PIN)
+     * @param more Additional information that might be required by some
+     * services in order to perform this action.
+     * @param credentials The credentials needed to authorize oneself to perform
+     * this action.
+     */
+    @PostMapping(value = "/bookings/{bookingId}/action/{action}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
+    public void performAction(
+            @PathVariable String bookingId,
+            @PathVariable BookingAction action,
+            @RequestParam(required = false) String serviceId,
+            @RequestParam(required = false) String assetId,
+            @RequestParam(required = false) String secret,
+            @RequestBody(required = false) String more,
+            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+    );
 
 }

@@ -54,7 +54,6 @@ import java.lang.reflect.Field;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author boesch, K.Sivarasah
@@ -139,21 +138,36 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public Booking modifyBooking(@PathVariable String id,
-            @RequestParam BookingAction action,
             @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             String credentials) {
 
         if (!debugInputObjects) {
             log.info("Received request to modify a booking.");
         } else {
-            log.info("Received request to modify booking with id \"" + id + "\" and action \"" + action + "\".");
+            log.info("Received request to modify booking with id \"" + id + "\".");
             debugLogAsJson(booking);
         }
 
         var creds = credentialsFactory.fromString(credentials);
         debugOutputCredentials(creds);
 
-        return bookingService.modifyBooking(id, action, booking, creds);
+        return bookingService.modifyBooking(id, booking, creds);
+    }
+
+    @Override
+    public void performAction(String bookingId, BookingAction action, String serviceId, String assetId, String secret, String more, String credentials) {
+
+        if (!debugInputObjects) {
+            log.info("Received request to perform an action on a booking.");
+        } else {
+            log.info(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s)", action, bookingId, assetId, obfuscate(secret)));
+            log.debug(more);
+        }
+
+        var creds = credentialsFactory.fromString(credentials);
+        debugOutputCredentials(creds);
+
+        bookingService.performAction(bookingId, action, assetId, secret, more, creds);
     }
 
     /**
@@ -249,7 +263,7 @@ public class BookingApi implements IBookingApi {
         try {
             log.debug(debugMapper.writeValueAsString(o));
         } catch (JsonProcessingException ex) {
-            log.debug("Could not serialize input object. Exception occured.");
+            log.debug("Could not serialize object for debug logging. Exception occured.");
             log.debug(ex);
         }
     }

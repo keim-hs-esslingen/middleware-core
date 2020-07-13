@@ -72,9 +72,14 @@ public class BookingService implements IBookingService {
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#modifyBooking(java.lang.String, de.hsesslingen.keim.efs.middleware.booking.Booking)
      */
     @Override
-    public Booking modifyBooking(String id, BookingAction action, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, AbstractCredentials credentials) {
+
     }
 
     /* (non-Javadoc)
