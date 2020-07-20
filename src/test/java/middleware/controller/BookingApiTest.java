@@ -76,6 +76,15 @@ public class BookingApiTest extends MiddlewareTestBase {
     }
 
     @Test
+    public void getOptionsTestIso_200() throws Exception {
+        // Testing incomplete zoned date time decplarations...
+        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", "2020-07-20T12:00")
+                .header("x-credentials", CredentialUtils.toJsonString(getDummyCredentials())))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(print());
+    }
+
+    @Test
     public void getOptionsTest_Invalid_Position_400() throws Exception {
         mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2345"))
                 .andExpect(status().is4xxClientError())

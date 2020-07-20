@@ -40,9 +40,11 @@ import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFuture;
+import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFutureZonedDateTime;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.time.ZonedDateTime;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
@@ -61,8 +63,12 @@ public interface IBookingApi extends IBilateralBookingApi {
      * @param radius Maximum distance a user wants to travel to reach asset in
      * metres, e.g. 500 metres.
      * @param to A desired destination e.g. 60.123,27.456.
-     * @param startTime Starttime in ms since epoch
-     * @param endTime Endtime in ms since epoch
+     * @param startTimeIso Zoned start time in ISO format. If startTime and
+     * startTimeIso are given, startTime is preferred.
+     * @param startTime Start time in ms since epoch
+     * @param endTimeIso Zoned end time in ISO format. If endTime and endTimeIso
+     * are given, endTime is preferred.
+     * @param endTime End time in ms since epoch
      * @param share Defines if user can also share a ride. (Available values :
      * YES, NO)
      * @param credentials Credential data as json content string
@@ -76,6 +82,8 @@ public interface IBookingApi extends IBilateralBookingApi {
             @RequestParam(required = false) @PositionAsString String to,
             @RequestParam(required = false) @TimeIsInFuture Long startTime,
             @RequestParam(required = false) @TimeIsInFuture Long endTime,
+            @RequestParam(required = false) @TimeIsInFutureZonedDateTime ZonedDateTime startTimeIso,
+            @RequestParam(required = false) @TimeIsInFutureZonedDateTime ZonedDateTime endTimeIso,
             @RequestParam(required = false) Integer radius,
             @RequestParam(required = false) Boolean share,
             @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials

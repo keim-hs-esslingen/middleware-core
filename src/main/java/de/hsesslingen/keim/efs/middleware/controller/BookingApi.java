@@ -51,6 +51,7 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParame
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,13 +79,25 @@ public class BookingApi implements IBookingApi {
     private boolean debugInputObjects;
 
     @Override
-    public List<Options> getBookingOptions(String from, String to, Long startTime, Long endTime, Integer radius,
-            Boolean share, String credentials) {
+    public List<Options> getBookingOptions(
+            String from, String to,
+            Long startTime, Long endTime,
+            ZonedDateTime startTimeIso, ZonedDateTime endTimeIso,
+            Integer radius, Boolean share,
+            String credentials) {
         log.info("Received request to get options.");
 
         Place placeTo = StringUtils.isEmpty(to) ? null : new Place(to);
-        Instant startTimeInstant = startTime == null ? Instant.now() : Instant.ofEpochMilli(startTime);
-        Instant endTimeInstant = endTime == null ? null : Instant.ofEpochMilli(endTime);
+
+        // Choose option for start time: 1. startTime, 2. startTimeIso, 3. Instant.now()
+        var startTimeInstant = (startTime != null) ? Instant.ofEpochMilli(startTime)
+                : (startTimeIso != null) ? startTimeIso.toInstant()
+                        : Instant.now();
+
+        // Choose option for end time: 1. endTime, 2. endTimeIso, 3. null
+        var endTimeInstant = (endTime != null) ? Instant.ofEpochMilli(endTime)
+                : (endTimeIso != null) ? endTimeIso.toInstant()
+                        : null;
 
         var creds = credentialsFactory.fromString(credentials);
         debugOutputCredentials(creds);
