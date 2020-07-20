@@ -58,6 +58,9 @@ public class ProviderRegistrator {
     @Value("${efs.middleware.provider-api.registration.retry-delay:5}")
     private long retryDelay;
 
+    @Value("${efs.middleware.provider-api.registration.disabled:false}")
+    private boolean registrationDisabled;
+
     private ScheduledExecutorService executor;
     private TaskScheduler scheduler;
     private ScheduledFuture future;
@@ -88,6 +91,10 @@ public class ProviderRegistrator {
 
     @EventListener(ApplicationReadyEvent.class)
     public void registerInServiceDirectory() {
+        if (registrationDisabled) {
+            log.info("Service registration is disabled.");
+            return;
+        }
 
         log.info("Trying to register my service at the service-directory...");
 
