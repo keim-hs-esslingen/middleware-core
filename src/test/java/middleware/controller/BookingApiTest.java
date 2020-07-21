@@ -51,6 +51,7 @@ import de.hsesslingen.keim.efs.middleware.booking.Leg;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Place;
+import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import middleware.api.security.TestCredential;
@@ -78,7 +79,7 @@ public class BookingApiTest extends MiddlewareTestBase {
     @Test
     public void getOptionsTestIso_200() throws Exception {
         // Testing incomplete zoned date time decplarations...
-        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", "2020-07-20T12:00")
+        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", LocalDateTime.now().plusHours(1).toString().substring(0,16))
                 .header("x-credentials", CredentialUtils.toJsonString(getDummyCredentials())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
