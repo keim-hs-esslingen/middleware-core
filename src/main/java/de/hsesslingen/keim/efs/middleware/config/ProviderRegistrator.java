@@ -92,7 +92,7 @@ public class ProviderRegistrator {
     @EventListener(ApplicationReadyEvent.class)
     public void registerInServiceDirectory() {
         if (registrationDisabled) {
-            log.info("Service registration is disabled.");
+            log.warn("Service registration is disabled.");
             return;
         }
 
