@@ -65,7 +65,7 @@ import org.springframework.lang.Nullable;
  * Communicates with the service directory to find providers that match the
  * consumers search criteria and propagates the options- and bookings requests
  * to those providers. It basically serves as a broker for accessing the
- * plattform.
+ * platform.
  *
  * @author k.sivarasah 28 Sep 2019 *
  */

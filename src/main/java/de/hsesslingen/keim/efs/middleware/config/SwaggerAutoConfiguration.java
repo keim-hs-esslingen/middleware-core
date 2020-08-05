@@ -46,8 +46,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Default Configuration for SwaggerUI to expose RestApis implemented in the middleware-library
+ * Default Configuration for SwaggerUI to expose REST-APIs implemented in the middleware-core library.
+ * 
  * @author k.sivarasah
+ * @author b.oesch
  * 10 Oct 2019
  */
 
@@ -59,18 +61,15 @@ public class SwaggerAutoConfiguration {
 	@Value("${spring.application.name:}")
 	private String serviceName;
 	
-	@Value("${efs.middleware.provider-api.enabled:true}")
+	@Value("${efs.middleware.provider-api.enabled:false}")
 	private boolean providerEnabled;
 	
-	@Value("${efs.middleware.consumer-api.enabled:true}")
+	@Value("${efs.middleware.consumer-api.enabled:false}")
 	private boolean consumerEnabled;
 	
-	public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(consumer) APIs provided for consuming mobility services", 1);
-	public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(provider) Booking related APIs with CRUD functionality", 2);
-	public static final Tag PLANNING_API_TAG = new Tag("Planning Api", "(provider) Gives information about transport asset availability and pricing", 3);
-			
-	public static final Tag[] PROVIDER_TAGS = new Tag[] { BOOKING_API_TAG, PLANNING_API_TAG };
-	
+	public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(Consumer) APIs provided for consuming mobility services", 1);
+	public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(Provider) Booking related APIs with CRUD functionality", 2);
+				
 	@Bean
 	@ConditionalOnMissingBean
 	public Docket api() {
@@ -92,19 +91,18 @@ public class SwaggerAutoConfiguration {
 	
 	private Docket setTags(Docket docket) {
 		if(providerEnabled && consumerEnabled) {
-			return docket.tags(CONSUMER_API_TAG, PROVIDER_TAGS);
+			return docket.tags(CONSUMER_API_TAG, BOOKING_API_TAG);
 		} else if(providerEnabled) {
-			return docket.tags(BOOKING_API_TAG, PLANNING_API_TAG);
+			return docket.tags(BOOKING_API_TAG);
 		} else {
 			return docket.tags(CONSUMER_API_TAG);
 		}
 	}
 	
 	public static Tag[] getTags() {
-		return new Tag[] { CONSUMER_API_TAG, BOOKING_API_TAG, PLANNING_API_TAG };
+		return new Tag[] { CONSUMER_API_TAG, BOOKING_API_TAG };
 	}
-	
-	
+
 	protected ApiInfo apiInfo() {
 		String serviceInfo = String.format("Middleware Service (%s)", serviceName);
 		return new ApiInfo(serviceInfo,
