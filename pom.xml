@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.keim-hs-esslingen</groupId>
+        <groupId>com.github.keim-hs-esslingen.efs</groupId>
         <artifactId>efs-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath/> <!-- skip parent lookup in parent directory. -->
     </parent>
 	
-    <groupId>com.github.keim-hs-esslingen</groupId>
+    <groupId>com.github.keim-hs-esslingen.efs</groupId>
     <artifactId>middleware-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     
@@ -51,7 +51,7 @@
             <artifactId>rest-utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.keim-hs-esslingen</groupId>
+            <groupId>com.github.keim-hs-esslingen.efs</groupId>
             <artifactId>mobility-commons</artifactId>
             <version>${mobility-commons.version}</version>
         </dependency>
