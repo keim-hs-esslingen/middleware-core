@@ -16,12 +16,12 @@
     
     <name>Middleware Core</name>
     <description>The middleware-library with core functionalities of the EFS project.</description>
-    <url>https://github.com/keim-hs-esslingen/middleware-core</url>
+    <url>https://github.com/keim-hs-esslingen/efs-middleware-core</url>
     
     <scm>
-        <connection>scm:git:git://github.com:keim-hs-esslingen/middleware-core.git</connection>
-        <developerConnection>scm:git:ssh://github.com:keim-hs-esslingen/middleware-core.git</developerConnection>
-        <url>https://github.com/keim-hs-esslingen/middleware-core</url>
+        <connection>scm:git:git://github.com:keim-hs-esslingen/efs-middleware-core.git</connection>
+        <developerConnection>scm:git:ssh://github.com:keim-hs-esslingen/efs-middleware-core.git</developerConnection>
+        <url>https://github.com/keim-hs-esslingen/efs-middleware-core</url>
     </scm>
 
     <licenses>
