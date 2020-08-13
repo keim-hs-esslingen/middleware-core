@@ -23,23 +23,17 @@
  */
 package de.hsesslingen.keim.efs.middleware.exception;
 
+import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import org.springframework.http.HttpStatus;
 
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-
 /**
- * @author k.sivarasah 26 Sep 2019
+ *
+ * @author boesch
  */
-public class UnsupportedOperationException extends AbstractEfsException {
+public class CredentialsInvalidException extends AbstractEfsException {
 
-    private static final long serialVersionUID = 1L;
-
-    public UnsupportedOperationException(String message, HttpStatus httpStatus) {
-        super(message, httpStatus);
-    }
-
-    public UnsupportedOperationException(String message) {
-        super(message, HttpStatus.METHOD_NOT_ALLOWED);
+    public CredentialsInvalidException(String message) {
+        super(message, HttpStatus.UNAUTHORIZED);
     }
 
 }
