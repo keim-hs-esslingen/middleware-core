@@ -46,8 +46,8 @@ import org.springframework.web.client.RestTemplate;
 
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import java.net.URI;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;

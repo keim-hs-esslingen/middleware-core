@@ -21,57 +21,79 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
+package de.hsesslingen.keim.efs.middleware.common;
 
 import java.io.Serializable;
-import java.time.Duration;
+import java.time.Instant;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.hsesslingen.keim.efs.middleware.common.LegBaseItem;
-import de.hsesslingen.keim.efs.middleware.common.Place;
+import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliDeserializer;
+import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliSerializer;
+import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
+import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFutureInstant;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import io.swagger.annotations.ApiModel;
-import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A OpenTripPlanner compatible definition of a leg (see OpenTripPlanner docs
- * for reference)
+ * Contains the route data about a mobility option.
  *
- * @author boesch, , K.Sivarasah
+ * @author boesch, K.Sivarasah
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-@ApiModel(description = "A OpenTripPlanner compatible definition of a leg (see OpenTripPlanner docs for reference)")
-public class Leg extends LegBaseItem implements Serializable {
+public class Leg implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public Leg(Instant startTime, Place from, Mode mode) {
-        super(startTime, from);
+        this.startTime = startTime;
+        this.from = from;
         this.mode = mode;
     }
 
+    public Leg(Instant startTime, Place from) {
+        this.startTime = startTime;
+        this.from = from;
+    }
+
+    @JsonSerialize(using = InstantEpochMilliSerializer.class)
+    @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
+    @TimeIsInFutureInstant(groups = OnCreate.class)
+    private Instant startTime;
+
+    @JsonSerialize(using = InstantEpochMilliSerializer.class)
+    @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
+    @TimeIsInFutureInstant(groups = OnCreate.class)
+    private Instant endTime;
+
     @NotNull
+    @Valid
     @JsonProperty(required = true)
+    private Place from;
+
+    @Valid
+    private Place to;
+
+    @NotEmpty
+    @JsonProperty(required = true)
+    private String serviceId;
+
     private Mode mode;
 
-    private Duration departureDelay;
-    private Duration arrivalDelay;
-    private int distance;
-    // private String fare;
-    private String route;
-    private String routeShortName;
-    private String routeLongName;
-
+    /**
+     * Distance/length of this leg in meter.
+     */
+    private Integer distance;
 }

@@ -157,8 +157,8 @@ public class ConsumerService {
                     + "from=%s, to=%s, startTime=%s, endTime=%s, radius=%d, share=%s, "
                     + "mobilityTypes=%s, modes=%s, serviceIds=%s",
                     from, to,
-                    startTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
-                    endTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+                    startTime == null ? "null" : startTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+                    endTime == null ? "null" : endTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
                     radiusMeter, share,
                     mobilityTypes.stream().map(m -> m.toString())
                             .collect(Collectors.joining(",")),
@@ -210,7 +210,7 @@ public class ConsumerService {
                 request.query("to", to);
             }
             if (startTime != null) {
-                request.query("startTime", to);
+                request.query("startTime", startTime.toInstant().toEpochMilli());
             }
             if (endTime != null) {
                 request.query("endTime", endTime.toInstant().toEpochMilli());

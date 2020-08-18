@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.booking;
 
+import de.hsesslingen.keim.efs.middleware.common.Leg;
 import java.io.Serializable;
 
 import javax.validation.Valid;

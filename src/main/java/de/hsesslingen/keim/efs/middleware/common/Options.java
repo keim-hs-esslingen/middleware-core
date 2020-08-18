@@ -51,7 +51,7 @@ public class Options implements Serializable {
     @Valid
     @NotNull
     @JsonProperty(required = true)
-    private LegBaseItem leg;
+    private Leg leg;
     
     @Valid
     @NotNull

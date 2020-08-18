@@ -49,9 +49,8 @@ import org.springframework.web.client.RestTemplate;
 
 import de.hsesslingen.keim.efs.middleware.common.Options;
 import de.hsesslingen.keim.efs.middleware.common.Place;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import de.hsesslingen.keim.efs.middleware.consumer.OptionsRequest;
-import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import java.net.URI;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
@@ -81,9 +80,9 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
     public void getOptionsTest_ConstViolation_Exception() {
         when(serviceDirectory.search(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
 
-        assertThatThrownBy(() -> consumerService.getOptions(new OptionsRequest(), null))
+        assertThatThrownBy(() -> consumerService.getOptions(null, null, null, null, null, null, null, null, null, null))
                 .isInstanceOf(ConstraintViolationException.class)
-                .hasMessageContaining("optionsRequest.from");
+                .hasMessageContaining("from");
 
         reset(serviceDirectory);
     }
@@ -105,7 +104,7 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
                 Mockito.any(ParameterizedTypeReference.class)
         )).thenReturn(entity);
 
-        List<Options> optionsResult = consumerService.getOptions(new OptionsRequest().setFrom(placeFrom), null);
+        List<Options> optionsResult = consumerService.getOptions(placeFrom, null, null, null, null, null, null, null, null, null);
         assertNotNull(optionsResult);
         assertEquals(1, optionsResult.size());
         assertEquals(SERVICE_ID, optionsResult.get(0).getLeg().getServiceId());

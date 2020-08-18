@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.controller;
+package middleware.consumer;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -53,10 +53,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
-import de.hsesslingen.keim.efs.middleware.booking.Leg;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
-import de.hsesslingen.keim.efs.middleware.common.LegBaseItem;
+import de.hsesslingen.keim.efs.middleware.common.Leg;
 import de.hsesslingen.keim.efs.middleware.common.Options;
 import de.hsesslingen.keim.efs.middleware.common.Place;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
@@ -86,7 +85,11 @@ public class ConsumerApiTest extends MiddlewareTestBase {
 
     @Test
     public void getOptionsTest_200() throws Exception {
-        when(consumerService.getOptions(Mockito.any(), Mockito.any())).thenReturn(getDummyOptions(PLACE_FROM));
+        when(consumerService.getOptions(Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(getDummyOptions(PLACE_FROM));
 
         mockMvc.perform(get(CONSUMER_API_OPTIONS).param("from", STRING_FROM))
                 .andExpect(status().is2xxSuccessful())
@@ -198,8 +201,8 @@ public class ConsumerApiTest extends MiddlewareTestBase {
     }
 
     private List<Options> getDummyOptions(Place from) {
-        Options op1 = new Options().setLeg(new LegBaseItem(Instant.now(), from).setServiceId(SERVICE_A_ID));
-        Options op2 = new Options().setLeg(new LegBaseItem(Instant.now(), from).setServiceId(SERVICE_B_ID));
+        Options op1 = new Options().setLeg(new Leg(Instant.now(), from).setServiceId(SERVICE_A_ID).setMode(Mode.CAR));
+        Options op2 = new Options().setLeg(new Leg(Instant.now(), from).setServiceId(SERVICE_B_ID).setMode(Mode.CAR));
         return Arrays.asList(op1, op2);
     }
 }

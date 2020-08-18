@@ -30,12 +30,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.keim.efs.middleware.common.Leg;
 
-import de.hsesslingen.keim.efs.middleware.common.LegBaseItem;
 import de.hsesslingen.keim.efs.middleware.common.Options;
 import de.hsesslingen.keim.efs.middleware.common.Place;
 import de.hsesslingen.keim.efs.middleware.common.TypeOfAsset;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 
 /**
  * @author k.sivarasah 28 Nov 2019
@@ -55,9 +56,9 @@ public class MiddlewareTestBase {
 
     public Options getDummyOption(String serviceId, String from) {
         return new Options()
-                .setLeg(new LegBaseItem().setServiceId(serviceId)
+                .setLeg(new Leg().setServiceId(serviceId)
                         .setStartTime(Instant.now()).setEndTime(Instant.now())
-                        .setFrom(new Place(from)))
+                        .setFrom(new Place(from)).setMode(Mode.CAR))
                 .setMeta(new TypeOfAsset().setName("dummy").setTypeID("type_id_001"));
     }
 

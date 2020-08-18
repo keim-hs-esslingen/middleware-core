@@ -75,8 +75,11 @@ public class SwaggerAutoConfiguration {
 	public Docket api() {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2)
 				.select()
-				.apis(Predicates.or(RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.controller"),
-						RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")))
+				.apis(Predicates.or(
+                        RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.provider"),
+                        RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.consumer"),
+						RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")
+                ))
 				.paths(PathSelectors.any())
 				.build()
 				.globalOperationParameters(Arrays.asList(new ParameterBuilder()

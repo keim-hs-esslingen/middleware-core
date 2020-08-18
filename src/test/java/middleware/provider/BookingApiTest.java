@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.controller;
+package middleware.provider;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -47,9 +47,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.apis.security.CredentialUtils;
 import de.hsesslingen.keim.efs.middleware.booking.BookingState;
-import de.hsesslingen.keim.efs.middleware.booking.Leg;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
+import de.hsesslingen.keim.efs.middleware.common.Leg;
 import de.hsesslingen.keim.efs.middleware.common.Place;
 import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
@@ -79,7 +79,7 @@ public class BookingApiTest extends MiddlewareTestBase {
     @Test
     public void getOptionsTestIso_200() throws Exception {
         // Testing incomplete zoned date time decplarations...
-        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", LocalDateTime.now().plusHours(1).toString().substring(0,16))
+        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", LocalDateTime.now().plusHours(1).toString().substring(0, 16))
                 .header("x-credentials", CredentialUtils.toJsonString(getDummyCredentials())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
