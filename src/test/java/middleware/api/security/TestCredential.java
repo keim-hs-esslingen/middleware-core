@@ -23,7 +23,7 @@
  */
 package middleware.api.security;
 
-import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

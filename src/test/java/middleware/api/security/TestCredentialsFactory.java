@@ -27,10 +27,10 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.apis.security.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
 
 /**
  * @author k.sivarasah 20 Nov 2019

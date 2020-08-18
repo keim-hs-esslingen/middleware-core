@@ -25,7 +25,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
 import java.time.Instant;
 import java.util.List;
 
@@ -39,8 +39,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.hsesslingen.keim.efs.middleware.apis.IBookingService;
-import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;

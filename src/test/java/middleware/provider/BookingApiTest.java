@@ -44,8 +44,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.apis.security.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;

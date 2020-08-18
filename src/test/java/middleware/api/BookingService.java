@@ -26,8 +26,8 @@ package middleware.api;
 import java.time.Instant;
 import java.util.List;
 
-import de.hsesslingen.keim.efs.middleware.apis.IBookingService;
-import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.IBookingService;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;

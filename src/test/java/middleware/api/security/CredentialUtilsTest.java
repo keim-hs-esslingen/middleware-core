@@ -33,7 +33,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.hsesslingen.keim.efs.middleware.apis.security.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 
 /**

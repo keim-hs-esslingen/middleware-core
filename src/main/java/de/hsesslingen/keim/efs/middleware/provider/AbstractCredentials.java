@@ -21,19 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.apis.security;
+package de.hsesslingen.keim.efs.middleware.provider.credentials;
 
-import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- *
- * @author boesch
- * @param <C>
+ * @author k.sivarasah
+ * 12 Nov 2019
  */
-public interface ICredentialsFactory<C extends AbstractCredentials> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class AbstractCredentials {
 
-    public C fromMap(Map<String, String> credentials);
-
-    public C fromString(String credentials);
-
+	private String serviceId;
+	
 }

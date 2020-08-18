@@ -28,10 +28,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import de.hsesslingen.keim.efs.middleware.apis.security.DefaultCredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.DefaultCredentialsFactory;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
-import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
 
 /**
  * AutoConfiguration class that creates necessary Beans for EFS-Middleware

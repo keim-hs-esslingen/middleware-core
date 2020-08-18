@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.apis.security;
+package de.hsesslingen.keim.efs.middleware.provider.credentials;
 
 import java.util.HashMap;
 import java.util.Map;
