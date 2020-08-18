@@ -34,7 +34,7 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author k.sivarasah 4 Oct 2019
  */
-public class TimeInFutureZonedDateTimeValidator implements ConstraintValidator<TimeIsInFutureZonedDateTime, ZonedDateTime> {
+public class TimeIsInFutureZonedDateTimeValidator implements ConstraintValidator<TimeIsInFutureZonedDateTime, ZonedDateTime> {
 
     @Override
     public boolean isValid(ZonedDateTime zonedDateTime, ConstraintValidatorContext context) {

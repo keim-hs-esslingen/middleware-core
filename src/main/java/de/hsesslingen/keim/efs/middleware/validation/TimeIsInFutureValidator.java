@@ -29,25 +29,29 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Checks if the given time value is a valid point of time in the future Null
- * values are considered as valid!
- *
- * @author k.sivarasah 4 Oct 2019
+ * Checks if the given time value is a valid point of time in the future
+ * Null values are considered as valid!
+ * 
+ * @author k.sivarasah
+ * 4 Oct 2019
  */
-public class TimeInFutureInstantValidator implements ConstraintValidator<TimeIsInFutureInstant, Instant> {
 
-    @Override
-    public boolean isValid(Instant instant, ConstraintValidatorContext context) {
-        if (instant == null) {
-            return true;
-        }
+public class TimeIsInFutureValidator implements ConstraintValidator<TimeIsInFuture, Long> {
 
-        try {
+	@Override
+	public boolean isValid(Long timeInMs, ConstraintValidatorContext context) {
+		if(timeInMs == null) {
+			return true;
+		}
+		
+		try {
+            Instant timeAsInstant = Instant.ofEpochMilli(timeInMs);
             Instant nowMinus10 = Instant.now().minusSeconds(10);
-            return instant.isAfter(nowMinus10);
-        } catch (Exception e) {
-            return false;
-        }
-    }
+			return timeAsInstant.isAfter(nowMinus10);
+		} catch (Exception e ) {
+			return false;
+		}
+			
+	}
 
 }

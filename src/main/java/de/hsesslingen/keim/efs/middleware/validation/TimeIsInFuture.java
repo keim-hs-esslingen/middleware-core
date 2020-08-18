@@ -33,14 +33,14 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * Custom annotation for validating time values using {@link TimeInFutureValidator}
+ * Custom annotation for validating time values using {@link TimeIsInFutureValidator}
  * @author k.sivarasah
  * 4 Oct 2019
  */
 
 @Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TimeInFutureValidator.class)
+@Constraint(validatedBy = TimeIsInFutureValidator.class)
 @Documented
 public @interface TimeIsInFuture {
 

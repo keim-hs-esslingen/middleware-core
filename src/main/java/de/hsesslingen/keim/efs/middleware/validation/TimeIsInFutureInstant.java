@@ -40,7 +40,7 @@ import javax.validation.Payload;
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TimeInFutureInstantValidator.class)
+@Constraint(validatedBy = TimeIsInFutureInstantValidator.class)
 @Documented
 public @interface TimeIsInFutureInstant {
 
