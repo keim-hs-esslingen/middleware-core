@@ -49,7 +49,7 @@ public class PositionValidator implements ConstraintValidator<PositionAsString, 
 		try {
 			lat = Double.valueOf(pos.split(",")[0]);
 			lon = Double.valueOf(pos.split(",")[1]);
-		} catch (Exception e ) {
+		} catch (NumberFormatException e ) {
 			return false;
 		}
 			

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.controller;
+package de.hsesslingen.keim.efs.middleware.consumer;
 
 import java.time.Instant;
 import java.util.List;
@@ -43,13 +43,12 @@ import de.hsesslingen.keim.efs.middleware.booking.BookingState;
 import de.hsesslingen.keim.efs.middleware.booking.Customer;
 import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
-import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import de.hsesslingen.keim.efs.middleware.consumer.OptionsRequest;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import io.swagger.annotations.Api;
+import java.time.ZoneId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -75,14 +74,12 @@ public class ConsumerApi implements IConsumerApi {
             Boolean share, Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds, String credentials) {
         log.info("Received request to get options from providers.");
 
-        return consumerService.getOptions(new OptionsRequest()
-                .setFrom(from).setTo(to)
-                .setStartTime(startTime == null ? null : Instant.ofEpochMilli(startTime))
-                .setEndTime(endTime == null ? null : Instant.ofEpochMilli(endTime))
-                .setRadius(radius).setShare(share)
-                .setModes(modes).setMobilityTypes(mobilityTypes)
-                .setServiceIds(serviceIds),
-                credentials);
+        return consumerService.getOptions(
+                from, to,
+                startTime == null ? null : Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()),
+                endTime == null ? null : Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()),
+                radius, share, mobilityTypes, modes, serviceIds, credentials
+        );
     }
 
     @Override

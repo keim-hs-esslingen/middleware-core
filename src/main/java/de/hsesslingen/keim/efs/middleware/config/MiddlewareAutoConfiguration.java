@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 
 import de.hsesslingen.keim.efs.middleware.apis.security.DefaultCredentialsFactory;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
 
 /**

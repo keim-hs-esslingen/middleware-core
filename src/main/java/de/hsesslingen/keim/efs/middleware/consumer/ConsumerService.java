@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import de.hsesslingen.keim.efs.middleware.booking.Booking;
 import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
@@ -44,17 +43,23 @@ import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
 import de.hsesslingen.keim.efs.middleware.common.Options;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
+import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
+import de.hsesslingen.keim.efs.mobility.service.MobilityType;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -83,19 +88,17 @@ public class ConsumerService {
     private static final String BOOKINGS_PATH = "/bookings";
     private static final String OPTIONS_PATH = "/bookings/options";
 
-    private ConsumerCredentialsCollection extractConsumerCredentials(String credentials) {
+    private Map<String, String> extractConsumerCredentials(String credentials) {
         if (credentials == null || credentials.isEmpty()) {
-            return ConsumerCredentialsCollection.empty();
+            return new HashMap<>();
         }
 
         try {
-            Map<String, String> credentialsMap = mapper.readValue(credentials, new TypeReference<LinkedHashMap<String, String>>() {
+            return mapper.readValue(credentials, new TypeReference<LinkedHashMap<String, String>>() {
             });
-
-            return new ConsumerCredentialsCollection(credentialsMap);
         } catch (IOException ex) {
             log.error("Credentials provided in wrong format. They must be a map of credentials, which maps each services credentials to its id...", ex);
-            return ConsumerCredentialsCollection.empty();
+            return new HashMap<>();
         }
     }
 
@@ -125,54 +128,115 @@ public class ConsumerService {
     }
 
     /**
-     * Collects {@link Options} from all available Service-Providers
+     * Collects {@link Options} from all matching and available
+     * Service-Providers
      *
-     * @param optionsRequest {@link OptionsRequest} containing filter parameters
+     * @param from From where the ride shall start.
+     * @param to To where the ride shall go.
+     * @param startTime When the ride should start.
+     * @param endTime When the ride should arrive.
+     * @param radiusMeter The geographical search radius around {@link from} for
+     * options.
+     * @param share Whether sharing is allowed.
+     * @param mobilityTypes List of mobility types to filter by.
+     * @param modes List of modes to filter by.
+     * @param serviceIds List of service provider ids that should be used.
      * @param credentials Credential data as json content string
-     * @return List of {@link Options}
+     * @return
      */
-    public List<Options> getOptions(@Valid OptionsRequest optionsRequest, String credentials) {
+    public List<Options> getOptions(@NotEmpty @PositionAsString String from,
+            @PositionAsString String to, ZonedDateTime startTime,
+            ZonedDateTime endTime, Integer radiusMeter, Boolean share,
+            Set<MobilityType> mobilityTypes, Set<Mode> modes,
+            Set<String> serviceIds, String credentials) {
 
+        //<editor-fold defaultstate="collapsed" desc="Long log.trace() statement...">
         if (log.isTraceEnabled()) {
-            try {
-                log.trace("Received following get options request:\n" + mapper.writeValueAsString(optionsRequest));
-            } catch (JsonProcessingException ex) {
-                log.trace("Received a get options request, but wasn't able to serialize it to JSON.");
-            }
-        } else {
-            log.info("Received get options request.");
+            // Output all params for debugging purposes.
+            log.trace("Going to fetch options with following parameters: "
+                    + "from=%s, to=%s, startTime=%s, endTime=%s, radius=%d, share=%s, "
+                    + "mobilityTypes=%s, modes=%s, serviceIds=%s",
+                    from, to,
+                    startTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+                    endTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+                    radiusMeter, share,
+                    mobilityTypes.stream().map(m -> m.toString())
+                            .collect(Collectors.joining(",")),
+                    modes.stream().map(m -> m.toString())
+                            .collect(Collectors.joining(",")),
+                    serviceIds.stream().collect(Collectors.joining(",")));
         }
+        //</editor-fold>
 
-        List<MobilityService> services = serviceDirectory.search(optionsRequest.getMobilityTypes(), optionsRequest.getModes(), optionsRequest.getServiceIds());
-        ConsumerCredentialsCollection credentialCollection = extractConsumerCredentials(credentials);
+        log.info("Requesting available services from Service-Directory...");
+        var services = serviceDirectory.search(mobilityTypes, modes, serviceIds);
+
+        // Extract credentials for the various services from the credentials string which
+        // should contain a JSON-object with JSON formatted credentials per service id.
+        var credentialsMap = extractConsumerCredentials(credentials);
 
         log.info("Requesting options from available services...");
+        var options = services
+                // using parallel stream for parallel HTTP requests
+                .parallelStream()
+                // The request method returns us a stream, therefore flatMap it.
+                .flatMap(service -> {
+                    return requestOptionsFromService(service.getId(),
+                            service.getServiceUrl(), credentialsMap.get(service.getId()),
+                            from, to, startTime, endTime, radiusMeter, share);
+                })
+                .collect(Collectors.toList());
 
-        return services.parallelStream().flatMap(service -> {
-            try {
-                String serviceCredentials = credentialCollection.ofService(service.getId());
+        log.trace("Received %d options in total.", options.size());
+        return options;
+    }
 
-                ResponseEntity<List<Options>> response = EfsRequest
-                        .get(getOptionsUrl(service.getServiceUrl(), optionsRequest))
-                        .credentials(serviceCredentials)
-                        .expect(new ParameterizedTypeReference<List<Options>>() {
-                        })
-                        .go();
+    private Stream<Options> requestOptionsFromService(
+            String serviceId, String serviceUrl,
+            String serviceCredentials, String from, String to,
+            ZonedDateTime startTime, ZonedDateTime endTime,
+            Integer radiusMeter, Boolean share) {
+        try {
+            // Start build the request object...
+            var request = EfsRequest
+                    .get(serviceUrl + OPTIONS_PATH)
+                    .query("from", from)
+                    .credentials(serviceCredentials)
+                    .expect(new ParameterizedTypeReference<List<Options>>() {
+                    });
 
-                List<Options> body = response.getBody();
+            // Building query string by adding existing params...
+            if (to != null) {
+                request.query("to", to);
+            }
+            if (startTime != null) {
+                request.query("startTime", to);
+            }
+            if (endTime != null) {
+                request.query("endTime", endTime.toInstant().toEpochMilli());
+            }
+            if (radiusMeter != null) {
+                request.query("radius", radiusMeter);
+            }
+            if (share != null) {
+                request.query("share", share);
+            }
 
-                if (body != null) {
-                    log.info("Service " + service.getId() + " returned " + body.size() + " options.");
-                    return body.stream();
-                } else {
-                    log.warn("Service " + service.getId() + " returned \"null\" upon requesting options.");
-                    return Stream.empty();
-                }
-            } catch (Exception e) {
-                log.error("Exception while getting options from url {}", service.getServiceUrl(), e);
+            // Sending the actual request...
+            List<Options> body = request.go().getBody();
+
+            // Logging some stuff about the response...
+            if (body != null) {
+                log.info("Service " + serviceId + " returned " + body.size() + " options.");
+                return body.stream();
+            } else {
+                log.info("Service " + serviceId + " returned \"null\" upon requesting options.");
                 return Stream.empty();
             }
-        }).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Exception while getting options from url {}", serviceUrl, e);
+            return Stream.empty();
+        }
     }
 
     /**
@@ -184,17 +248,17 @@ public class ConsumerService {
      * @return
      */
     public List<Booking> getBookings(Set<String> serviceIds, String credentials) {
+        log.info("Requesting available services from Service-Directory...");
+        var services = serviceDirectory.search(null, null, serviceIds);
 
-        log.info("Received get bookings request for " + serviceIds.size() + " services.");
-
-        List<MobilityService> services = serviceDirectory.search(null, null, serviceIds);
-        ConsumerCredentialsCollection credentialCollection = extractConsumerCredentials(credentials);
+        // Extract credentials for the various services from the credentials string which
+        // should contain a JSON-object with JSON formatted credentials per service id.
+        var credentialsMap = extractConsumerCredentials(credentials);
 
         log.info("Requesting bookings list from services...");
-
         return services.parallelStream().flatMap(service -> {
             try {
-                String serviceCredentials = credentialCollection.ofService(service.getId());
+                String serviceCredentials = credentialsMap.get(service.getId());
 
                 ResponseEntity<List<Booking>> response = EfsRequest
                         .get(service.getServiceUrl() + BOOKINGS_PATH)
@@ -282,13 +346,13 @@ public class ConsumerService {
      * this action.
      */
     public void performAction(
-            @NonNull String bookingId,
-            @NonNull BookingAction action,
-            @NonNull String serviceId,
+            @NotNull String bookingId,
+            @NotNull BookingAction action,
+            @NotNull String serviceId,
             @Nullable String assetId,
             @Nullable String secret,
             @Nullable String more,
-            @NonNull String credentials
+            @NotNull String credentials
     ) {
         String bookingUrl = getBookingsUrlByServiceAndBookingId(serviceId, bookingId);
 
@@ -313,29 +377,6 @@ public class ConsumerService {
                 .filter(service -> service.getId().equalsIgnoreCase(serviceId))
                 .map(MobilityService::getServiceUrl).findAny()
                 .orElseThrow(() -> new ResourceAccessException(serviceId + " is not available"));
-    }
-
-    private String getOptionsUrl(String baseUrl, OptionsRequest optionsRequest) {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + OPTIONS_PATH)
-                .queryParam("from", optionsRequest.getFrom());
-
-        if (optionsRequest.getTo() != null) {
-            uriBuilder.queryParam("to", optionsRequest.getTo());
-        }
-        if (optionsRequest.getRadius() != null) {
-            uriBuilder.queryParam("radius", optionsRequest.getRadius());
-        }
-        if (optionsRequest.getShare() != null) {
-            uriBuilder.queryParam("share", optionsRequest.getShare());
-        }
-        if (optionsRequest.getStartTime() != null) {
-            uriBuilder.queryParam("startTime", optionsRequest.getStartTime().toEpochMilli());
-        }
-        if (optionsRequest.getEndTime() != null) {
-            uriBuilder.queryParam("endTime", optionsRequest.getEndTime().toEpochMilli());
-        }
-
-        return uriBuilder.toUriString();
     }
 
     private String getBookingsUrlByServiceId(String serviceId) {

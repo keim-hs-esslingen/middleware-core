@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.controller;
+package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;

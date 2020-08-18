@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.controller;
+package de.hsesslingen.keim.efs.middleware.consumer;
 
 import java.util.List;
 import java.util.Set;
@@ -41,6 +41,7 @@ import de.hsesslingen.keim.efs.middleware.booking.Customer;
 import de.hsesslingen.keim.efs.middleware.common.Options;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
+import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFuture;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;

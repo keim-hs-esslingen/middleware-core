@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.consumer;
+package de.hsesslingen.keim.efs.middleware.common;
 
 import java.util.List;
 import java.util.Set;

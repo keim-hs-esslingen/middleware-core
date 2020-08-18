@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.config;
 
-import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
