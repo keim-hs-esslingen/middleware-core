@@ -21,49 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
-
-import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+package de.hsesslingen.keim.efs.middleware.model;
 
 /**
+ * Actions that can be performed on some bookings.
  *
- * @author boesch
+ * @author keim
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(chain = true)
-public class Customer implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The ID of the customer.
-     */
-    private String id;
-
-    /**
-     * First name of the customer.
-     */
-    private String firstName;
-
-    /**
-     * Last name of the customer
-     */
-    private String lastName;
-
-    /**
-     * Phone number of the customer.
-     */
-    private String phone;
-
-    /**
-     * Email address of the customer.
-     */
-    private String email;
-
+public enum BookingAction {
+    LOCK, // LOCK asset
+    UNLOCK; // UNLOCK asset
 }

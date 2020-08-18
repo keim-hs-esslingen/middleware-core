@@ -21,51 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
+package de.hsesslingen.keim.efs.middleware.model;
 
-import de.hsesslingen.keim.efs.middleware.common.Leg;
 import java.io.Serializable;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A new booking, created by MaaS POST request in 'new' state.
+ * The booking information describing the state and details of the transaction.
  *
- * @author boesch, K.Sivarasah
+ * @author boesch
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-@ApiModel(description = "Model used to create a new Booking in BookingState NEW")
-public class NewBooking implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(description = "The booking object describing its state and details")
+public class Booking extends NewBooking implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public NewBooking(BookingState state, Leg leg, Customer customer) {
-        this.state = state;
-        this.leg = leg;
-        this.customer = customer;
-    }
+	/**
+     * The identifier MaaS will be using to referring to the booking
+     */
+	@JsonProperty(required = true)
+	@NotEmpty
+    private String id;
 
-    @ApiModelProperty(value = "Current state of the booking", required = true)
-    private BookingState state;
+    //private String terms;
 
-    @Valid
-    @NotNull
-    @JsonProperty(required = true)
-    private Leg leg;
+    private Token token;
 
-    private Customer customer;
-    
-    private String other;
-
+    /**
+     * Arbitrary metadata that a TO can add
+     */
+    private Object meta;
 }

@@ -23,9 +23,9 @@
  */
 package de.hsesslingen.keim.efs.middleware.common;
 
-import de.hsesslingen.keim.efs.middleware.booking.Booking;
-import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
-import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.Booking;
+import de.hsesslingen.keim.efs.middleware.model.BookingAction;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;

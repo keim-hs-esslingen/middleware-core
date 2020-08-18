@@ -46,11 +46,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.apis.security.CredentialUtils;
-import de.hsesslingen.keim.efs.middleware.booking.BookingState;
+import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
-import de.hsesslingen.keim.efs.middleware.common.Leg;
-import de.hsesslingen.keim.efs.middleware.common.Place;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.Leg;
+import de.hsesslingen.keim.efs.middleware.model.Place;
 import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;

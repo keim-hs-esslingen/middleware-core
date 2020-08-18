@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.common;
+package de.hsesslingen.keim.efs.middleware.model;
 
 /**
  *
  * @author boesch
  */
-public enum Propulsion {
-    muscle, electric, gasoline, diesel, hybrid, LPG, hydrogen;
+public enum Gearbox {
+    manual, automatic, semiautomatic
 }

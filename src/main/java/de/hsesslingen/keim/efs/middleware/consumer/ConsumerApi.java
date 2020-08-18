@@ -37,12 +37,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.hsesslingen.keim.efs.middleware.booking.Booking;
-import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
-import de.hsesslingen.keim.efs.middleware.booking.BookingState;
-import de.hsesslingen.keim.efs.middleware.booking.Customer;
-import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
-import de.hsesslingen.keim.efs.middleware.common.Options;
+import de.hsesslingen.keim.efs.middleware.model.Booking;
+import de.hsesslingen.keim.efs.middleware.model.BookingAction;
+import de.hsesslingen.keim.efs.middleware.model.BookingState;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;

@@ -26,7 +26,7 @@ package de.hsesslingen.keim.efs.middleware.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import java.time.Instant;
 
 /**

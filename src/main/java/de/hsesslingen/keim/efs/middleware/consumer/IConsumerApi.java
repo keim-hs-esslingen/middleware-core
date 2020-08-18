@@ -35,10 +35,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import de.hsesslingen.keim.efs.middleware.booking.Booking;
-import de.hsesslingen.keim.efs.middleware.booking.BookingState;
-import de.hsesslingen.keim.efs.middleware.booking.Customer;
-import de.hsesslingen.keim.efs.middleware.common.Options;
+import de.hsesslingen.keim.efs.middleware.model.Booking;
+import de.hsesslingen.keim.efs.middleware.model.BookingState;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;

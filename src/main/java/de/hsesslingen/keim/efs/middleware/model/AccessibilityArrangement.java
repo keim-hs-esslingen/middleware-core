@@ -21,49 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
-
-import java.io.Serializable;
-
-import javax.validation.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+package de.hsesslingen.keim.efs.middleware.model;
 
 /**
- * The booking information describing the state and details of the transaction.
  *
  * @author boesch
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-@ApiModel(description = "The booking object describing its state and details")
-public class Booking extends NewBooking implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	/**
-     * The identifier MaaS will be using to referring to the booking
-     */
-	@JsonProperty(required = true)
-	@NotEmpty
-    private String id;
-
-    //private String terms;
-
-    private Token token;
-
-    /**
-     * Arbitrary metadata that a TO can add
-     */
-    private Object meta;
+public enum AccessibilityArrangement {
+    lift, escalator, ground_level, sightimpairment, hearingimpairment, wheelchair;
 }

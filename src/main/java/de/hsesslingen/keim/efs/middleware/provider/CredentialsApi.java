@@ -25,7 +25,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.apis.security.ICredentialsFactory;
 import de.hsesslingen.keim.efs.middleware.apis.ICredentialsService;
-import de.hsesslingen.keim.efs.middleware.booking.Customer;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import io.swagger.annotations.Api;

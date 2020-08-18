@@ -21,45 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
+package de.hsesslingen.keim.efs.middleware.model;
 
+import java.io.Serializable;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
- * The validity token (such as booking ID, travel ticket etc.) that MaaS clients
- * will display to validate the trip when starting the leg.
+ * A new booking, created by MaaS POST request in 'new' state.
  *
- * @author boesch
+ * @author boesch, K.Sivarasah
  */
 @Data
-public class Token {
+@NoArgsConstructor
+@Accessors(chain = true)
+@ApiModel(description = "Model used to create a new Booking in BookingState NEW")
+public class NewBooking implements Serializable {
 
-    /**
-     * The rules that MaaS will interpret to schedule, -validate or cancel the
-     * booking.
-     */
-    private ValidityDuration validityDuration;
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Arbitrary metadata the TO may pass along the ticket to the client (e.g. a
-     * booking code, base64 encoded binary)
-     */
-    private Object meta;
-
-    
-    
-    @Data
-    public static class ValidityDuration {
-
-        /**
-         * The starting time from which the ticket is valid
-         */
-        private long from;
-
-        /**
-         * The finishing time the ticket is valid for
-         */
-        private long to;
-
+    public NewBooking(BookingState state, Leg leg, Customer customer) {
+        this.state = state;
+        this.leg = leg;
+        this.customer = customer;
     }
+
+    @ApiModelProperty(value = "Current state of the booking", required = true)
+    private BookingState state;
+
+    @Valid
+    @NotNull
+    @JsonProperty(required = true)
+    private Leg leg;
+
+    private Customer customer;
+    
+    private String other;
+
 }

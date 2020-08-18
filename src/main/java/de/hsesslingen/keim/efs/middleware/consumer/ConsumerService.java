@@ -36,11 +36,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.ResourceAccessException;
 
-import de.hsesslingen.keim.efs.middleware.booking.Booking;
-import de.hsesslingen.keim.efs.middleware.booking.BookingAction;
-import de.hsesslingen.keim.efs.middleware.booking.Customer;
-import de.hsesslingen.keim.efs.middleware.booking.NewBooking;
-import de.hsesslingen.keim.efs.middleware.common.Options;
+import de.hsesslingen.keim.efs.middleware.model.Booking;
+import de.hsesslingen.keim.efs.middleware.model.BookingAction;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;

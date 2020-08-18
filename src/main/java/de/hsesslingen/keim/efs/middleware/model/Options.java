@@ -21,14 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.booking;
+package de.hsesslingen.keim.efs.middleware.model;
+
+import java.io.Serializable;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
- * Actions that can be performed on some bookings.
+ * Contains information about a mobility option.
  *
- * @author keim
+ * @author boesch, K.Sivarasah
  */
-public enum BookingAction {
-    LOCK, // LOCK asset
-    UNLOCK; // UNLOCK asset
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+public class Options implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Valid
+    @NotNull
+    @JsonProperty(required = true)
+    private Leg leg;
+    
+    @Valid
+    @NotNull
+    @JsonProperty(required = true)
+    private TypeOfAsset meta;
+
 }

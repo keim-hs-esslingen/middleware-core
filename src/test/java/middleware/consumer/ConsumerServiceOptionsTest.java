@@ -47,8 +47,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import de.hsesslingen.keim.efs.middleware.common.Options;
-import de.hsesslingen.keim.efs.middleware.common.Place;
+import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
 import java.net.URI;

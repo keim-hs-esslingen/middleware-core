@@ -21,12 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.common;
+package de.hsesslingen.keim.efs.middleware.model;
 
 /**
+ * The life,cycle state of the booking (from NEW to FINISHED)
  *
  * @author boesch
  */
-public enum AccessibilityArrangement {
-    lift, escalator, ground_level, sightimpairment, hearingimpairment, wheelchair;
+public enum BookingState {
+    NEW, // Followed by: BOOKED | STARTED | UPDATEREQUESTED
+    BOOKED, // Followed by: CANCELLED | STARTED | UPDATEREQUESTED
+    CANCELLED, // Closed
+    UPDATEREQUESTED, // Kept as before
+    STARTED, // Followed by: ABORTED | FINISHED | UPDATEREQUESTED
+    ABORTED, // Closed
+    FINISHED; // Closed
+
+    public boolean canAdvanceTo(BookingState next) {
+        if (next == null) {
+            return false;
+        }
+
+        switch (this) {
+            case NEW:
+                return next == UPDATEREQUESTED || next == BOOKED || next == STARTED;
+            case BOOKED:
+                return next == UPDATEREQUESTED || next == CANCELLED || next == STARTED;
+            case STARTED:
+                return next == UPDATEREQUESTED || next == ABORTED || next == FINISHED;
+            case UPDATEREQUESTED:
+                return true;
+            case CANCELLED:
+            case FINISHED:
+            case ABORTED:
+            default:
+                return false;
+        }
+    }
+
 }

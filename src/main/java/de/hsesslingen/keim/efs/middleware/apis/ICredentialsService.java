@@ -24,7 +24,7 @@
 package de.hsesslingen.keim.efs.middleware.apis;
 
 import de.hsesslingen.keim.efs.middleware.apis.security.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.booking.Customer;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
