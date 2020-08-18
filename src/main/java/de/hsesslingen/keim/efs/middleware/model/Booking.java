@@ -58,8 +58,6 @@ public class Booking extends NewBooking implements Serializable {
 	@NotEmpty
     private String id;
 
-    //private String terms;
-
     private Token token;
 
     /**
