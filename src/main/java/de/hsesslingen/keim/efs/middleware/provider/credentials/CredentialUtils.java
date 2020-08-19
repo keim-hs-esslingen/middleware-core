@@ -43,6 +43,7 @@ import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
  */
 public class CredentialUtils {
 
+    // TODO: Lazyload ObjectMapper to reduce memory overhead.
 	private final static ObjectMapper mapper = new ObjectMapper();
 	private final static Logger log = LoggerFactory.getLogger(CredentialUtils.class);
 	
