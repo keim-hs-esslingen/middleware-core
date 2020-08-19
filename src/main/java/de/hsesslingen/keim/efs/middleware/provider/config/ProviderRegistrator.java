@@ -21,10 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.provider;
+package de.hsesslingen.keim.efs.middleware.provider.config;
 
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
-import de.hsesslingen.keim.efs.middleware.config.IMobilityServiceConfigurationProperties;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

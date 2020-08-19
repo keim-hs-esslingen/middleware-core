@@ -21,8 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.provider.credentials;
+package de.hsesslingen.keim.efs.middleware.provider.config;
 
+import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
 import java.util.Map;
 
 /**

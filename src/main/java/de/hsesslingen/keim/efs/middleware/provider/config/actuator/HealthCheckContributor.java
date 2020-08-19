@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.config.actuator;
+package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 
 import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
 import java.util.ArrayList;

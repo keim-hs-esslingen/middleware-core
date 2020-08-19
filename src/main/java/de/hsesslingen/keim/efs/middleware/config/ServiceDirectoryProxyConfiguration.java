@@ -21,31 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.config.actuator;
+package de.hsesslingen.keim.efs.middleware.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.info.Info.Builder;
-import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-
-import de.hsesslingen.keim.efs.middleware.config.IMobilityServiceConfigurationProperties;
+import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
- * Custom Implementation of InfoContributor, that enriches the actuator's info endpoint
- * with custom service properties
- * 
- * @author k.sivarasah
- * 3 Oct 2019
+ *
+ * @author keim
  */
-@ConditionalOnBean(IMobilityServiceConfigurationProperties.class)
-public class ServiceInfoContributor implements InfoContributor {
+@Configuration
+@AutoConfigureAfter(RestUtilsAutoConfiguration.class)
+public class ServiceDirectoryProxyConfiguration {
 
-	@Autowired
-	IMobilityServiceConfigurationProperties properties;
+    private static final Log log = LogFactory.getLog(ServiceDirectoryProxyConfiguration.class);
 
-	@Override
-	public void contribute(Builder builder) {
-		builder.withDetail("properties", properties.getMobilityService());
-	}
-
+    // Not marked directly as @Service in class because this bean should be
+    // initialized AFTER RestUtilsAutoConfiguration took place.
+    @Bean
+    @Lazy // Initialize only if needed.
+    public ServiceDirectoryProxy serviceDirectoryProxy() {
+        log.info("Initializing ServiceDirectoryProxy bean...");
+        return new ServiceDirectoryProxy();
+    }
 }

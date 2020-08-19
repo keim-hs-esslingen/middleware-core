@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.hsesslingen.keim.efs.middleware.config.MobilityServiceConfigurationProperties;
+import de.hsesslingen.keim.efs.middleware.provider.config.MobilityServiceConfigurationProperties;
 
 /**
  * @author k.sivarasah

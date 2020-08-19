@@ -21,34 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.utils;
+package de.hsesslingen.keim.efs.middleware.provider.config;
 
-import java.io.IOException;
-import java.time.Instant;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import java.time.ZonedDateTime;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 
 /**
- * Deserializer for {@link Instant}. Makes an {@link Instant} out of a
- * milliseconds since epoch.
- *
- * @author k.sivarasah 3 Oct 2019
+ * @author k.sivarasah
+ * 3 Oct 2019
  */
-public class FlexibleZonedDateTimeDeserializer extends JsonDeserializer<ZonedDateTime> {
+public interface IMobilityServiceConfigurationProperties {
 
-    @Override
-    public ZonedDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        var value = p.getText();
-
-        try {
-            return FlexibleZonedDateTimeParser.tryParseZonedDateTime(value);
-        } catch (RuntimeException ex) {
-            throw new IOException(ex);
-        }
-    }
-
+	
+	/**
+	 * Returns the {@link MobilityService} read from Configuration file
+	 * @return The MobilityService as configured in yml file
+	 */
+	public MobilityService getMobilityService();
+	
+	/**
+	 * Used by ConfiguratonProperties class to set MobilityService details read from Configuration file
+	 * @param mobilityService {@link MobilityService} containing service meta data
+	 */
+	public void setMobilityService(MobilityService mobilityService);
+	
 }

@@ -21,27 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.config;
+package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 
-import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.info.Info.Builder;
+import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+
+import de.hsesslingen.keim.efs.middleware.provider.config.IMobilityServiceConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
- * @author k.sivarasah
- * 3 Oct 2019
+ * Custom Implementation of InfoContributor, that enriches the actuator's info
+ * endpoint with custom service properties
+ *
+ * @author k.sivarasah 3 Oct 2019
  */
-public interface IMobilityServiceConfigurationProperties {
+@Component
+@ConditionalOnBean(IMobilityServiceConfigurationProperties.class)
+public class MobilityServiceInfoContributor implements InfoContributor {
 
-	
-	/**
-	 * Returns the {@link MobilityService} read from Configuration file
-	 * @return The MobilityService as configured in yml file
-	 */
-	public MobilityService getMobilityService();
-	
-	/**
-	 * Used by ConfiguratonProperties class to set MobilityService details read from Configuration file
-	 * @param mobilityService {@link MobilityService} containing service meta data
-	 */
-	public void setMobilityService(MobilityService mobilityService);
-	
+    @Autowired
+    IMobilityServiceConfigurationProperties properties;
+
+    @Override
+    public void contribute(Builder builder) {
+        builder.withDetail("properties", properties.getMobilityService());
+    }
+
 }

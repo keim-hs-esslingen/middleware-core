@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.config;
+package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -31,30 +31,27 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import de.hsesslingen.keim.efs.middleware.config.actuator.HealthCheckContributor;
-import de.hsesslingen.keim.efs.middleware.config.actuator.ServiceInfoContributor;
+import de.hsesslingen.keim.efs.middleware.provider.config.ProviderAutoConfiguration;
 
 /**
  * AutoConfiguration for HealthCheck and InfoContributor
- * 
- * @author k.sivarasah
- * 10 Oct 2019
+ *
+ * @author k.sivarasah 10 Oct 2019
  */
-
 @Configuration
-@AutoConfigureAfter(MiddlewareAutoConfiguration.class)
+@AutoConfigureAfter(ProviderAutoConfiguration.class)
 @ConditionalOnClass(HealthIndicator.class)
-public class MiddlewareActuatorAutoConfiguration {
+public class ProviderActuatorAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public InfoContributor serviceInfoContributor() {
-		return new ServiceInfoContributor();
-	}
-	
-	@Bean
-	@ConditionalOnMissingBean
-	public HealthIndicator healthCheckContributor() {
-		return new HealthCheckContributor();
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public InfoContributor serviceInfoContributor() {
+        return new MobilityServiceInfoContributor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HealthIndicator healthCheckContributor() {
+        return new HealthCheckContributor();
+    }
 }
