@@ -1,8 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 de.hsesslingen.keim.efs.middleware.provider.BookingApi,\
+de.hsesslingen.keim.efs.middleware.provider.ProviderRegistrator,\
 de.hsesslingen.keim.efs.middleware.consumer.ConsumerApi,\
 de.hsesslingen.keim.efs.middleware.config.MiddlewareAutoConfiguration,\
-de.hsesslingen.keim.efs.middleware.config.ProviderRegistrator,\
 de.hsesslingen.keim.efs.middleware.config.MiddlewareActuatorAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration,\
