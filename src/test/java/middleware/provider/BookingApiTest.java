@@ -54,7 +54,7 @@ import de.hsesslingen.keim.efs.middleware.model.Place;
 import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
-import middleware.api.security.TestCredential;
+import middleware.provider.credentials.TestCredential;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**

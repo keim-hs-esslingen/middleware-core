@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.api.security;
+package middleware.provider.credentials;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import lombok.AllArgsConstructor;

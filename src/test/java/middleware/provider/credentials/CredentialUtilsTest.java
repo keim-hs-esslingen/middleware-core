@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.api.security;
+package middleware.provider.credentials;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

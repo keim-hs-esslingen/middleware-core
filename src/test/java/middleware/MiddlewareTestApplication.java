@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 
-import middleware.api.BookingService;
+import middleware.provider.BookingService;
 
 @SpringBootApplication
 @ActiveProfiles("test")

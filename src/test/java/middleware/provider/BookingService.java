@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.api;
+package middleware.provider;
 
 import java.time.Instant;
 import java.util.List;
@@ -46,7 +46,6 @@ public class BookingService implements IBookingService {
      */
     @Override
     public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -55,7 +54,6 @@ public class BookingService implements IBookingService {
      */
     @Override
     public Booking createNewBooking(NewBooking newBooking, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -64,7 +62,6 @@ public class BookingService implements IBookingService {
      */
     @Override
     public Booking getBookingById(String id, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -73,7 +70,6 @@ public class BookingService implements IBookingService {
      */
     @Override
     public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -88,7 +84,6 @@ public class BookingService implements IBookingService {
     @Override
     public List<Options> getBookingOptions(Place from, Place to, Instant startTime, Instant endTime,
             Integer radiusMeter, Boolean sharingAllowed, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -97,7 +92,6 @@ public class BookingService implements IBookingService {
      */
     @Override
     public List<Options> getBookingOptions(Place from, Instant startTime, AbstractCredentials credentials) throws AbstractEfsException {
-        // TODO Auto-generated method stub
         return null;
     }
 }
