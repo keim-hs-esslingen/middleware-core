@@ -37,12 +37,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFuture;
 import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFutureZonedDateTime;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.time.ZonedDateTime;
@@ -87,7 +87,7 @@ public interface IBookingApi extends IBilateralBookingApi {
             @RequestParam(required = false) @TimeIsInFutureZonedDateTime ZonedDateTime endTimeIso,
             @RequestParam(required = false) Integer radius,
             @RequestParam(required = false) Boolean share,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -102,7 +102,7 @@ public interface IBookingApi extends IBilateralBookingApi {
     @ApiOperation(value = "Get Bookings", notes = "Returns a list of Booking optionally filtered by their state.")
     public List<Booking> getBookings(
             @RequestParam(required = false) BookingState state,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -117,6 +117,6 @@ public interface IBookingApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(@PathVariable String id,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
 
 }

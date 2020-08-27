@@ -42,7 +42,7 @@ import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;

@@ -51,7 +51,7 @@ import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.net.URI;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
@@ -77,10 +77,10 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
     @MockBean
     @Qualifier("restTemplateSimple")
     RestTemplate restTemplateSimple;
-    
+
     @Before
-    public void before(){
-        EfsRequest.configure(restTemplate, restTemplateSimple, null);
+    public void before() {
+        EfsRequest.configureRestTemplates(restTemplate, restTemplateSimple);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
                 Mockito.any(),
                 Mockito.any(ParameterizedTypeReference.class)
         )).thenReturn(entity);
-        
+
         when(restTemplate.exchange(
                 Mockito.argThat((String uri) -> {
                     return uri.contains(OPTIONS_PATH);
@@ -119,7 +119,7 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
                 Mockito.any(),
                 Mockito.any(ParameterizedTypeReference.class)
         )).thenReturn(entity);
-        
+
         when(restTemplateSimple.exchange(
                 Mockito.argThat((URI uri) -> {
                     return uri.getPath().contains(OPTIONS_PATH);
@@ -128,7 +128,7 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
                 Mockito.any(),
                 Mockito.any(ParameterizedTypeReference.class)
         )).thenReturn(entity);
-        
+
         when(restTemplateSimple.exchange(
                 Mockito.argThat((String uri) -> {
                     return uri.contains(OPTIONS_PATH);

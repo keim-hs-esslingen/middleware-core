@@ -39,7 +39,6 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
@@ -47,6 +46,7 @@ import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFuture;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -95,7 +95,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
             @RequestParam(required = false, defaultValue = "") @ApiParam("Desired mobility types") Set<MobilityType> mobilityTypes,
             @RequestParam(required = false, defaultValue = "") @ApiParam("Desired modes") Set<Mode> modes,
             @RequestParam(required = false, defaultValue = "") @ApiParam("Ids of preferred services to filter by") Set<String> serviceIds,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -110,7 +110,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(@PathVariable String id, @RequestParam String serviceId,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
 
     /**
      * Gets a {@link List<Booking>} from the service using its id
@@ -126,7 +126,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     public List<Booking> getBookings(
             @RequestParam(required = true, defaultValue = "") @ApiParam("List of the agencies from which to get the bookings.") Set<String> serviceIds,
             @RequestParam(required = false) @ApiParam("Optionally a state for which to filter the bookings.") BookingState state,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -142,7 +142,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ApiOperation(value = "Create login token", notes = "Allows to create a login-token associated to the provided credentials. This might be necessary for some providers, but not for all.")
     public String createLoginToken(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -158,7 +158,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ApiOperation(value = "Log out user", notes = "Logs out (invalidates) the given login-token.")
     public Boolean deleteLoginToken(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -175,7 +175,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ApiOperation(value = "Register a new user", notes = "Registers a new user at this service.")
     public String registerUser(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials,
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials,
             @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
     );
 
@@ -192,6 +192,6 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given credentials are still valid and can be used for booking purposes etc.")
     public Boolean checkCredentialsAreValid(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 }

@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.common.base.Predicates;
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -47,72 +46,69 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Default Configuration for SwaggerUI to expose REST-APIs implemented in the middleware-core library.
- * 
+ * Default Configuration for SwaggerUI to expose REST-APIs implemented in the
+ * middleware-core library.
+ *
  * @author k.sivarasah
- * @author b.oesch
- * 10 Oct 2019
+ * @author b.oesch 10 Oct 2019
  */
-
 @Configuration
 @EnableSwagger2
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
-	@Value("${spring.application.name:}")
-	private String serviceName;
-	
-	@Value("${efs.middleware.provider-api.enabled:false}")
-	private boolean providerEnabled;
-	
-	@Value("${efs.middleware.consumer-api.enabled:false}")
-	private boolean consumerEnabled;
-	
-	public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(Consumer) APIs provided for consuming mobility services", 1);
-	public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(Provider) Booking related APIs with CRUD functionality", 2);
-				
-	@Bean
-	@ConditionalOnMissingBean
-	public Docket api() {
-		Docket docket = new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(Predicates.or(
+    @Value("${spring.application.name:}")
+    private String serviceName;
+
+    @Value("${efs.middleware.provider-api.enabled:false}")
+    private boolean providerEnabled;
+
+    @Value("${efs.middleware.consumer-api.enabled:false}")
+    private boolean consumerEnabled;
+
+    public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(Consumer) APIs provided for consuming mobility services", 1);
+    public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(Provider) Booking related APIs with CRUD functionality", 2);
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Docket api() {
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(Predicates.or(
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.provider"),
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.consumer"),
-						RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")
+                        RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")
                 ))
-				.paths(PathSelectors.any())
-				.build()
-				.globalOperationParameters(Arrays.asList(new ParameterBuilder()
-						.name(ApiConstants.API_KEY_HEADER_NAME)
-						.description(ApiConstants.API_KEY_DESC)
-						.modelRef(new ModelRef("string"))
-						.parameterType("header")
-						.required(false).build()));
-		
-		return setTags(docket).apiInfo(apiInfo());
-	}
-	
-	private Docket setTags(Docket docket) {
-		if(providerEnabled && consumerEnabled) {
-			return docket.tags(CONSUMER_API_TAG, BOOKING_API_TAG);
-		} else if(providerEnabled) {
-			return docket.tags(BOOKING_API_TAG);
-		} else {
-			return docket.tags(CONSUMER_API_TAG);
-		}
-	}
-	
-	public static Tag[] getTags() {
-		return new Tag[] { CONSUMER_API_TAG, BOOKING_API_TAG };
-	}
+                .paths(PathSelectors.any())
+                .build()
+                .globalOperationParameters(Arrays.asList(new ParameterBuilder()
+                        .modelRef(new ModelRef("string"))
+                        .parameterType("header")
+                        .required(false).build()));
 
-	protected ApiInfo apiInfo() {
-		String serviceInfo = String.format("Middleware Service (%s)", serviceName);
-		return new ApiInfo(serviceInfo,
-				"API description of " + serviceInfo, "V0.1", null,
-				new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null), 
-				null, null, Collections.emptyList());
-	}
+        return setTags(docket).apiInfo(apiInfo());
+    }
+
+    private Docket setTags(Docket docket) {
+        if (providerEnabled && consumerEnabled) {
+            return docket.tags(CONSUMER_API_TAG, BOOKING_API_TAG);
+        } else if (providerEnabled) {
+            return docket.tags(BOOKING_API_TAG);
+        } else {
+            return docket.tags(CONSUMER_API_TAG);
+        }
+    }
+
+    public static Tag[] getTags() {
+        return new Tag[]{CONSUMER_API_TAG, BOOKING_API_TAG};
+    }
+
+    protected ApiInfo apiInfo() {
+        String serviceInfo = String.format("Middleware Service (%s)", serviceName);
+        return new ApiInfo(serviceInfo,
+                "API description of " + serviceInfo, "V0.1", null,
+                new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null),
+                null, null, Collections.emptyList());
+    }
 
 }

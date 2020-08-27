@@ -26,9 +26,9 @@ package de.hsesslingen.keim.efs.middleware.common;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import javax.validation.Valid;
@@ -64,7 +64,7 @@ public interface IBilateralBookingApi {
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
             @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
 
     /**
      * Updates an existing {@link Booking} with new details.
@@ -80,7 +80,7 @@ public interface IBilateralBookingApi {
     public Booking modifyBooking(
             @PathVariable String id,
             @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials);
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
 
     /**
      * Can be used to perform actions on bookings. This can be used to e.g.
@@ -111,7 +111,7 @@ public interface IBilateralBookingApi {
             @RequestParam(required = false) String assetId,
             @RequestParam(required = false) String secret,
             @RequestBody(required = false) String more,
-            @RequestHeader(name = ApiConstants.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(ApiConstants.CREDENTIALS_DESC) String credentials
+            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
     );
 
 }

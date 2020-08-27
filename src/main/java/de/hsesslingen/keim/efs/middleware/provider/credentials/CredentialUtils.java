@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 
 /**
  * Utility class for converting credential data from and to various representations
@@ -134,7 +134,7 @@ public class CredentialUtils {
 		}
 		
 		Map<String, String> headerElement = new HashMap<>();
-		headerElement.put(ApiConstants.CREDENTIALS_HEADER_NAME, toJsonString(credentialObject));
+		headerElement.put(EfsRequest.CREDENTIALS_HEADER_NAME, toJsonString(credentialObject));
 		return headerElement;
 	}
 	

@@ -31,7 +31,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
-import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

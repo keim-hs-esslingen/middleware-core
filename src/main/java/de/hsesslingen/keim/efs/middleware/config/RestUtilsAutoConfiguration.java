@@ -23,9 +23,8 @@
  */
 package de.hsesslingen.keim.efs.middleware.config;
 
-import de.hsesslingen.keim.efs.middleware.utils.AbstractEfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -58,9 +57,8 @@ public class RestUtilsAutoConfiguration {
 
     @Bean
     public Object efsRequest(@Qualifier("restTemplateLoadBalanced") RestTemplate restTemplateLoadBalanced,
-            @Qualifier("restTemplateSimple") RestTemplate restTemplateSimple,
-            @Value("${efs.security.api-key.value:null}") String apiKey) {
-        AbstractEfsRequest.configure(restTemplateLoadBalanced, restTemplateSimple, apiKey);
+            @Qualifier("restTemplateSimple") RestTemplate restTemplateSimple) {
+        EfsRequest.configureRestTemplates(restTemplateLoadBalanced, restTemplateSimple);
         return null;
     }
 

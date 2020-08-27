@@ -34,7 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
-import de.hsesslingen.keim.efs.middleware.config.ApiConstants;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 
 /**
  * @author k.sivarasah
@@ -124,7 +124,7 @@ public class CredentialUtilsTest {
 		Map<String, String> result = CredentialUtils.toHttpHeaderElement(credentialObject);
 		assertNotNull(result);
 		Map<String, String> headerMap = new HashMap<>();
-		headerMap.put(ApiConstants.CREDENTIALS_HEADER_NAME, credentialString);
+		headerMap.put(EfsRequest.CREDENTIALS_HEADER_NAME, credentialString);
 		assertEquals(headerMap, result);
 	}
 	

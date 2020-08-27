@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 
-import de.hsesslingen.keim.efs.middleware.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
