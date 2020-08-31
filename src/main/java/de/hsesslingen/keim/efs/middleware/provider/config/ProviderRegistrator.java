@@ -24,6 +24,8 @@
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -61,6 +63,9 @@ public class ProviderRegistrator {
     @Value("${efs.middleware.provider-api.registration.disabled:false}")
     private boolean registrationDisabled;
 
+    @Value("${efs.services.url.service-directory:http://service-directory/api}")
+    public String baseUrl;
+    
     private ScheduledExecutorService executor;
     private TaskScheduler scheduler;
     private ScheduledFuture future;
@@ -99,7 +104,7 @@ public class ProviderRegistrator {
         log.info("Trying to register my service at the service-directory...");
 
         try {
-            proxy.register(serviceConfig.getMobilityService());
+            register(serviceConfig.getMobilityService());
         } catch (Exception ex) {
             log.trace(ex);
             log.info("Registration failed. Retrying after " + retryDelay + " seconds.");
@@ -113,6 +118,10 @@ public class ProviderRegistrator {
         } else {
             log.info("Registration successful.");
         }
+    }
+
+    private void register(MobilityService service) {
+        EfsRequest.post(baseUrl + "/services").toInternal().body(service).go();
     }
 
 }

@@ -101,7 +101,4 @@ public class ServiceDirectoryProxy {
         return uri;
     }
 
-    public void register(MobilityService service) {
-        EfsRequest.post(baseUrl + "/services").body(service).go();
-    }
 }
