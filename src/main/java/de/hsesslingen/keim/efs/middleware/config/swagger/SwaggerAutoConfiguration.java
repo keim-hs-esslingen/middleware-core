@@ -39,7 +39,6 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Default Configuration for SwaggerUI to expose REST-APIs implemented in the
@@ -49,7 +48,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author b.oesch 10 Oct 2019
  */
 @Configuration
-@EnableSwagger2
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
@@ -110,7 +108,7 @@ public class SwaggerAutoConfiguration {
     protected ApiInfo apiInfo() {
         String serviceInfo = String.format("Middleware Service (%s)", serviceName);
         return new ApiInfo(serviceInfo,
-                "API description of " + serviceInfo, "V0.1", null,
+                "API description of " + serviceInfo, "V1.1", null,
                 new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null),
                 null, null, Collections.emptyList());
     }
