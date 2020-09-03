@@ -24,14 +24,13 @@
 package de.hsesslingen.keim.efs.middleware.config.swagger;
 
 import java.util.Collections;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -66,12 +65,24 @@ public class SwaggerAutoConfiguration {
     public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(Consumer) APIs provided for consuming mobility services", 1);
     public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(Provider) Booking related APIs with CRUD functionality", 2);
 
+    private <T> Predicate<T> or(Predicate... predicates) {
+        return t -> {
+            for (var predicate : predicates) {
+                if (predicate.test(t)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public Docket api() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(Predicates.or(
+                .apis(or(
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.provider"),
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.middleware.consumer"),
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")
