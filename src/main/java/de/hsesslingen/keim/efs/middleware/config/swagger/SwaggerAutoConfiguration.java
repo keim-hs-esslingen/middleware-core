@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.config.swagger;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,10 +33,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.google.common.base.Predicates;
 
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Tag;
@@ -80,11 +77,7 @@ public class SwaggerAutoConfiguration {
                         RequestHandlerSelectors.basePackage("de.hsesslingen.keim.efs.adapter")
                 ))
                 .paths(PathSelectors.any())
-                .build()
-                .globalOperationParameters(Arrays.asList(new ParameterBuilder()
-                        .modelRef(new ModelRef("string"))
-                        .parameterType("header")
-                        .required(false).build()));
+                .build();
 
         return setTags(docket).apiInfo(apiInfo());
     }
