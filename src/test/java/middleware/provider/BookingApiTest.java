@@ -45,7 +45,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
@@ -71,7 +71,7 @@ public class BookingApiTest extends MiddlewareTestBase {
     @Test
     public void getOptionsTest_200() throws Exception {
         mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345")
-                .header("x-credentials", CredentialUtils.toJsonString(getDummyCredentials())))
+                .header("x-credentials", CredentialsUtils.toJsonString(getDummyCredentials())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
@@ -80,7 +80,7 @@ public class BookingApiTest extends MiddlewareTestBase {
     public void getOptionsTestIso_200() throws Exception {
         // Testing incomplete zoned date time decplarations...
         mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", LocalDateTime.now().plusHours(1).toString().substring(0, 16))
-                .header("x-credentials", CredentialUtils.toJsonString(getDummyCredentials())))
+                .header("x-credentials", CredentialsUtils.toJsonString(getDummyCredentials())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }

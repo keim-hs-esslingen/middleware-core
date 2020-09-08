@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.lang.NonNull;
@@ -35,7 +34,6 @@ import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import javax.validation.Valid;
 
@@ -45,46 +43,6 @@ import javax.validation.Valid;
  * @param <C>
  */
 public interface IBookingService<C extends AbstractCredentials> {
-
-    /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional. If startTime is not provided, but required
-     * by the third party API, a default value of "Date.now()" is used.
-     *
-     * @param from User's location
-     * @param radiusMeter Maximum distance a user wants to travel to reach asset
-     * @param to A desired destination
-     * @param sharingAllowed Defines if user can also share a ride. (Null
-     * allowed)
-     * @param startTime Planned start-time of the trip
-     * @param endTime Planned end-time of the trip
-     * @param credentials Credential data
-     * @return List of {@link Options}
-     */
-    public @NonNull
-    List<Options> getBookingOptions(
-            @NonNull Place from,
-            @Nullable Place to,
-            @Nullable Instant startTime,
-            @Nullable Instant endTime,
-            @Nullable Integer radiusMeter,
-            @Nullable Boolean sharingAllowed,
-            @Nullable @Valid C credentials
-    ) throws AbstractEfsException;
-
-    /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional. If startTime is not provided, but required
-     * by the third party API, a default value of "Date.now()" is used.
-     *
-     * @param from User's location
-     * @param startTime Planned start-time of the trip
-     * @param credentials Credential data
-     * @return List of {@link Options}
-     */
-    public @NonNull
-    List<Options> getBookingOptions(@NonNull Place from, @Nullable Instant startTime,
-            @Nullable @Valid C credentials) throws AbstractEfsException;
 
     /**
      * Returns all Bookings, optionally filtered by the specified state.

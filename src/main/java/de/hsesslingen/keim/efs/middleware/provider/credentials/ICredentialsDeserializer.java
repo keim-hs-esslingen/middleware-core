@@ -23,16 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.credentials;
 
-import java.util.Map;
-
 /**
  *
  * @author boesch
  * @param <C>
  */
-public interface ICredentialsFactory<C extends AbstractCredentials> {
-
-    public C fromMap(Map<String, String> credentials);
+public interface ICredentialsDeserializer<C extends AbstractCredentials> {
 
     public C fromString(String credentials);
 

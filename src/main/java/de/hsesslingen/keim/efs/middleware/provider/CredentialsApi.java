@@ -23,10 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -49,14 +51,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @ConditionalOnBean(ICredentialsService.class)
-@Api(tags = {"Credentials Api"})
+@Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
 public class CredentialsApi {
 
     @Autowired
     private ICredentialsService credentialsService;
 
     @Autowired
-    private ICredentialsFactory credentialsFactory;
+    private CredentialsUtils credentialsUtils;
 
     /**
      * Allows to create a login token associated to the provided credentials.
@@ -65,13 +67,13 @@ public class CredentialsApi {
      * @param credentials Credential data as json content string
      * @return Login token data in a provider specific format.
      */
-    @PostMapping(value = "/credentials/login-token")
+    @PostMapping("/credentials/login-token")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create login token", notes = "Allows to create a login-token associated to the provided credentials. This might be necessary for some providers, but not for all.")
     public String createLoginToken(
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.createLoginToken(credentialsFactory.fromString(credentials));
+        return credentialsService.createLoginToken(credentialsUtils.fromString(credentials));
     }
 
     /**
@@ -81,13 +83,13 @@ public class CredentialsApi {
      * @return true if the logout was successful. false if some error occured.
      * @throws AbstractEfsException
      */
-    @DeleteMapping(value = "/credentials/login-token")
+    @DeleteMapping("/credentials/login-token")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Log out user", notes = "Logs out (invalidates) the given login-token.")
     public boolean deleteLoginToken(
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.deleteLoginToken(credentialsFactory.fromString(credentials));
+        return credentialsService.deleteLoginToken(credentialsUtils.fromString(credentials));
     }
 
     /**
@@ -98,14 +100,14 @@ public class CredentialsApi {
      * providers.
      * @return Credentials data in a provider specific format.
      */
-    @PostMapping(value = "/credentials/user")
+    @PostMapping("/credentials/user")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Register a new user", notes = "Registers a new user at this service.")
     public String registerUser(
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
             @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
     ) {
-        return credentialsService.registerUser(credentialsFactory.fromString(credentials), userData);
+        return credentialsService.registerUser(credentialsUtils.fromString(credentials), userData);
     }
 
     /**
@@ -116,13 +118,13 @@ public class CredentialsApi {
      * @return true if valid, false if not.
      * @throws AbstractEfsException
      */
-    @GetMapping(value = "/credentials/check")
+    @GetMapping("/credentials/check")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given credentials are still valid and can be used for booking purposes etc.")
     public boolean checkCredentialsAreValid(
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.checkCredentialsAreValid(credentialsFactory.fromString(credentials));
+        return credentialsService.checkCredentialsAreValid(credentialsUtils.fromString(credentials));
     }
 
 }

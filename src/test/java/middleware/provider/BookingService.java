@@ -23,7 +23,6 @@
  */
 package middleware.provider;
 
-import java.time.Instant;
 import java.util.List;
 
 import de.hsesslingen.keim.efs.middleware.provider.IBookingService;
@@ -34,12 +33,14 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
+import java.time.ZonedDateTime;
 
 /**
  * @author k.sivarasah 6 Oct 2019
  */
-public class BookingService implements IBookingService {
+public class BookingService implements IBookingService, IOptionsService {
 
     /* (non-Javadoc)
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingsByState(de.hsesslingen.keim.efs.middleware.booking.BookingState)
@@ -82,7 +83,7 @@ public class BookingService implements IBookingService {
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingOptions(de.hsesslingen.keim.efs.middleware.common.Place, de.hsesslingen.keim.efs.middleware.common.Place, java.time.Instant, java.time.Instant, java.lang.Integer, java.lang.Boolean)
      */
     @Override
-    public List<Options> getBookingOptions(Place from, Place to, Instant startTime, Instant endTime,
+    public List<Options> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime,
             Integer radiusMeter, Boolean sharingAllowed, AbstractCredentials credentials) throws AbstractEfsException {
         return null;
     }
@@ -91,7 +92,7 @@ public class BookingService implements IBookingService {
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingOptions(de.hsesslingen.keim.efs.middleware.common.Place, java.time.Instant)
      */
     @Override
-    public List<Options> getBookingOptions(Place from, Instant startTime, AbstractCredentials credentials) throws AbstractEfsException {
+    public List<Options> getOptions(Place from, ZonedDateTime startTime, AbstractCredentials credentials) throws AbstractEfsException {
         return null;
     }
 }

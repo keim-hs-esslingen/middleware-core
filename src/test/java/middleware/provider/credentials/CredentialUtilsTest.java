@@ -33,7 +33,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 
 /**
@@ -69,59 +69,59 @@ public class CredentialUtilsTest {
 	
 	@Test
 	public void testFromMapToObject() {
-		TestCredential result = CredentialUtils.toCredentials(credentialMap, TestCredential.class);
+		TestCredential result = CredentialsUtils.toCredentials(credentialMap, TestCredential.class);
 		assertNotNull(result);
 		assertEquals(credentialObject, result);
 	}
 	
 	@Test
 	public void testFromMapToObject_null() {
-		TestCredential result = CredentialUtils.toCredentials((Map<String, String>) null, TestCredential.class);
+		TestCredential result = CredentialsUtils.toCredentials((Map<String, String>) null, TestCredential.class);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testFromStringToObject() {
-		TestCredential result = CredentialUtils.toCredentials(credentialString, TestCredential.class);
+		TestCredential result = CredentialsUtils.toCredentials(credentialString, TestCredential.class);
 		assertNotNull(result);
 		assertEquals(credentialObject, result);
 	}
 	
 	@Test
 	public void testFromStringToObject_null() {
-		TestCredential result = CredentialUtils.toCredentials((String) null, TestCredential.class);
+		TestCredential result = CredentialsUtils.toCredentials((String) null, TestCredential.class);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testFromObjectToString() {
-		String result = CredentialUtils.toJsonString(credentialObject);
+		String result = CredentialsUtils.toJsonString(credentialObject);
 		assertNotNull(result);
 		assertEquals(credentialString, result);
 	}
 	
 	@Test
 	public void testFromObjectToString_null() {
-		String result = CredentialUtils.toJsonString(null);
+		String result = CredentialsUtils.toJsonString(null);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testFromStringToMap() {
-		Map<String, String> result = CredentialUtils.toMap(credentialString);
+		Map<String, String> result = CredentialsUtils.toMap(credentialString);
 		assertNotNull(result);
 		assertEquals(credentialMap, result);
 	}
 	
 	@Test
 	public void testFromStringToMap_null() {
-		Map<String, String> result = CredentialUtils.toMap(null);
+		Map<String, String> result = CredentialsUtils.toMap(null);
 		assertNull(result);
 	}
 	
 	@Test
 	public void testFromObjectToHeaderMap() {
-		Map<String, String> result = CredentialUtils.toHttpHeaderElement(credentialObject);
+		Map<String, String> result = CredentialsUtils.toHttpHeaderElement(credentialObject);
 		assertNotNull(result);
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put(EfsRequest.CREDENTIALS_HEADER_NAME, credentialString);
@@ -130,7 +130,7 @@ public class CredentialUtilsTest {
 	
 	@Test
 	public void testFromObjectToHeaderMap_null() {
-		Map<String, String> result = CredentialUtils.toHttpHeaderElement(null);
+		Map<String, String> result = CredentialsUtils.toHttpHeaderElement(null);
 		assertNull(result);
 	}
 }

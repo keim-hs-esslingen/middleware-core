@@ -21,31 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.provider.config;
+package de.hsesslingen.keim.efs.middleware.validation;
 
-import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
-import java.util.Map;
+import java.time.Instant;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 /**
- * @author k.sivarasah 12 Nov 2019
+ * Checks if the given time value is a valid point of time in the future
+ * Null values are considered as valid!
+ * 
+ * @author k.sivarasah
+ * 4 Oct 2019
  */
-public class DefaultCredentialsFactory implements ICredentialsFactory<AbstractCredentials> {
 
-    @Override
-    public AbstractCredentials fromMap(Map<String, String> credentials) {
-        if (credentials == null || credentials.isEmpty()) {
-            return null;
-        }
-        return CredentialUtils.toCredentials(credentials, AbstractCredentials.class);
-    }
+public class TimeIsInFutureLongValidator implements ConstraintValidator<TimeIsInFutureLong, Long> {
 
-    @Override
-    public AbstractCredentials fromString(String credentials) {
-        if (credentials == null || credentials.isEmpty()) {
-            return null;
-        }
-        return CredentialUtils.toCredentials(credentials, AbstractCredentials.class);
-    }
+	@Override
+	public boolean isValid(Long timeInMs, ConstraintValidatorContext context) {
+		if(timeInMs == null) {
+			return true;
+		}
+		
+		try {
+            Instant timeAsInstant = Instant.ofEpochMilli(timeInMs);
+            Instant nowMinus10 = Instant.now().minusSeconds(10);
+			return timeAsInstant.isAfter(nowMinus10);
+		} catch (Exception e ) {
+			return false;
+		}
+			
+	}
+
 }

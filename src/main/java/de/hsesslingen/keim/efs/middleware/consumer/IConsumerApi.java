@@ -41,17 +41,19 @@ import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;
+import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
-import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFuture;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
+import java.time.ZonedDateTime;
 
 /**
  * This interface contains the method declarations, including all swagger-ui
@@ -82,20 +84,20 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return List of {@link Options}
      */
-    @GetMapping(value = "/bookings/options")
+    @GetMapping({"/bookings/options", "/options"})
     @ResponseStatus(HttpStatus.OK)
     @EfsSwaggerGetBookingOptions
-    public List<Options> getBookingOptions(
+    public List<Options> getOptions(
             @RequestParam(required = true) @PositionAsString String from,
             @RequestParam(required = false) @PositionAsString String to,
-            @RequestParam(required = false) @TimeIsInFuture Long startTime,
-            @RequestParam(required = false) @TimeIsInFuture Long endTime,
-            @RequestParam(required = false) Integer radius,
+            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
+            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
+            @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
             @RequestParam(required = false) Boolean share,
             @RequestParam(required = false, defaultValue = "") @ApiParam("Desired mobility types") Set<MobilityType> mobilityTypes,
             @RequestParam(required = false, defaultValue = "") @ApiParam("Desired modes") Set<Mode> modes,
             @RequestParam(required = false, defaultValue = "") @ApiParam("Ids of preferred services to filter by") Set<String> serviceIds,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -106,11 +108,11 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return the {@link Booking} object
      */
-    @GetMapping(value = "/bookings/{id}")
+    @GetMapping("/bookings/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(@PathVariable String id, @RequestParam String serviceId,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials);
 
     /**
      * Gets a {@link List<Booking>} from the service using its id
@@ -120,13 +122,13 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return the {@link List<Booking>} object
      */
-    @GetMapping(value = "/bookings")
+    @GetMapping("/bookings")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get bookings from agencies.")
     public List<Booking> getBookings(
             @RequestParam(required = true, defaultValue = "") @ApiParam("List of the agencies from which to get the bookings.") Set<String> serviceIds,
             @RequestParam(required = false) @ApiParam("Optionally a state for which to filter the bookings.") BookingState state,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -137,12 +139,12 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return Login token data in a provider specific format.
      */
-    @PostMapping(value = "/credentials/login-token")
+    @PostMapping("/credentials/login-token")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create login token", notes = "Allows to create a login-token associated to the provided credentials. This might be necessary for some providers, but not for all.")
     public String createLoginToken(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -153,12 +155,12 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Provider specific credentials.
      * @return true if the logout was successful. false if some error occured.
      */
-    @DeleteMapping(value = "/credentials/login-token")
+    @DeleteMapping("/credentials/login-token")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Log out user", notes = "Logs out (invalidates) the given login-token.")
     public Boolean deleteLoginToken(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
     /**
@@ -170,12 +172,12 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * providers.
      * @return Credentials data in a provider specific format.
      */
-    @PostMapping(value = "/credentials/user")
+    @PostMapping("/credentials/user")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Register a new user", notes = "Registers a new user at this service.")
     public String registerUser(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
             @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
     );
 
@@ -187,11 +189,11 @@ public interface IConsumerApi extends IBilateralBookingApi {
      * @param credentials Provider specific credentials.
      * @return true if valid, false if not.
      */
-    @GetMapping(value = "/credentials/check")
+    @GetMapping("/credentials/check")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given credentials are still valid and can be used for booking purposes etc.")
     public Boolean checkCredentialsAreValid(
             @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = true) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 }

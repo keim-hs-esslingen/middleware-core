@@ -24,7 +24,6 @@
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
 import de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -53,12 +52,4 @@ public class ProviderAutoConfiguration {
         return new MobilityServiceConfigurationProperties();
     }
 
-    // Not marked directly as @Service in class because this bean should be
-    // initialized AFTER RestUtilsAutoConfiguration took place.
-    @Bean
-    @ConditionalOnMissingBean
-    public ICredentialsFactory credentialsFactory() {
-        log.info("Initializing DefaultCredentialsFactory bean...");
-        return new DefaultCredentialsFactory();
-    }
 }

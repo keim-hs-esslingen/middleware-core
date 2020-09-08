@@ -28,7 +28,8 @@ import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import javax.validation.Valid;
@@ -58,13 +59,14 @@ public interface IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return {@link Booking} that was created
      */
-    @PostMapping(value = "/bookings")
+    @PostMapping("/bookings")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider "
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
             @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
 
     /**
      * Updates an existing {@link Booking} with new details.
@@ -74,13 +76,14 @@ public interface IBilateralBookingApi {
      * @param credentials Credential data as json content string
      * @return the modified {@link Booking} object
      */
-    @PutMapping(value = "/bookings/{id}")
+    @PutMapping("/bookings/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
     public Booking modifyBooking(
             @PathVariable String id,
             @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials);
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
 
     /**
      * Can be used to perform actions on bookings. This can be used to e.g.
@@ -101,7 +104,7 @@ public interface IBilateralBookingApi {
      * @param credentials The credentials needed to authorize oneself to perform
      * this action.
      */
-    @PostMapping(value = "/bookings/{bookingId}/action/{action}")
+    @PostMapping("/bookings/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
     public void performAction(
@@ -111,7 +114,7 @@ public interface IBilateralBookingApi {
             @RequestParam(required = false) String assetId,
             @RequestParam(required = false) String secret,
             @RequestBody(required = false) String more,
-            @RequestHeader(name = EfsRequest.CREDENTIALS_HEADER_NAME, required = false) @ApiParam(EfsRequest.CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
 }

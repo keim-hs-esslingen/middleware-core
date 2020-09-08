@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import java.time.Instant;
+import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import java.util.List;
 import java.util.Set;
 
@@ -48,9 +48,9 @@ import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import io.swagger.annotations.Api;
-import java.time.ZoneId;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.time.ZonedDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class receives the consumers requests for searching and booking mobility
@@ -60,81 +60,86 @@ import org.apache.commons.logging.LogFactory;
  */
 @Validated
 @RestController
-@Api(tags = {"Consumer Api"})
+@Api(tags = {SwaggerAutoConfiguration.CONSUMER_API_TAG})
 @ConditionalOnProperty(name = "efs.middleware.consumer-api.enabled", havingValue = "true")
 public class ConsumerApi implements IConsumerApi {
 
-    private static final Log log = LogFactory.getLog(ConsumerApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerApi.class);
 
     @Autowired
     public ConsumerService consumerService;
 
     @Override
-    public List<Options> getBookingOptions(String from, String to, Long startTime, Long endTime, Integer radius,
-            Boolean share, Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds, String credentials) {
-        log.info("Received request to get options from providers.");
-
-        return consumerService.getOptions(
-                from, to,
-                startTime == null ? null : Instant.ofEpochMilli(startTime).atZone(ZoneId.systemDefault()),
-                endTime == null ? null : Instant.ofEpochMilli(endTime).atZone(ZoneId.systemDefault()),
-                radius, share, mobilityTypes, modes, serviceIds, credentials
-        );
+    public List<Options> getOptions(
+            String from,
+            String to,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radius,
+            Boolean share,
+            Set<MobilityType> mobilityTypes,
+            Set<Mode> modes,
+            Set<String> serviceIds,
+            String credentials
+    ) {
+        logger.info("Received request to get options from providers.");
+        return consumerService.getOptions(from, to, startTime, endTime,
+                radius, share, mobilityTypes, modes, serviceIds, credentials);
     }
 
     @Override
     public List<Booking> getBookings(Set<String> serviceIds, BookingState state, String credentials) {
-        log.info("Received request to get bookings from providers.");
+        logger.info("Received request to get bookings from providers.");
         return consumerService.getBookings(serviceIds, credentials);
     }
 
     @Override
     public Booking getBookingById(@PathVariable String id, @RequestParam String serviceId, String credentials) {
-        log.info("Received request to get a booking by id from a specific provider.");
+        logger.info("Received request to get a booking by id from a specific provider.");
         return consumerService.getBookingById(id, serviceId, credentials);
     }
 
     @Override
     public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
             String credentials) {
-        log.info("Received request to create a new booking at a specific provider.");
+        logger.info("Received request to create a new booking at a specific provider.");
         return consumerService.createBooking(newBooking, credentials);
     }
 
     @Override
     public Booking modifyBooking(@PathVariable String id, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
             String credentials) {
-        log.info("Received request to modify a booking at a specific provider.");
+        logger.info("Received request to modify a booking at a specific provider.");
         return consumerService.modifyBooking(id, booking, credentials);
     }
 
     @Override
     public void performAction(String bookingId, BookingAction action, String serviceId, String assetId, String secret, String more, String credentials) {
-        log.info("Received request to perform an action on a booking");
+        logger.info("Received request to perform an action on a booking");
         consumerService.performAction(bookingId, action, serviceId, assetId, secret, more, credentials);
     }
 
     @Override
     public String createLoginToken(String serviceId, String credentials) {
-        log.info("Received request to create a login token at a specific provider.");
+        logger.info("Received request to create a login token at a specific provider.");
         return consumerService.createLoginToken(serviceId, credentials);
     }
 
     @Override
     public String registerUser(String serviceId, String credentials, Customer userData) {
-        log.info("Received request to register a user at a specific provider.");
+        logger.info("Received request to register a user at a specific provider.");
         return consumerService.registerUser(serviceId, credentials, userData);
     }
 
     @Override
     public Boolean deleteLoginToken(String serviceId, String credentials) {
-        log.info("Received request to delete a token at a specific provider.");
+        logger.info("Received request to delete a token at a specific provider.");
         return consumerService.deleteLoginToken(serviceId, credentials);
     }
 
     @Override
     public Boolean checkCredentialsAreValid(String serviceId, String credentials) {
-        log.info("Received request to check the validity of credentials at a specific provider.");
+        logger.info("Received request to check the validity of credentials at a specific provider.");
         return consumerService.checkCredentialsAreValid(serviceId, credentials);
     }
 }

@@ -25,8 +25,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
-import java.time.Instant;
+import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -39,20 +38,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
-import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -60,56 +58,50 @@ import org.springframework.beans.factory.annotation.Value;
  */
 @Validated
 @RestController
-@ConditionalOnBean(IBookingService.class)
-@Api(tags = {"Booking Api"})
+@ConditionalOnBean({IBookingService.class, IOptionsService.class})
+@Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
 public class BookingApi implements IBookingApi {
 
-    private static final Log log = LogFactory.getLog(BookingApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookingApi.class);
 
     @Autowired
     private IBookingService bookingService;
 
     @Autowired
-    private ICredentialsFactory credentialsFactory;
+    private IOptionsService optionsService;
 
-    @Value("${efs.middleware.debug-credentials:false}")
-    private boolean debugCredentials;
+    @Autowired
+    private CredentialsUtils credentialsUtils;
+
+    @Autowired
+    private ObjectMapper mapper;
+
     @Value("${efs.middleware.debug-input-objects:false}")
     private boolean debugInputObjects;
 
     @Override
     public List<Options> getBookingOptions(
             String from, String to,
-            Long startTime, Long endTime,
-            ZonedDateTime startTimeIso, ZonedDateTime endTimeIso,
-            Integer radius, Boolean share,
-            String credentials) {
-        log.info("Received request to get options.");
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radius,
+            Boolean share,
+            String credentials
+    ) {
+        logger.info("Received request to get options.");
 
         Place placeTo = StringUtils.isEmpty(to) ? null : new Place(to);
 
-        // Choose option for start time: 1. startTime, 2. startTimeIso, 3. Instant.now()
-        var startTimeInstant = (startTime != null) ? Instant.ofEpochMilli(startTime)
-                : (startTimeIso != null) ? startTimeIso.toInstant()
-                        : Instant.now();
+        var creds = credentialsUtils.fromString(credentials);
 
-        // Choose option for end time: 1. endTime, 2. endTimeIso, 3. null
-        var endTimeInstant = (endTime != null) ? Instant.ofEpochMilli(endTime)
-                : (endTimeIso != null) ? endTimeIso.toInstant()
-                        : null;
-
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
-
-        return bookingService.getBookingOptions(new Place(from), placeTo, startTimeInstant, endTimeInstant, radius, share, creds);
+        return optionsService.getOptions(new Place(from), placeTo, startTime, endTime, radius, share, creds);
     }
 
     @Override
     public List<Booking> getBookings(BookingState state, String credentials) {
-        log.info("Received request to get bookings.");
+        logger.info("Received request to get bookings.");
 
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
+        var creds = credentialsUtils.fromString(credentials);
 
         return bookingService.getBookings(state, creds);
     }
@@ -117,13 +109,12 @@ public class BookingApi implements IBookingApi {
     @Override
     public Booking getBookingById(@PathVariable String id, String credentials) {
         if (!debugInputObjects) {
-            log.info("Received request to get a booking by id.");
+            logger.info("Received request to get a booking by id.");
         } else {
-            log.info("Received request to get booking with id \"" + id + "\".");
+            logger.info("Received request to get booking with id \"" + id + "\".");
         }
 
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
+        var creds = credentialsUtils.fromString(credentials);
 
         return bookingService.getBookingById(id, creds);
     }
@@ -131,19 +122,18 @@ public class BookingApi implements IBookingApi {
     @Override
     public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
             String credentials) {
-        log.info("Received request to create a new booking.");
+        logger.info("Received request to create a new booking.");
 
         if (debugInputObjects) {
             debugLogAsJson(newBooking);
         }
 
         if (newBooking.getState() != BookingState.NEW) {
-            log.warn("Received a NewBooking with booking state set to \"" + newBooking.getState() + "\". Setting it manually to \"NEW\".");
+            logger.warn("Received a NewBooking with booking state set to \"" + newBooking.getState() + "\". Setting it manually to \"NEW\".");
             newBooking.setState(BookingState.NEW);
         }
 
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
+        var creds = credentialsUtils.fromString(credentials);
 
         return bookingService.createNewBooking(newBooking, creds);
     }
@@ -154,14 +144,13 @@ public class BookingApi implements IBookingApi {
             String credentials) {
 
         if (!debugInputObjects) {
-            log.info("Received request to modify a booking.");
+            logger.info("Received request to modify a booking.");
         } else {
-            log.info("Received request to modify booking with id \"" + id + "\".");
+            logger.info("Received request to modify booking with id \"" + id + "\".");
             debugLogAsJson(booking);
         }
 
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
+        var creds = credentialsUtils.fromString(credentials);
 
         return bookingService.modifyBooking(id, booking, creds);
     }
@@ -170,97 +159,16 @@ public class BookingApi implements IBookingApi {
     public void performAction(String bookingId, BookingAction action, String serviceId, String assetId, String secret, String more, String credentials) {
 
         if (!debugInputObjects) {
-            log.info("Received request to perform an action on a booking.");
+            logger.info("Received request to perform an action on a booking.");
         } else {
-            log.info(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s)", action, bookingId, assetId, obfuscate(secret)));
-            log.debug(more);
+            logger.info(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s)", action, bookingId, assetId, CredentialsUtils.obfuscate(secret)));
+            logger.debug(more);
         }
 
-        var creds = credentialsFactory.fromString(credentials);
-        debugOutputCredentials(creds);
+        var creds = credentialsUtils.fromString(credentials);
 
         bookingService.performAction(bookingId, action, assetId, secret, more, creds);
     }
-
-    /**
-     * This method outputs the (obfuscated) credentials sent with a request. It
-     * is intended to be used for debugging purposes.
-     * <p>
-     * To activate this function, set {@code efs.middleware.debug-credentials}
-     * (default=false) in application properties to true. Additionally the log
-     * level must be set to {@code DEBUG}, otherwise the output will not be
-     * logged.
-     *
-     * @param creds
-     */
-    private void debugOutputCredentials(AbstractCredentials creds) {
-        if (debugCredentials) {
-            if (creds == null) {
-                log.debug("Credentials are null.");
-                return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("Parsed credentials with following values: ");
-
-            var cl = creds.getClass();
-            var fields = cl.getDeclaredFields();
-
-            int count = 0;
-            for (Field field : fields) {
-                field.setAccessible(true);
-
-                sb.append(field.getName());
-
-                try {
-                    sb.append("=").append(obfuscate(field.get(creds)));
-                } catch (IllegalAccessException ex) {
-                    sb.append("->IllegalAccessException");
-                } catch (IllegalArgumentException ex) {
-                    sb.append("->IllegalArgumentException");
-                }
-
-                sb.append(", ");
-
-                field.setAccessible(false);
-
-                ++count;
-            }
-
-            String output;
-
-            if (count == 0) {
-                sb.append("(no values parsed)");
-                output = sb.toString();
-            } else {
-                output = sb.toString();
-
-                if (output.endsWith(", ")) {
-                    output = output.substring(0, output.lastIndexOf(","));
-                }
-            }
-
-            log.debug(output);
-        }
-    }
-
-    private String obfuscate(Object any) {
-        if (any == null) {
-            return "null";
-        }
-
-        if (any.toString().isEmpty()) {
-            return "\"\"";
-        }
-
-        return "***";
-    }
-
-    /**
-     * Used in {@link debugLogAsJson}, lazily loaded.
-     */
-    private ObjectMapper debugMapper;
 
     /**
      * Log objects on debug level for debugging purposes.
@@ -268,15 +176,10 @@ public class BookingApi implements IBookingApi {
      * @param o
      */
     private void debugLogAsJson(Object o) {
-        if (debugMapper == null) {
-            debugMapper = new ObjectMapper();
-        }
-
         try {
-            log.debug(debugMapper.writeValueAsString(o));
+            logger.debug(mapper.writeValueAsString(o));
         } catch (JsonProcessingException ex) {
-            log.debug("Could not serialize object for debug logging. Exception occured.");
-            log.debug(ex);
+            logger.debug("Could not serialize object for debug logging. Exception occured.", ex);
         }
     }
 }

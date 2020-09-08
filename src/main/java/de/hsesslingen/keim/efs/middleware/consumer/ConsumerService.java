@@ -77,12 +77,13 @@ import org.springframework.lang.Nullable;
 @Validated
 public class ConsumerService {
 
-    private final static Logger log = LoggerFactory.getLogger(ConsumerService.class);
+    private final static Logger logger = LoggerFactory.getLogger(ConsumerService.class);
 
     @Autowired
     private ServiceDirectoryProxy serviceDirectory;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper mapper;
 
     private static final String CREDENTIALS_PATH = "/credentials";
     private static final String BOOKINGS_PATH = "/bookings";
@@ -97,7 +98,7 @@ public class ConsumerService {
             return mapper.readValue(credentials, new TypeReference<LinkedHashMap<String, String>>() {
             });
         } catch (IOException ex) {
-            log.error("Credentials provided in wrong format. They must be a map of credentials, which maps each services credentials to its id...", ex);
+            logger.error("Credentials provided in wrong format. They must be a map of credentials, which maps each services credentials to its id...", ex);
             return new HashMap<>();
         }
     }
@@ -144,16 +145,22 @@ public class ConsumerService {
      * @param credentials Credential data as json content string
      * @return
      */
-    public List<Options> getOptions(@NotEmpty @PositionAsString String from,
-            @PositionAsString String to, ZonedDateTime startTime,
-            ZonedDateTime endTime, Integer radiusMeter, Boolean share,
-            Set<MobilityType> mobilityTypes, Set<Mode> modes,
-            Set<String> serviceIds, String credentials) {
-
+    public List<Options> getOptions(
+            @NotEmpty @PositionAsString String from,
+            @PositionAsString String to,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radiusMeter,
+            Boolean share,
+            Set<MobilityType> mobilityTypes,
+            Set<Mode> modes,
+            Set<String> serviceIds,
+            String credentials
+    ) {
         //<editor-fold defaultstate="collapsed" desc="Long log.trace() statement...">
-        if (log.isTraceEnabled()) {
+        if (logger.isTraceEnabled()) {
             // Output all params for debugging purposes.
-            log.trace("Going to fetch options with following parameters: "
+            logger.trace("Going to fetch options with following parameters: "
                     + "from=%s, to=%s, startTime=%s, endTime=%s, radius=%d, share=%s, "
                     + "mobilityTypes=%s, modes=%s, serviceIds=%s",
                     from, to,
@@ -168,14 +175,14 @@ public class ConsumerService {
         }
         //</editor-fold>
 
-        log.info("Requesting available services from Service-Directory...");
+        logger.info("Requesting available services from Service-Directory...");
         var services = serviceDirectory.search(mobilityTypes, modes, serviceIds);
 
         // Extract credentials for the various services from the credentials string which
         // should contain a JSON-object with JSON formatted credentials per service id.
         var credentialsMap = extractConsumerCredentials(credentials);
 
-        log.info("Requesting options from available services...");
+        logger.info("Requesting options from available services...");
         var options = services
                 // using parallel stream for parallel HTTP requests
                 .parallelStream()
@@ -187,7 +194,7 @@ public class ConsumerService {
                 })
                 .collect(Collectors.toList());
 
-        log.trace("Received %d options in total.", options.size());
+        logger.trace("Received %d options in total.", options.size());
         return options;
     }
 
@@ -227,14 +234,14 @@ public class ConsumerService {
 
             // Logging some stuff about the response...
             if (body != null) {
-                log.info("Service " + serviceId + " returned " + body.size() + " options.");
+                logger.info("Service " + serviceId + " returned " + body.size() + " options.");
                 return body.stream();
             } else {
-                log.info("Service " + serviceId + " returned \"null\" upon requesting options.");
+                logger.info("Service " + serviceId + " returned \"null\" upon requesting options.");
                 return Stream.empty();
             }
         } catch (Exception e) {
-            log.error("Exception while getting options from url {}", serviceUrl, e);
+            logger.error("Exception while getting options from url {}", serviceUrl, e);
             return Stream.empty();
         }
     }
@@ -248,14 +255,14 @@ public class ConsumerService {
      * @return
      */
     public List<Booking> getBookings(Set<String> serviceIds, String credentials) {
-        log.info("Requesting available services from Service-Directory...");
+        logger.info("Requesting available services from Service-Directory...");
         var services = serviceDirectory.search(null, null, serviceIds);
 
         // Extract credentials for the various services from the credentials string which
         // should contain a JSON-object with JSON formatted credentials per service id.
         var credentialsMap = extractConsumerCredentials(credentials);
 
-        log.info("Requesting bookings list from services...");
+        logger.info("Requesting bookings list from services...");
         return services.parallelStream().flatMap(service -> {
             try {
                 String serviceCredentials = credentialsMap.get(service.getId());
@@ -270,14 +277,14 @@ public class ConsumerService {
                 List<Booking> body = response.getBody();
 
                 if (body != null) {
-                    log.warn("Service " + service.getId() + " returned " + body.size() + " bookings.");
+                    logger.warn("Service " + service.getId() + " returned " + body.size() + " bookings.");
                     return body.stream();
                 } else {
-                    log.warn("Service " + service.getId() + " returned null upon requesting all bookings.");
+                    logger.warn("Service " + service.getId() + " returned null upon requesting all bookings.");
                     return Stream.empty();
                 }
             } catch (Exception e) {
-                log.error("Exception while getting bookings from url {}", service.getServiceUrl(), e);
+                logger.error("Exception while getting bookings from url {}", service.getServiceUrl(), e);
                 return Stream.empty();
             }
         }).collect(Collectors.toList());

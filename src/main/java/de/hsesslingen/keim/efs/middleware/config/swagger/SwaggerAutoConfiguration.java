@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.config.swagger;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
 
@@ -51,29 +52,31 @@ import springfox.documentation.spring.web.plugins.Docket;
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
+    public static final String OPTIONS_API_TAG = "Options Api";
+    public static final String BOOKING_API_TAG = "Booking Api";
+    public static final String CREDENTIALS_API_TAG = "Credentials Api";
+    public static final String CONSUMER_API_TAG = "Consumer Api";
+    public static final String FLEX_DATETIME_DESC = "Date time value in a flexible format. "
+            + "(Epoch millis, ISO zoned date time, ISO local date time, ISO date only, "
+            + "ISO time only, ISO time only with offest e.g. +01:00, ... "
+            + "Mising information is added, by simple assumptions. "
+            + "If only time is given, \"today\" is added as date. "
+            + "If a time zone is missing, the system default zone is used, ...)";
+
     @Value("${spring.application.name:}")
     private String serviceName;
 
-    @Value("${efs.middleware.provider-api.enabled:false}")
-    private boolean providerEnabled;
+    @Value("${efs.middleware.options-api.enabled:false}")
+    private boolean optionsEnabled;
+
+    @Value("${efs.middleware.booking-api.enabled:false}")
+    private boolean bookingEnabled;
+
+    @Value("${efs.middleware.credentials-api.enabled:false}")
+    private boolean credentialsEnabled;
 
     @Value("${efs.middleware.consumer-api.enabled:false}")
     private boolean consumerEnabled;
-
-    public static final Tag CONSUMER_API_TAG = new Tag("Consumer Api", "(Consumer) APIs provided for consuming mobility services", 1);
-    public static final Tag BOOKING_API_TAG = new Tag("Booking Api", "(Provider) Booking related APIs with CRUD functionality", 2);
-
-    private <T> Predicate<T> or(Predicate... predicates) {
-        return t -> {
-            for (var predicate : predicates) {
-                if (predicate.test(t)) {
-                    return true;
-                }
-            }
-
-            return false;
-        };
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -88,29 +91,58 @@ public class SwaggerAutoConfiguration {
                 .paths(PathSelectors.any())
                 .build();
 
-        return setTags(docket).apiInfo(apiInfo());
+        setTags(docket);
+        docket.apiInfo(apiInfo());
+
+        return docket;
     }
 
-    private Docket setTags(Docket docket) {
-        if (providerEnabled && consumerEnabled) {
-            return docket.tags(CONSUMER_API_TAG, BOOKING_API_TAG);
-        } else if (providerEnabled) {
-            return docket.tags(BOOKING_API_TAG);
-        } else {
-            return docket.tags(CONSUMER_API_TAG);
+    private void setTags(Docket docket) {
+        var tags = new ArrayList<Tag>(5);
+
+        if (optionsEnabled) {
+            tags.add(new Tag(OPTIONS_API_TAG, "Options related API forsearching mobility options.", 1));
+        }
+
+        if (bookingEnabled) {
+            tags.add(new Tag(BOOKING_API_TAG, "Booking related APIs with CRUD functionality.", 2));
+        }
+
+        if (credentialsEnabled) {
+            tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related APIs for managing with credentials of remote APIs.", 3));
+        }
+
+        if (consumerEnabled) {
+            tags.add(new Tag(CONSUMER_API_TAG, "APIs provided for consuming mobility services.", 4));
+        }
+
+        if (!tags.isEmpty()) {
+            if (tags.size() > 1) {
+                docket.tags(tags.get(0), tags.subList(1, tags.size()).toArray(new Tag[0]));
+            } else {
+                docket.tags(tags.get(0));
+            }
         }
     }
 
-    public static Tag[] getTags() {
-        return new Tag[]{CONSUMER_API_TAG, BOOKING_API_TAG};
-    }
-
-    protected ApiInfo apiInfo() {
+    private ApiInfo apiInfo() {
         String serviceInfo = String.format("Middleware Service (%s)", serviceName);
         return new ApiInfo(serviceInfo,
                 "API description of " + serviceInfo, "V1.1", null,
                 new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null),
                 null, null, Collections.emptyList());
+    }
+
+    private static <T> Predicate<T> or(Predicate... predicates) {
+        return t -> {
+            for (var predicate : predicates) {
+                if (predicate.test(t)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
     }
 
 }

@@ -23,29 +23,23 @@
  */
 package middleware.provider.credentials;
 
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialUtils;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsFactory;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
 
 /**
  * @author k.sivarasah 20 Nov 2019
  */
 @Component
-public class TestCredentialsFactory implements ICredentialsFactory<AbstractCredentials> {
-
-    @Override
-    public AbstractCredentials fromMap(Map<String, String> credentials) throws AbstractEfsException {
-        return CredentialUtils.toCredentials(credentials, TestCredential.class);
-    }
+public class TestCredentialsFactory implements ICredentialsDeserializer<AbstractCredentials> {
 
     @Override
     public AbstractCredentials fromString(String credentials) throws AbstractEfsException {
-        return CredentialUtils.toCredentials(credentials, TestCredential.class);
+        return CredentialsUtils.toCredentials(credentials, TestCredential.class);
     }
 
 }
