@@ -40,20 +40,26 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
-import de.hsesslingen.keim.efs.middleware.common.IBilateralBookingApi;
 import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
+import de.hsesslingen.keim.efs.middleware.model.BookingAction;
+import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import java.time.ZonedDateTime;
+import javax.validation.Valid;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PutMapping;
+import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
 
 /**
  * This interface contains the method declarations, including all swagger-ui
@@ -63,7 +69,7 @@ import java.time.ZonedDateTime;
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/consumer/api", produces = MediaType.APPLICATION_JSON_VALUE)
-public interface IConsumerApi extends IBilateralBookingApi {
+public interface IConsumerApi {
 
     /**
      * Returns available transport options for given coordinate. Start time can
@@ -88,7 +94,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @EfsSwaggerGetBookingOptions
     public List<Options> getOptions(
-            @RequestParam(required = true) @PositionAsString String from,
+            @RequestParam @PositionAsString String from,
             @RequestParam(required = false) @PositionAsString String to,
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
@@ -111,8 +117,11 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @GetMapping("/bookings/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
-    public Booking getBookingById(@PathVariable String id, @RequestParam String serviceId,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials);
+    public Booking getBookingById(
+            @PathVariable String id,
+            @RequestParam String serviceId,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
 
     /**
      * Gets a {@link List<Booking>} from the service using its id
@@ -126,8 +135,73 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get bookings from agencies.")
     public List<Booking> getBookings(
-            @RequestParam(required = true, defaultValue = "") @ApiParam("List of the agencies from which to get the bookings.") Set<String> serviceIds,
+            @RequestParam(defaultValue = "") @ApiParam("List of the service providers from which to get the bookings.") Set<String> serviceIds,
             @RequestParam(required = false) @ApiParam("Optionally a state for which to filter the bookings.") BookingState state,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
+
+    /**
+     * Creates a new booking and returns it.
+     *
+     * @param newBooking {@link NewBooking} that should be created
+     * @param credentials Credential data as json content string
+     * @return {@link Booking} that was created
+     */
+    @PostMapping("/bookings")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider "
+            + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
+    public Booking createNewBooking(
+            @RequestBody @Validated({OnCreate.class, ConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
+
+    /**
+     * Updates an existing {@link Booking} with new details.
+     *
+     * @param id the booking id
+     * @param booking the {@link Booking} object containing modified data
+     * @param credentials Credential data as json content string
+     * @return the modified {@link Booking} object
+     */
+    @PutMapping("/bookings/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
+    public Booking modifyBooking(
+            @PathVariable String id,
+            @RequestBody @Validated(ConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
+
+    /**
+     * Can be used to perform actions on bookings. This can be used to e.g.
+     * unlock the door of rented vehicles, or stamp tickets...
+     *
+     * @param bookingId The ID of the booking on which to perform the action.
+     * @param action The action that should be performed on the booking with the
+     * given bookingId.
+     * @param serviceId The ID of the service to which this booking belongs to.
+     * This is only required if calling the consumer API of a middleware
+     * instance.
+     * @param assetId The ID of the asset on which to perform this action. If
+     * none specified, the service can choose how to handle this situation.
+     * @param secret A secret that might be required by some services to perform
+     * this action. (e.g. a PIN)
+     * @param more Additional information that might be required by some
+     * services in order to perform this action.
+     * @param credentials The credentials needed to authorize oneself to perform
+     * this action.
+     */
+    @PostMapping("/bookings/{bookingId}/action/{action}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
+    public void performAction(
+            @PathVariable String bookingId,
+            @PathVariable BookingAction action,
+            @RequestParam String serviceId,
+            @RequestParam(required = false) String assetId,
+            @RequestParam(required = false) String secret,
+            @RequestBody(required = false) String more,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
@@ -143,7 +217,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create login token", notes = "Allows to create a login-token associated to the provided credentials. This might be necessary for some providers, but not for all.")
     public String createLoginToken(
-            @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
+            @RequestParam @ApiParam("The service of which to get a login token.") String serviceId,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
@@ -159,7 +233,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Log out user", notes = "Logs out (invalidates) the given login-token.")
     public Boolean deleteLoginToken(
-            @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
+            @RequestParam @ApiParam("The service of which to get a login token.") String serviceId,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
@@ -176,7 +250,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Register a new user", notes = "Registers a new user at this service.")
     public String registerUser(
-            @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
+            @RequestParam @ApiParam("The service of which to get a login token.") String serviceId,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
             @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
     );
@@ -193,7 +267,7 @@ public interface IConsumerApi extends IBilateralBookingApi {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given credentials are still valid and can be used for booking purposes etc.")
     public Boolean checkCredentialsAreValid(
-            @RequestParam(required = true) @ApiParam("The service of which to get a login token.") String serviceId,
+            @RequestParam @ApiParam("The service of which to get a login token.") String serviceId,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 }

@@ -30,6 +30,8 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -49,19 +51,14 @@ import lombok.experimental.Accessors;
 @ApiModel(description = "The booking object describing its state and details")
 public class Booking extends NewBooking implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-	/**
-     * The identifier MaaS will be using to referring to the booking
-     */
-	@JsonProperty(required = true)
-	@NotEmpty
+    @NotEmpty
+    @JsonProperty(required = true)
     private String id;
 
-    private Token token;
+    @NotNull
+    @ApiModelProperty(value = "Current state of the booking", required = true)
+    private BookingState state;
 
-    /**
-     * Arbitrary metadata that a TO can add
-     */
-    private Object meta;
 }

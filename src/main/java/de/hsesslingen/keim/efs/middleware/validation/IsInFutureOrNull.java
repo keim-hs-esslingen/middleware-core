@@ -23,31 +23,31 @@
  */
 package de.hsesslingen.keim.efs.middleware.validation;
 
-import java.time.Instant;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 /**
- * Checks if the given time value is a valid point of time in the future Null
- * values are considered as valid!
+ * Custom annotation for validating time values using
+ * {@link TimeInFutureValidator}
  *
  * @author k.sivarasah 4 Oct 2019
  */
-public class TimeIsInFutureInstantValidator implements ConstraintValidator<TimeIsInFutureInstant, Instant> {
+@Target({ElementType.PARAMETER, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = IsInFutureOrNullValidator.class)
+@Documented
+public @interface IsInFutureOrNull {
 
-    @Override
-    public boolean isValid(Instant instant, ConstraintValidatorContext context) {
-        if (instant == null) {
-            return true;
-        }
+    String message() default "Time value should be in the future!";
 
-        try {
-            Instant nowMinus10 = Instant.now().minusSeconds(10);
-            return instant.isAfter(nowMinus10);
-        } catch (Exception e) {
-            return false;
-        }
-    }
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 
 }

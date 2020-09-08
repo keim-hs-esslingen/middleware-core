@@ -23,7 +23,9 @@
  */
 package de.hsesslingen.keim.efs.middleware.validation;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -34,20 +36,37 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author k.sivarasah 4 Oct 2019
  */
-public class TimeIsInFutureZonedDateTimeValidator implements ConstraintValidator<TimeIsInFutureZonedDateTime, ZonedDateTime> {
+public class IsInFutureOrNullValidator implements ConstraintValidator<IsInFutureOrNull, Object> {
 
     @Override
-    public boolean isValid(ZonedDateTime zonedDateTime, ConstraintValidatorContext context) {
-        if (zonedDateTime == null) {
+    public boolean isValid(Object time, ConstraintValidatorContext context) {
+        if (time == null) {
             return true;
         }
 
+        boolean valid = false;
+
+        if (time instanceof Long) {
+            valid = isValid((Long) time, context);
+        } else if (time instanceof Temporal) {
+            valid = isValid((Temporal) time, context);
+        }
+
+        return valid;
+    }
+
+    private boolean isValid(Long time, ConstraintValidatorContext context) {
         try {
-            ZonedDateTime nowMinus10 = ZonedDateTime.now().minusSeconds(10);
-            return zonedDateTime.isAfter(nowMinus10);
+            // Get NOW minus 10 seconds to allow a small buffer.
+            var nowMinus10s = Instant.now().minusSeconds(10).getLong(ChronoField.INSTANT_SECONDS);
+
+            return time - nowMinus10s >= 0;
         } catch (Exception e) {
             return false;
         }
     }
 
+    private boolean isValid(Temporal time, ConstraintValidatorContext context) {
+        return isValid(time.getLong(ChronoField.INSTANT_SECONDS), context);
+    }
 }

@@ -34,7 +34,7 @@ import java.time.Instant;
  *
  * @author k.sivarasah 4 Oct 2019
  */
-public class ConsistentBookingDateValidator implements ConstraintValidator<ConsistentBookingDateParameters, NewBooking> {
+public class ConsistentBookingDateValidator implements ConstraintValidator<ConsistentBookingDateParams, NewBooking> {
 
     @Override
     public boolean isValid(NewBooking booking, ConstraintValidatorContext context) {

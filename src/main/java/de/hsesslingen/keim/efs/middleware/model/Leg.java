@@ -26,23 +26,23 @@ package de.hsesslingen.keim.efs.middleware.model;
 import java.io.Serializable;
 import java.time.Instant;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.hsesslingen.keim.efs.middleware.consumer.ConsumerApi;
 
 import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliDeserializer;
 import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliSerializer;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
-import de.hsesslingen.keim.efs.middleware.validation.TimeIsInFutureInstant;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
 
 /**
  * Contains the route data about a mobility option.
@@ -70,26 +70,25 @@ public class Leg implements Serializable {
 
     @JsonSerialize(using = InstantEpochMilliSerializer.class)
     @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
-    @TimeIsInFutureInstant(groups = OnCreate.class)
+    @IsInFutureOrNull(groups = OnCreate.class)
     private Instant startTime;
 
     @JsonSerialize(using = InstantEpochMilliSerializer.class)
     @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
-    @TimeIsInFutureInstant(groups = OnCreate.class)
+    @IsInFutureOrNull(groups = OnCreate.class)
     private Instant endTime;
 
     @NotNull
-    @Valid
     @JsonProperty(required = true)
     private Place from;
 
-    @Valid
     private Place to;
 
-    @NotEmpty
+    @NotEmpty(groups = ConsumerApi.class)
     @JsonProperty(required = true)
     private String serviceId;
 
+    @JsonProperty(required = true)
     private Mode mode;
 
     /**

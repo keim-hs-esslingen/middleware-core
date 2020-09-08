@@ -45,13 +45,13 @@ import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
 
 /**
  * @author boesch, K.Sivarasah
@@ -120,17 +120,12 @@ public class BookingApi implements IBookingApi {
     }
 
     @Override
-    public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
+    public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
             String credentials) {
         logger.info("Received request to create a new booking.");
 
         if (debugInputObjects) {
             debugLogAsJson(newBooking);
-        }
-
-        if (newBooking.getState() != BookingState.NEW) {
-            logger.warn("Received a NewBooking with booking state set to \"" + newBooking.getState() + "\". Setting it manually to \"NEW\".");
-            newBooking.setState(BookingState.NEW);
         }
 
         var creds = credentialsUtils.fromString(credentials);
@@ -140,7 +135,7 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public Booking modifyBooking(@PathVariable String id,
-            @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
+            @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
             String credentials) {
 
         if (!debugInputObjects) {
@@ -156,7 +151,7 @@ public class BookingApi implements IBookingApi {
     }
 
     @Override
-    public void performAction(String bookingId, BookingAction action, String serviceId, String assetId, String secret, String more, String credentials) {
+    public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, String credentials) {
 
         if (!debugInputObjects) {
             logger.info("Received request to perform an action on a booking.");

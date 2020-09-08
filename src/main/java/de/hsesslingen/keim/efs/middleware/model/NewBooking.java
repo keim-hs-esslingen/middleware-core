@@ -31,7 +31,6 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -47,16 +46,12 @@ import lombok.experimental.Accessors;
 @ApiModel(description = "Model used to create a new Booking in BookingState NEW")
 public class NewBooking implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    public NewBooking(BookingState state, Leg leg, Customer customer) {
-        this.state = state;
+    public NewBooking(Leg leg, Customer customer) {
         this.leg = leg;
         this.customer = customer;
     }
-
-    @ApiModelProperty(value = "Current state of the booking", required = true)
-    private BookingState state;
 
     @Valid
     @NotNull
@@ -64,7 +59,7 @@ public class NewBooking implements Serializable {
     private Leg leg;
 
     private Customer customer;
-    
-    private String other;
+
+    private Object other;
 
 }

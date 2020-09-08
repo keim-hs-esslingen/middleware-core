@@ -43,7 +43,6 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParameters;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
@@ -51,6 +50,7 @@ import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
 
 /**
  * This class receives the consumers requests for searching and booking mobility
@@ -100,15 +100,19 @@ public class ConsumerApi implements IConsumerApi {
     }
 
     @Override
-    public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParameters NewBooking newBooking,
+    public Booking createNewBooking(
+            @RequestBody @Validated({OnCreate.class, ConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
             String credentials) {
         logger.info("Received request to create a new booking at a specific provider.");
         return consumerService.createBooking(newBooking, credentials);
     }
 
     @Override
-    public Booking modifyBooking(@PathVariable String id, @RequestBody @Valid @ConsistentBookingDateParameters Booking booking,
-            String credentials) {
+    public Booking modifyBooking(
+            @PathVariable String id, 
+            @RequestBody @Validated(ConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
+            String credentials
+    ) {
         logger.info("Received request to modify a booking at a specific provider.");
         return consumerService.modifyBooking(id, booking, credentials);
     }

@@ -41,7 +41,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ConsistentBookingDateValidator.class)
 @Documented
-public @interface ConsistentBookingDateParameters {
+public @interface ConsistentBookingDateParams {
 	
 	String message() default "Booking endtime should be after starttime";
 
