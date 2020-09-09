@@ -178,7 +178,7 @@ public class ConsumerService {
         log.info("Requesting options from available services...");
         var options = services
                 // using parallel stream for parallel HTTP requests
-                .parallelStream()
+                .stream()
                 // The request method returns us a stream, therefore flatMap it.
                 .flatMap(service -> {
                     return requestOptionsFromService(service.getId(),
@@ -201,9 +201,12 @@ public class ConsumerService {
             var request = EfsRequest
                     .get(serviceUrl + OPTIONS_PATH)
                     .query("from", from)
-                    .credentials(serviceCredentials)
                     .expect(new ParameterizedTypeReference<List<Options>>() {
                     });
+
+            if (serviceCredentials != null) {
+                request.credentials(serviceCredentials);
+            }
 
             // Building query string by adding existing params...
             if (to != null) {
