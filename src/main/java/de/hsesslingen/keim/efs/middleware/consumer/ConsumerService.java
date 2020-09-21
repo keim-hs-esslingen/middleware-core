@@ -176,28 +176,35 @@ public class ConsumerService {
         var credentialsMap = extractConsumerCredentials(credentials);
 
         log.info("Requesting options from available services...");
-        var options = services.stream()
-                // Building a matching options request for each service
+        
+        // Preparing request in synchronous stream...
+        var requests = services.stream()
+                // Building a matching options request for each service...
                 .map(service
                         -> buildOptionsRequest(service.getServiceUrl(), credentialsMap.get(service.getId()),
                         from, to, startTime, endTime, radiusMeter, share)
                 )
                 // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
                 .map(request -> request.callOutgoingRequestAdapters())
-                // Using parallel stream for parallel HTTP requests (increases performance)
-                .parallel()
-                // Sending the actual request...
+                // Collecting requests before sending them, to ensure usage of main thread.
+                .collect(Collectors.toList());
+        
+        // Sending the actual requests in parallel to increase performance...
+        var options = requests.parallelStream()
                 .map(request -> {
                     try {
-                        return request.go().getBody();
+                        return request.go();
                     } catch (Exception e) {
                         log.error("Exception while getting options from url {}", request.uriBuilder().build().toUriString(), e);
                         return null;
                     }
                 })
-                // Filtering null objects (due to null-response or exception)
+                // Filtering null response (due to exceptions)...
+                .filter(response -> response != null)
+                // Mapping to body and filtering nulls (due to null-response)...
+                .map(response -> response.getBody())
                 .filter(opts -> opts != null)
-                // Flatmapping to get one stream.
+                // Flatmapping and collecting to get unified list of options...
                 .flatMap(opts -> opts.stream())
                 .collect(Collectors.toList());
 
