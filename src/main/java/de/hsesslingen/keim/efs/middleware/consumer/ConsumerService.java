@@ -176,70 +176,107 @@ public class ConsumerService {
         var credentialsMap = extractConsumerCredentials(credentials);
 
         log.info("Requesting options from available services...");
-        var options = services
-                // using parallel stream for parallel HTTP requests
-                .stream()
-                // The request method returns us a stream, therefore flatMap it.
-                .flatMap(service -> {
-                    return requestOptionsFromService(service.getId(),
-                            service.getServiceUrl(), credentialsMap.get(service.getId()),
-                            from, to, startTime, endTime, radiusMeter, share);
+        var options = services.stream()
+                // Building a matching options request for each service
+                .map(service
+                        -> buildOptionsRequest(service.getServiceUrl(), credentialsMap.get(service.getId()),
+                        from, to, startTime, endTime, radiusMeter, share)
+                )
+                // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
+                .map(request -> request.callOutgoingRequestAdapters())
+                // Using parallel stream for parallel HTTP requests (increases performance)
+                .parallel()
+                // Sending the actual request...
+                .map(request -> {
+                    try {
+                        return request.go().getBody();
+                    } catch (Exception e) {
+                        log.error("Exception while getting options from url {}", request.uriBuilder().build().toUriString(), e);
+                        return null;
+                    }
                 })
+                // Filtering null objects (due to null-response or exception)
+                .filter(opts -> opts != null)
+                // Flatmapping to get one stream.
+                .flatMap(opts -> opts.stream())
                 .collect(Collectors.toList());
 
-        log.trace("Received %d options in total.", options.size());
+        if (log.isDebugEnabled()) {
+            // Analyze the received options for faults and numbers...
+            debugAnalyzeReceivedOptions(options);
+            log.debug("Received %d options in total.", options.size());
+        }
+
         return options;
     }
 
-    private Stream<Options> requestOptionsFromService(
-            String serviceId, String serviceUrl,
-            String serviceCredentials, String from, String to,
+    private void debugAnalyzeReceivedOptions(List<Options> options) {
+        var optionsNumberMap = new HashMap<String, Integer>();
+
+        for (var opt : options) {
+            var leg = opt.getLeg();
+
+            if (leg == null) {
+                log.debug("Received an option with leg == null");
+                continue;
+            }
+
+            var serviceId = leg.getServiceId();
+
+            if (serviceId == null) {
+                log.debug("Received an option with leg.serviceId == null");
+                continue;
+            }
+
+            var value = optionsNumberMap.get(serviceId);
+
+            if (value == null) {
+                optionsNumberMap.put(serviceId, 1);
+            } else {
+                optionsNumberMap.put(serviceId, value + 1);
+            }
+        }
+
+        for (var serviceId : optionsNumberMap.keySet()) {
+            log.debug(String.format("Received %d options from service \"%s\".", optionsNumberMap.get(serviceId), serviceId));
+        }
+    }
+
+    private EfsRequest<List<Options>> buildOptionsRequest(
+            String serviceUrl, String serviceCredentials,
+            String from, String to,
             ZonedDateTime startTime, ZonedDateTime endTime,
             Integer radiusMeter, Boolean share) {
-        try {
-            // Start build the request object...
-            var request = EfsRequest
-                    .get(serviceUrl + OPTIONS_PATH)
-                    .query("from", from)
-                    .expect(new ParameterizedTypeReference<List<Options>>() {
-                    });
 
-            if (serviceCredentials != null) {
-                request.credentials(serviceCredentials);
-            }
+        // Start build the request object...
+        var request = EfsRequest
+                .get(serviceUrl + OPTIONS_PATH)
+                .query("from", from)
+                .expect(new ParameterizedTypeReference<List<Options>>() {
+                });
 
-            // Building query string by adding existing params...
-            if (to != null) {
-                request.query("to", to);
-            }
-            if (startTime != null) {
-                request.query("startTime", startTime.toInstant().toEpochMilli());
-            }
-            if (endTime != null) {
-                request.query("endTime", endTime.toInstant().toEpochMilli());
-            }
-            if (radiusMeter != null) {
-                request.query("radius", radiusMeter);
-            }
-            if (share != null) {
-                request.query("share", share);
-            }
-
-            // Sending the actual request...
-            List<Options> body = request.go().getBody();
-
-            // Logging some stuff about the response...
-            if (body != null) {
-                log.info("Service " + serviceId + " returned " + body.size() + " options.");
-                return body.stream();
-            } else {
-                log.info("Service " + serviceId + " returned \"null\" upon requesting options.");
-                return Stream.empty();
-            }
-        } catch (Exception e) {
-            log.error("Exception while getting options from url {}", serviceUrl, e);
-            return Stream.empty();
+        if (serviceCredentials != null) {
+            request.credentials(serviceCredentials);
         }
+
+        // Building query string by adding existing params...
+        if (to != null) {
+            request.query("to", to);
+        }
+        if (startTime != null) {
+            request.query("startTime", startTime.toInstant().toEpochMilli());
+        }
+        if (endTime != null) {
+            request.query("endTime", endTime.toInstant().toEpochMilli());
+        }
+        if (radiusMeter != null) {
+            request.query("radius", radiusMeter);
+        }
+        if (share != null) {
+            request.query("share", share);
+        }
+
+        return request;
     }
 
     /**
