@@ -73,6 +73,9 @@ public class CredentialsUtils {
     @Value("${efs.middleware.debug-credentials:false}")
     private boolean debugCredentials;
 
+    @Value("${efs.middleware.debug-credentials.obfuscate:true}")
+    private boolean obfuscateCredentialsForDebugging;
+
     /**
      * Attempts to deserialize the given String into a credentials object. If
      * the given string value is {@code null} or empty, {@code null} is
@@ -140,7 +143,13 @@ public class CredentialsUtils {
             sb.append(field.getName());
 
             try {
-                sb.append("=").append(obfuscate(field.get(creds)));
+                var value = field.get(creds);
+                
+                if (obfuscateCredentialsForDebugging) {
+                    value = obfuscate(value);
+                }
+                
+                sb.append("=").append(value);
             } catch (IllegalAccessException ex) {
                 sb.append("->IllegalAccessException");
             } catch (IllegalArgumentException ex) {
