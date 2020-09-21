@@ -182,68 +182,119 @@ public class ConsumerService {
         // should contain a JSON-object with JSON formatted credentials per service id.
         var credentialsMap = extractConsumerCredentials(credentials);
 
-        logger.info("Requesting options from available services...");
-        var options = services
-                // using parallel stream for parallel HTTP requests
-                .parallelStream()
-                // The request method returns us a stream, therefore flatMap it.
-                .flatMap(service -> {
-                    return requestOptionsFromService(service.getId(),
-                            service.getServiceUrl(), credentialsMap.get(service.getId()),
-                            from, to, startTime, endTime, radiusMeter, share);
-                })
+        log.info("Requesting options from available services...");
+
+        // Preparing request in synchronous stream...
+        var requests = services.stream()
+                // Building a matching options request for each service...
+                .map(service
+                        -> buildOptionsRequest(service.getServiceUrl(),
+                        credentialsMap.get(service.getId()), from, to,
+                        startTime, endTime, radiusMeter, share)
+                )
+                // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
+                .map(request -> request.callOutgoingRequestAdapters())
+                // Collecting requests before sending them, to ensure usage of main thread.
                 .collect(Collectors.toList());
 
-        logger.trace("Received %d options in total.", options.size());
+        // Sending the actual requests in parallel to increase performance...
+        var options = requests.parallelStream()
+                .map(request -> {
+                    try {
+                        return request.go();
+                    } catch (Exception e) {
+                        log.error(
+                                "Exception while getting options from url {}",
+                                request.uriBuilder().build().toUriString(), e
+                        );
+                        return null;
+                    }
+                })
+                // Filtering null response (due to exceptions)...
+                .filter(response -> response != null)
+                // Mapping to body and filtering nulls (due to null-response)...
+                .map(response -> response.getBody())
+                .filter(opts -> opts != null)
+                // Flatmapping and collecting to get unified list of options...
+                .flatMap(opts -> opts.stream())
+                .collect(Collectors.toList());
+
+        if (log.isDebugEnabled()) {
+            // Analyze the received options for faults and numbers...
+            debugAnalyzeReceivedOptions(options);
+            log.debug("Received %d options in total.", options.size());
+        }
+
         return options;
     }
 
-    private Stream<Options> requestOptionsFromService(
-            String serviceId, String serviceUrl,
-            String serviceCredentials, String from, String to,
+    private void debugAnalyzeReceivedOptions(List<Options> options) {
+        var optionsNumberMap = new HashMap<String, Integer>();
+
+        for (var opt : options) {
+            var leg = opt.getLeg();
+
+            if (leg == null) {
+                log.debug("Received an option with leg == null");
+                continue;
+            }
+
+            var serviceId = leg.getServiceId();
+
+            if (serviceId == null) {
+                log.debug("Received an option with leg.serviceId == null");
+                continue;
+            }
+
+            var value = optionsNumberMap.get(serviceId);
+
+            if (value == null) {
+                optionsNumberMap.put(serviceId, 1);
+            } else {
+                optionsNumberMap.put(serviceId, value + 1);
+            }
+        }
+
+        for (var serviceId : optionsNumberMap.keySet()) {
+            log.debug(String.format("Received %d options from service \"%s\".", optionsNumberMap.get(serviceId), serviceId));
+        }
+    }
+
+    private EfsRequest<List<Options>> buildOptionsRequest(
+            String serviceUrl, String serviceCredentials,
+            String from, String to,
             ZonedDateTime startTime, ZonedDateTime endTime,
             Integer radiusMeter, Boolean share) {
-        try {
-            // Start build the request object...
-            var request = EfsRequest
-                    .get(serviceUrl + OPTIONS_PATH)
-                    .query("from", from)
-                    .credentials(serviceCredentials)
-                    .expect(new ParameterizedTypeReference<List<Options>>() {
-                    });
 
-            // Building query string by adding existing params...
-            if (to != null) {
-                request.query("to", to);
-            }
-            if (startTime != null) {
-                request.query("startTime", startTime.toInstant().toEpochMilli());
-            }
-            if (endTime != null) {
-                request.query("endTime", endTime.toInstant().toEpochMilli());
-            }
-            if (radiusMeter != null) {
-                request.query("radius", radiusMeter);
-            }
-            if (share != null) {
-                request.query("share", share);
-            }
+        // Start build the request object...
+        var request = EfsRequest
+                .get(serviceUrl + OPTIONS_PATH)
+                .query("from", from)
+                .expect(new ParameterizedTypeReference<List<Options>>() {
+                });
 
-            // Sending the actual request...
-            List<Options> body = request.go().getBody();
-
-            // Logging some stuff about the response...
-            if (body != null) {
-                logger.info("Service " + serviceId + " returned " + body.size() + " options.");
-                return body.stream();
-            } else {
-                logger.info("Service " + serviceId + " returned \"null\" upon requesting options.");
-                return Stream.empty();
-            }
-        } catch (Exception e) {
-            logger.error("Exception while getting options from url {}", serviceUrl, e);
-            return Stream.empty();
+        if (serviceCredentials != null) {
+            request.credentials(serviceCredentials);
         }
+
+        // Building query string by adding existing params...
+        if (to != null) {
+            request.query("to", to);
+        }
+        if (startTime != null) {
+            request.query("startTime", startTime.toInstant().toEpochMilli());
+        }
+        if (endTime != null) {
+            request.query("endTime", endTime.toInstant().toEpochMilli());
+        }
+        if (radiusMeter != null) {
+            request.query("radius", radiusMeter);
+        }
+        if (share != null) {
+            request.query("share", share);
+        }
+
+        return request;
     }
 
     /**
