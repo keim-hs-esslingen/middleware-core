@@ -176,26 +176,30 @@ public class ConsumerService {
         var credentialsMap = extractConsumerCredentials(credentials);
 
         log.info("Requesting options from available services...");
-        
+
         // Preparing request in synchronous stream...
         var requests = services.stream()
                 // Building a matching options request for each service...
                 .map(service
-                        -> buildOptionsRequest(service.getServiceUrl(), credentialsMap.get(service.getId()),
-                        from, to, startTime, endTime, radiusMeter, share)
+                        -> buildOptionsRequest(service.getServiceUrl(),
+                        credentialsMap.get(service.getId()), from, to,
+                        startTime, endTime, radiusMeter, share)
                 )
                 // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
                 .map(request -> request.callOutgoingRequestAdapters())
                 // Collecting requests before sending them, to ensure usage of main thread.
                 .collect(Collectors.toList());
-        
+
         // Sending the actual requests in parallel to increase performance...
         var options = requests.parallelStream()
                 .map(request -> {
                     try {
                         return request.go();
                     } catch (Exception e) {
-                        log.error("Exception while getting options from url {}", request.uriBuilder().build().toUriString(), e);
+                        log.error(
+                                "Exception while getting options from url {}",
+                                request.uriBuilder().build().toUriString(), e
+                        );
                         return null;
                     }
                 })
