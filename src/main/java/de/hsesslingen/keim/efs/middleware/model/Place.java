@@ -122,9 +122,9 @@ public class Place implements ICoordinates, Serializable {
         this.name = name;
     }
 
-    private void assertPositionIsValid(String pos) {
-        if (StringUtils.isEmpty(pos) || StringUtils.countOccurrencesOf(pos, ",") != 1) {
-            throw new InvalidParameterException("Invalid format for position " + pos);
+    private void assertPositionIsValid(String latLonString) {
+        if (StringUtils.isEmpty(latLonString) || StringUtils.countOccurrencesOf(latLonString, ",") != 1) {
+            throw new InvalidParameterException("Invalid format for position " + latLonString);
         }
     }
 
