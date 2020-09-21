@@ -26,14 +26,14 @@ package de.hsesslingen.keim.efs.middleware.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.hsesslingen.keim.efs.middleware.exception.InvalidParameterException;
-import de.hsesslingen.keim.efs.mobility.Coordinates;
 import java.io.Serializable;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 
 import org.springframework.util.StringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
@@ -45,11 +45,34 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Place extends Coordinates implements Serializable {
+public class Place implements ICoordinates, Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * minimum: -90
+     * <p>
+     * maximum: 90
+     * <p>
+     * example: 52.376883 The field value must be a valid WGS84 latitude in
+     * decimal degrees format.
+     */
+    @DecimalMin("-90.0")
+    @DecimalMax("90.0")
+    private Double lat;
+
+    /**
+     * minimum: -180
+     * <p>
+     * maximum: 180
+     * <p>
+     * example: 4.90017 The field value must be a valid WGS84 longitude in
+     * decimal degrees format.
+     */
+    @DecimalMin("-180.0")
+    @DecimalMax("180.0")
+    private Double lon;
 
     /**
      * Human readable name of the place
@@ -82,6 +105,12 @@ public class Place extends Coordinates implements Serializable {
         this.stopCode = stopCode;
     }
 
+    public Place(String name, String stopId, String stopCode) {
+        this.name = name;
+        this.stopId = stopId;
+        this.stopCode = stopCode;
+    }
+
     public Place(String latCommaLonString, String name) {
         assertPositionIsValid(latCommaLonString);
 
@@ -99,9 +128,25 @@ public class Place extends Coordinates implements Serializable {
         }
     }
 
-    @Override
+    /**
+     * Updates this instance with the latitude and longitude values of the given
+     * ICoordinates. If null is passed, nothing happens.
+     *
+     * @param coordinates
+     */
+    public void setCoordinates(ICoordinates coordinates) {
+        if (coordinates == null) {
+            return;
+        }
+
+        this.lat = coordinates.getLat();
+        this.lon = coordinates.getLon();
+    }
+
     public void updateSelfFrom(Object other) {
-        super.updateSelfFrom(other);
+        if (other instanceof ICoordinates) {
+            this.setCoordinates((ICoordinates) other);
+        }
 
         if (other instanceof Place) {
             Place o = (Place) other;
