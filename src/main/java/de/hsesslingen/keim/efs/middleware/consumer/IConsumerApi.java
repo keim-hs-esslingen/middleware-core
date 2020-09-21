@@ -152,7 +152,7 @@ public interface IConsumerApi {
     @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider "
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
-            @RequestBody @Validated({OnCreate.class, ConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            @RequestBody @Validated({OnCreate.class, IConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 
@@ -169,7 +169,7 @@ public interface IConsumerApi {
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
     public Booking modifyBooking(
             @PathVariable String id,
-            @RequestBody @Validated(ConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
+            @RequestBody @Validated(IConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
 

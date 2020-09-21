@@ -101,7 +101,7 @@ public class ConsumerApi implements IConsumerApi {
 
     @Override
     public Booking createNewBooking(
-            @RequestBody @Validated({OnCreate.class, ConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            @RequestBody @Validated({OnCreate.class, IConsumerApi.class}) @Valid @ConsistentBookingDateParams NewBooking newBooking,
             String credentials) {
         logger.info("Received request to create a new booking at a specific provider.");
         return consumerService.createBooking(newBooking, credentials);
@@ -110,7 +110,7 @@ public class ConsumerApi implements IConsumerApi {
     @Override
     public Booking modifyBooking(
             @PathVariable String id, 
-            @RequestBody @Validated(ConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
+            @RequestBody @Validated(IConsumerApi.class) @Valid @ConsistentBookingDateParams Booking booking,
             String credentials
     ) {
         logger.info("Received request to modify a booking at a specific provider.");

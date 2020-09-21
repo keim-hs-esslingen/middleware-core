@@ -32,7 +32,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hsesslingen.keim.efs.middleware.consumer.ConsumerApi;
+import de.hsesslingen.keim.efs.middleware.consumer.IConsumerApi;
 
 import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliDeserializer;
 import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliSerializer;
@@ -84,7 +84,7 @@ public class Leg implements Serializable {
 
     private Place to;
 
-    @NotEmpty(groups = ConsumerApi.class)
+    @NotEmpty(groups = IConsumerApi.class)
     @JsonProperty(required = true)
     private String serviceId;
 
