@@ -182,7 +182,7 @@ public class ConsumerService {
         // should contain a JSON-object with JSON formatted credentials per service id.
         var credentialsMap = extractConsumerCredentials(credentials);
 
-        log.info("Requesting options from available services...");
+        logger.info("Requesting options from available services...");
 
         // Preparing request in synchronous stream...
         var requests = services.stream()
@@ -203,7 +203,7 @@ public class ConsumerService {
                     try {
                         return request.go();
                     } catch (Exception e) {
-                        log.error(
+                        logger.error(
                                 "Exception while getting options from url {}",
                                 request.uriBuilder().build().toUriString(), e
                         );
@@ -219,10 +219,10 @@ public class ConsumerService {
                 .flatMap(opts -> opts.stream())
                 .collect(Collectors.toList());
 
-        if (log.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
             debugAnalyzeReceivedOptions(options);
-            log.debug("Received %d options in total.", options.size());
+            logger.debug("Received %d options in total.", options.size());
         }
 
         return options;
@@ -235,14 +235,14 @@ public class ConsumerService {
             var leg = opt.getLeg();
 
             if (leg == null) {
-                log.debug("Received an option with leg == null");
+                logger.debug("Received an option with leg == null");
                 continue;
             }
 
             var serviceId = leg.getServiceId();
 
             if (serviceId == null) {
-                log.debug("Received an option with leg.serviceId == null");
+                logger.debug("Received an option with leg.serviceId == null");
                 continue;
             }
 
@@ -256,7 +256,7 @@ public class ConsumerService {
         }
 
         for (var serviceId : optionsNumberMap.keySet()) {
-            log.debug(String.format("Received %d options from service \"%s\".", optionsNumberMap.get(serviceId), serviceId));
+            logger.debug(String.format("Received %d options from service \"%s\".", optionsNumberMap.get(serviceId), serviceId));
         }
     }
 
