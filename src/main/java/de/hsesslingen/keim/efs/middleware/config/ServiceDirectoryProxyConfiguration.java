@@ -24,8 +24,8 @@
 package de.hsesslingen.keim.efs.middleware.config;
 
 import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,14 +39,14 @@ import org.springframework.context.annotation.Lazy;
 @AutoConfigureAfter(RestUtilsAutoConfiguration.class)
 public class ServiceDirectoryProxyConfiguration {
 
-    private static final Log log = LogFactory.getLog(ServiceDirectoryProxyConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxyConfiguration.class);
 
     // Not marked directly as @Service in class because this bean should be
     // initialized AFTER RestUtilsAutoConfiguration took place.
     @Bean
     @Lazy // Initialize only if needed.
     public ServiceDirectoryProxy serviceDirectoryProxy() {
-        log.info("Initializing ServiceDirectoryProxy bean...");
+        logger.info("Initializing ServiceDirectoryProxy bean...");
         return new ServiceDirectoryProxy();
     }
 }

@@ -33,8 +33,8 @@ import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 
 /**
@@ -44,7 +44,7 @@ import org.springframework.core.ParameterizedTypeReference;
  */
 public class ServiceDirectoryProxy {
 
-    private static final Log log = LogFactory.getLog(ServiceDirectoryProxy.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxy.class);
 
     @Value("${efs.services.url.service-directory:http://service-directory/api}")
     public String baseUrl;
@@ -55,7 +55,7 @@ public class ServiceDirectoryProxy {
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search() {
-        log.info("Querying service directory for available mobility services...");
+        logger.info("Querying service directory for available mobility services...");
         return EfsRequest.get(buildUri()).expect(new ParameterizedTypeReference<List<MobilityService>>() {
         }).go().getBody();
     }
@@ -70,7 +70,7 @@ public class ServiceDirectoryProxy {
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds) {
-        log.info("Querying service directory for specific set of available mobility services...");
+        logger.info("Querying service directory for specific set of available mobility services...");
         return EfsRequest.get(buildUri(mobilityTypes, modes, serviceIds, true)).expect(new ParameterizedTypeReference<List<MobilityService>>() {
         }).go().getBody();
     }
@@ -96,7 +96,7 @@ public class ServiceDirectoryProxy {
 
         String uri = uriBuilder.toUriString();
 
-        log.trace("Using \"" + uri + "\" for querying the service directory.");
+        logger.trace("Using \"" + uri + "\" for querying the service directory.");
 
         return uri;
     }

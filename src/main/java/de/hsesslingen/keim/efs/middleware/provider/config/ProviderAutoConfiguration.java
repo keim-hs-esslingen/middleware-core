@@ -24,8 +24,8 @@
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
 import de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -41,14 +41,14 @@ import org.springframework.context.annotation.Lazy;
 @AutoConfigureAfter(RestUtilsAutoConfiguration.class)
 public class ProviderAutoConfiguration {
 
-    private static final Log log = LogFactory.getLog(ProviderAutoConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProviderAutoConfiguration.class);
 
     // Not marked directly as @Service in class because this bean should be
     // initialized AFTER RestUtilsAutoConfiguration took place.
     @Bean
     @ConditionalOnMissingBean
     public IMobilityServiceConfigurationProperties mobilityServiceConfigurationProperties() {
-        log.info("Initializing MobilityServiceConfigurationProperties bean...");
+        logger.info("Initializing MobilityServiceConfigurationProperties bean...");
         return new MobilityServiceConfigurationProperties();
     }
 

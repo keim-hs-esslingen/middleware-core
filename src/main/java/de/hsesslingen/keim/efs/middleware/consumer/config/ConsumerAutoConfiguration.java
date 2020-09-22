@@ -29,8 +29,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -44,14 +44,14 @@ import org.springframework.context.annotation.Lazy;
 @AutoConfigureAfter(RestUtilsAutoConfiguration.class)
 public class ConsumerAutoConfiguration {
 
-    private static final Log log = LogFactory.getLog(ConsumerAutoConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerAutoConfiguration.class);
 
     // Not marked directly as @Service in class because this bean should be
     // initialized AFTER RestUtilsAutoConfiguration took place.
     @Bean
     @Lazy // Initialize only if needed.
     public ConsumerService consumerService() {
-        log.info("Initializing ConsumerService bean...");
+        logger.info("Initializing ConsumerService bean...");
         return new ConsumerService();
     }
 

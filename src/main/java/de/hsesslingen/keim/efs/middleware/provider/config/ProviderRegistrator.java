@@ -30,8 +30,8 @@ import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "efs.middleware.provider-api.enabled", havingValue = "true")
 public class ProviderRegistrator {
 
-    private static final Log log = LogFactory.getLog(ProviderRegistrator.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProviderRegistrator.class);
 
     @Autowired
     private ServiceDirectoryProxy proxy;
@@ -65,14 +65,14 @@ public class ProviderRegistrator {
 
     @Value("${efs.services.url.service-directory:http://service-directory/api}")
     public String baseUrl;
-    
+
     private ScheduledExecutorService executor;
     private TaskScheduler scheduler;
     private ScheduledFuture future;
 
     private TaskScheduler getScheduler() {
         if (scheduler == null) {
-            log.info("Creating task scheduler for provider registration...");
+            logger.info("Creating task scheduler for provider registration...");
 
             executor = Executors.newSingleThreadScheduledExecutor();
             scheduler = new ConcurrentTaskScheduler(executor);
@@ -97,26 +97,33 @@ public class ProviderRegistrator {
     @EventListener(ApplicationReadyEvent.class)
     public void registerInServiceDirectory() {
         if (registrationDisabled) {
-            log.warn("Service registration is disabled.");
+            logger.warn("Service registration is disabled.");
             return;
         }
 
-        log.info("Trying to register my service at the service-directory...");
+        logger.info("Trying to register my service at the service-directory...");
 
         try {
             register(serviceConfig.getMobilityService());
         } catch (Exception ex) {
-            log.trace(ex);
-            log.info("Registration failed. Retrying after " + retryDelay + " seconds.");
+            var message = "Registration failed. Retrying after " + retryDelay + " seconds.";
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(message + " {}", ex);
+            } else {
+                logger.info(message);
+            }
+
             future = getScheduler().schedule(this::registerInServiceDirectory, Instant.now().plusSeconds(retryDelay));
+            
             return;
         }
 
         if (scheduler != null) {
-            log.info("Registration successful. Shutting down registration-retry-scheduler...");
+            logger.info("Registration successful. Shutting down registration-retry-scheduler...");
             shutdownScheduler();
         } else {
-            log.info("Registration successful.");
+            logger.info("Registration successful.");
         }
     }
 
