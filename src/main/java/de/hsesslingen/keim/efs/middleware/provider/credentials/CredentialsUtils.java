@@ -70,11 +70,8 @@ public class CredentialsUtils {
     @Autowired(required = false)
     private ICredentialsDeserializer deserializer;
 
-    @Value("${efs.middleware.debug-credentials:false}")
-    private boolean debugCredentials;
-
-    @Value("${efs.middleware.debug-credentials.obfuscate:true}")
-    private boolean obfuscateCredentialsForDebugging;
+    @Value("${middleware.logging.debug.obfuscate-credentials:true}")
+    private boolean obfuscateCredentialsForDebugLogging;
 
     /**
      * Attempts to deserialize the given String into a credentials object. If
@@ -98,13 +95,15 @@ public class CredentialsUtils {
             return null;
         }
 
+        C creds;
+
         if (deserializer != null) {
-            return (C) deserializer.fromString(credentials);
+            creds = (C) deserializer.fromString(credentials);
+        } else {
+            creds = (C) toCredentials(credentials, AbstractCredentials.class);
         }
 
-        var creds = (C) toCredentials(credentials, AbstractCredentials.class);
-
-        if (debugCredentials) {
+        if (logger.isDebugEnabled()) {
             debugOutputCredentials(creds);
         }
 
@@ -144,11 +143,11 @@ public class CredentialsUtils {
 
             try {
                 var value = field.get(creds);
-                
-                if (obfuscateCredentialsForDebugging) {
+
+                if (obfuscateCredentialsForDebugLogging) {
                     value = obfuscate(value);
                 }
-                
+
                 sb.append("=").append(value);
             } catch (IllegalAccessException ex) {
                 sb.append("->IllegalAccessException");
