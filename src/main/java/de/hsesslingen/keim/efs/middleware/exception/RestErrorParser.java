@@ -43,7 +43,7 @@ import org.springframework.web.client.ResponseErrorHandler;
  */
 public abstract class RestErrorParser implements ResponseErrorHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(RestErrorParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestErrorParser.class);
 
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
@@ -68,7 +68,7 @@ public abstract class RestErrorParser implements ResponseErrorHandler {
             error = new EfsError(responseBody, httpStatus.value(), null);
         }
 
-        log.error("Error Response: {}", responseBody);
+        logger.error("Error Response: {}", responseBody);
 
         throw new HttpException(httpStatus, error);
     }

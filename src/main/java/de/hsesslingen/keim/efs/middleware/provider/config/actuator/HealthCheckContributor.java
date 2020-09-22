@@ -50,11 +50,11 @@ import org.springframework.util.Assert;
 public class HealthCheckContributor implements HealthIndicator {
 
     private List<String> healthCheckUrls = new ArrayList<>();
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Health health() {
-        log.debug("Checking service availability using Health-Check-Urls: " + healthCheckUrls);
+        logger.debug("Checking service availability using Health-Check-Urls: " + healthCheckUrls);
         Map<String, String> healthStatus = new HashMap<>();
 
         Builder healthBuilder = Health.up();
@@ -68,7 +68,7 @@ public class HealthCheckContributor implements HealthIndicator {
                 Assert.isTrue(responseStatus.is2xxSuccessful(), String.format("%s returned HttpStatus %s", url, responseStatus));
                 healthStatus.put(url, responseStatus.toString());
             } catch (Exception e) {
-                log.warn("Health check failed. See exception for details.", e);
+                logger.warn("Health check failed. See exception for details.", e);
                 healthBuilder = Health.down();
                 healthStatus.put(url, "Error");
             }
