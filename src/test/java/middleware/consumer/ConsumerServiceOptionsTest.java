@@ -49,7 +49,7 @@ import org.springframework.web.client.RestTemplate;
 
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
+import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.net.URI;

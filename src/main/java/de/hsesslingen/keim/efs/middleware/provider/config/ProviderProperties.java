@@ -23,33 +23,30 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
-import de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
+import javax.validation.Valid;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.validation.annotation.Validated;
+
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import java.util.List;
+import lombok.Data;
 
 /**
+ * Reads {@link MobilityService} details from Configuration file.
  *
- * @author keim
+ * @author k.sivarasah 3 Oct 2019
  */
-@Lazy // Initialize the beans in this class only when they are needed.
+@Data
+@Validated
 @Configuration
-@AutoConfigureAfter(RestUtilsAutoConfiguration.class)
-public class ProviderAutoConfiguration {
+@ConfigurationProperties(prefix = "efs.middleware.provider")
+public class ProviderProperties {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProviderAutoConfiguration.class);
+    @Valid
+    private MobilityService mobilityService;
 
-    // Not marked directly as @Service in class because this bean should be
-    // initialized AFTER RestUtilsAutoConfiguration took place.
-    @Bean
-    @ConditionalOnMissingBean
-    public IMobilityServiceConfigurationProperties mobilityServiceConfigurationProperties() {
-        logger.info("Initializing MobilityServiceConfigurationProperties bean...");
-        return new MobilityServiceConfigurationProperties();
-    }
+    private List<String> healthCheckUrls;
 
 }

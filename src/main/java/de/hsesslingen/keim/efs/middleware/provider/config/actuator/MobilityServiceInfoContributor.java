@@ -26,9 +26,10 @@ package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.info.Info.Builder;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 
-import de.hsesslingen.keim.efs.middleware.provider.config.IMobilityServiceConfigurationProperties;
+import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,13 +37,15 @@ import org.springframework.stereotype.Component;
  * endpoint with custom service properties
  *
  * @author k.sivarasah 3 Oct 2019
+ * @author b.oesch
  */
 @Component
-@ConditionalOnBean(IMobilityServiceConfigurationProperties.class)
+@ConditionalOnBean(ProviderProperties.class)
+@ConditionalOnMissingBean
 public class MobilityServiceInfoContributor implements InfoContributor {
 
     @Autowired
-    IMobilityServiceConfigurationProperties properties;
+    private ProviderProperties properties;
 
     @Override
     public void contribute(Builder builder) {

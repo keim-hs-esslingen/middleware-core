@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.common;
+package de.hsesslingen.keim.efs.middleware.consumer;
 
 import java.util.List;
 import java.util.Set;
@@ -35,19 +35,28 @@ import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Service;
 
 /**
  * Helper Class used to make rest calls to service-directory
  *
  * @author k.sivarasah 26 Sep 2019
  */
+@Service
+@Lazy
 public class ServiceDirectoryProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxy.class);
 
     @Value("${efs.services.url.service-directory:http://service-directory/api}")
     public String baseUrl;
+    
+    public ServiceDirectoryProxy(){
+        // Used for tracing lazy loading of beans.
+        logger.debug("Initializing ServiceDirectoryProxy bean...");
+    }
 
     /**
      * Searches for available services in Service-Directory

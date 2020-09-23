@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
-import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.time.Instant;
@@ -51,11 +50,8 @@ public class ProviderRegistrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderRegistrator.class);
 
-    @Autowired
-    private ServiceDirectoryProxy proxy;
-
-    @Autowired
-    private IMobilityServiceConfigurationProperties serviceConfig;
+    @Autowired(required = false)
+    private ProviderProperties properties;
 
     @Value("${efs.middleware.provider-api.registration.retry-delay:5}")
     private long retryDelay;
@@ -101,10 +97,17 @@ public class ProviderRegistrator {
             return;
         }
 
+        if (properties == null || properties.getMobilityService() == null) {
+            logger.warn("No mobility service properties defined. "
+                    + "Nothing will be registered in the service directory and noone will be able to find you. "
+                    + "Specify your mobility properties to be able to provide services to consumers.");
+            return;
+        }
+
         logger.info("Trying to register my service at the service-directory...");
 
         try {
-            register(serviceConfig.getMobilityService());
+            register(properties.getMobilityService());
         } catch (Exception ex) {
             var message = "Registration failed. Retrying after " + retryDelay + " seconds.";
 
@@ -115,7 +118,7 @@ public class ProviderRegistrator {
             }
 
             future = getScheduler().schedule(this::registerInServiceDirectory, Instant.now().plusSeconds(retryDelay));
-            
+
             return;
         }
 

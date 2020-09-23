@@ -23,20 +23,23 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config.actuator;
 
+import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -45,26 +48,35 @@ import org.springframework.util.Assert;
  * the reachability of the provided HealthCheck-URLs
  *
  * @author k.sivarasah 3 Oct 2019
+ * @author b.oesch
  */
-@ConfigurationProperties(prefix = "efs.provider")
+@Component
+@ConditionalOnBean(ProviderProperties.class)
+@ConditionalOnMissingBean
 public class HealthCheckContributor implements HealthIndicator {
 
-    private List<String> healthCheckUrls = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private ProviderProperties properties;
 
     @Override
     public Health health() {
-        logger.debug("Checking service availability using Health-Check-Urls: " + healthCheckUrls);
+        if (logger.isDebugEnabled()) {
+            var joinedUrls = properties.getHealthCheckUrls().stream().collect(Collectors.joining());
+            logger.debug("Checking service availability using Health-Check-Urls: " + joinedUrls);
+        }
+
         Map<String, String> healthStatus = new HashMap<>();
 
         Builder healthBuilder = Health.up();
 
-        for (String url : healthCheckUrls) {
+        for (String url : properties.getHealthCheckUrls()) {
             try {
                 EfsRequest request = EfsRequest.get(url);
                 ResponseEntity<?> response = request.go();
                 HttpStatus responseStatus = response.getStatusCode();
-                
+
                 Assert.isTrue(responseStatus.is2xxSuccessful(), String.format("%s returned HttpStatus %s", url, responseStatus));
                 healthStatus.put(url, responseStatus.toString());
             } catch (Exception e) {
@@ -76,19 +88,6 @@ public class HealthCheckContributor implements HealthIndicator {
 
         return healthBuilder.withDetails(healthStatus).build();
 
-    }
-
-    /**
-     * List of urls as string that should be checked for reachability
-     *
-     * @return List of urls as string
-     */
-    public List<String> getHealthCheckUrls() {
-        return healthCheckUrls;
-    }
-
-    public void setHealthCheckUrls(List<String> healthCheckUrls) {
-        this.healthCheckUrls = healthCheckUrls;
     }
 
 }

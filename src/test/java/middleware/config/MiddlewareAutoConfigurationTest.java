@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.hsesslingen.keim.efs.middleware.provider.config.MobilityServiceConfigurationProperties;
+import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 
 /**
  * @author k.sivarasah
@@ -45,7 +45,7 @@ import de.hsesslingen.keim.efs.middleware.provider.config.MobilityServiceConfigu
 public class MiddlewareAutoConfigurationTest {
 
 	@Autowired 
-	MobilityServiceConfigurationProperties properties;
+	private ProviderProperties properties;
 	
 	@Test
 	public void getServiceConfigPropertiesTest() {

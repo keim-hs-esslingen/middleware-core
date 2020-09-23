@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import de.hsesslingen.keim.efs.middleware.common.ServiceDirectoryProxy;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
