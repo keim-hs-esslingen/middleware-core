@@ -50,7 +50,6 @@ import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
 
 /**
@@ -75,9 +74,6 @@ public class BookingApi implements IBookingApi {
 
     @Autowired
     private ObjectMapper mapper;
-
-    @Value("${efs.middleware.debug-input-objects:false}")
-    private boolean debugInputObjects;
 
     @Override
     public List<Options> getBookingOptions(
@@ -108,11 +104,8 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public Booking getBookingById(@PathVariable String id, String credentials) {
-        if (!debugInputObjects) {
-            logger.info("Received request to get a booking by id.");
-        } else {
-            logger.info("Received request to get booking with id \"" + id + "\".");
-        }
+        logger.info("Received request to get a booking by id.");
+        logger.debug("Received request to get booking with id \"" + id + "\".");
 
         var creds = credentialsUtils.fromString(credentials);
 
@@ -124,7 +117,7 @@ public class BookingApi implements IBookingApi {
             String credentials) {
         logger.info("Received request to create a new booking.");
 
-        if (debugInputObjects) {
+        if (logger.isTraceEnabled()) {
             debugLogAsJson(newBooking);
         }
 
@@ -137,11 +130,10 @@ public class BookingApi implements IBookingApi {
     public Booking modifyBooking(@PathVariable String id,
             @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
             String credentials) {
+        logger.info("Received request to modify a booking.");
+        logger.debug("Received request to modify booking with id \"" + id + "\".");
 
-        if (!debugInputObjects) {
-            logger.info("Received request to modify a booking.");
-        } else {
-            logger.info("Received request to modify booking with id \"" + id + "\".");
+        if (logger.isTraceEnabled()) {
             debugLogAsJson(booking);
         }
 
@@ -152,13 +144,8 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, String credentials) {
-
-        if (!debugInputObjects) {
-            logger.info("Received request to perform an action on a booking.");
-        } else {
-            logger.info(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s)", action, bookingId, assetId, CredentialsUtils.obfuscate(secret)));
-            logger.debug(more);
-        }
+        logger.info("Received request to perform an action on a booking.");
+        logger.debug(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s) The value of field more is logged in the next line:\n%s", action, bookingId, assetId, CredentialsUtils.obfuscate(secret), more));
 
         var creds = credentialsUtils.fromString(credentials);
 
@@ -172,9 +159,9 @@ public class BookingApi implements IBookingApi {
      */
     private void debugLogAsJson(Object o) {
         try {
-            logger.debug(mapper.writeValueAsString(o));
+            logger.trace(mapper.writeValueAsString(o));
         } catch (JsonProcessingException ex) {
-            logger.debug("Could not serialize object for debug logging. Exception occured.", ex);
+            logger.trace("Could not serialize object for debug logging. Exception occured.", ex);
         }
     }
 }

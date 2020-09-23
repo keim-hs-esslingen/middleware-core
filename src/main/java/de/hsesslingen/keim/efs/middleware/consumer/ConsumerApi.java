@@ -61,7 +61,7 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 @Validated
 @RestController
 @Api(tags = {SwaggerAutoConfiguration.CONSUMER_API_TAG})
-@ConditionalOnProperty(name = "efs.middleware.consumer-api.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "middleware.consumer.api.enabled", havingValue = "true")
 public class ConsumerApi implements IConsumerApi {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsumerApi.class);

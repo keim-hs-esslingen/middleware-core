@@ -66,16 +66,16 @@ public class SwaggerAutoConfiguration {
     @Value("${spring.application.name:}")
     private String serviceName;
 
-    @Value("${efs.middleware.options-api.enabled:false}")
+    @Value("${middleware.provider.options-api.enabled:false}")
     private boolean optionsEnabled;
 
-    @Value("${efs.middleware.booking-api.enabled:false}")
+    @Value("${middleware.provider.booking-api.enabled:false}")
     private boolean bookingEnabled;
 
-    @Value("${efs.middleware.credentials-api.enabled:false}")
+    @Value("${middleware.provider.credentials-api.enabled:false}")
     private boolean credentialsEnabled;
 
-    @Value("${efs.middleware.consumer-api.enabled:false}")
+    @Value("${middleware.consumer.api.enabled:false}")
     private boolean consumerEnabled;
 
     @Bean

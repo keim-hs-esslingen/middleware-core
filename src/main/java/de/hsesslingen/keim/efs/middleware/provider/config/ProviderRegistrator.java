@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
  * @author keim
  */
 @Component
-@ConditionalOnProperty(name = "efs.middleware.provider-api.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "middleware.provider.api.enabled", havingValue = "true")
 public class ProviderRegistrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderRegistrator.class);
@@ -53,13 +53,13 @@ public class ProviderRegistrator {
     @Autowired(required = false)
     private ProviderProperties properties;
 
-    @Value("${efs.middleware.provider-api.registration.retry-delay:5}")
+    @Value("${middleware.provider.api.registration.retry-delay:5}")
     private long retryDelay;
 
-    @Value("${efs.middleware.provider-api.registration.disabled:false}")
+    @Value("${middleware.provider.api.registration.disabled:false}")
     private boolean registrationDisabled;
 
-    @Value("${efs.services.url.service-directory:http://service-directory/api}")
+    @Value("${middleware.service-directory-url:http://service-directory/api}")
     public String baseUrl;
 
     private ScheduledExecutorService executor;

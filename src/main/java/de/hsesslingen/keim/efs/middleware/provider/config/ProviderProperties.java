@@ -41,7 +41,7 @@ import lombok.Data;
 @Data
 @Validated
 @Configuration
-@ConfigurationProperties(prefix = "efs.middleware.provider")
+@ConfigurationProperties(prefix = "middleware.provider")
 public class ProviderProperties {
 
     @Valid

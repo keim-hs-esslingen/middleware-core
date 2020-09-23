@@ -68,7 +68,7 @@ import middleware.MiddlewareTestBase;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MiddlewareTestApplication.class})
 @AutoConfigureMockMvc
-@TestPropertySource(properties = {"efs.middleware.consumer-api.enabled=true"})
+@TestPropertySource(properties = {"middleware.consumer.api.enabled=true"})
 public class ConsumerApiTest extends MiddlewareTestBase {
 
     @Autowired

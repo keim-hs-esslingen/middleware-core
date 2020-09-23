@@ -1,4 +1,4 @@
-efs.middleware.provider:
+middleware.provider:
   mobility-service:
     id: service-a
     provider-name: Legendary Services GmbH
