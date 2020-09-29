@@ -38,6 +38,7 @@ import org.springframework.web.client.ResourceAccessException;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
@@ -58,7 +59,6 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 
 /**
@@ -220,43 +220,11 @@ public class ConsumerService {
 
         if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
-            debugAnalyzeReceivedOptions(options);
+            debugAnalyzeReceivedOptionsOrBookings(options.stream().map(o -> o.getLeg()), "option");
             logger.debug("Received %d options in total.", options.size());
         }
 
         return options;
-    }
-
-    private void debugAnalyzeReceivedOptions(List<Options> options) {
-        var optionsNumberMap = new HashMap<String, Integer>();
-
-        for (var opt : options) {
-            var leg = opt.getLeg();
-
-            if (leg == null) {
-                logger.debug("Received an option with leg == null");
-                continue;
-            }
-
-            var serviceId = leg.getServiceId();
-
-            if (serviceId == null) {
-                logger.debug("Received an option with leg.serviceId == null");
-                continue;
-            }
-
-            var value = optionsNumberMap.get(serviceId);
-
-            if (value == null) {
-                optionsNumberMap.put(serviceId, 1);
-            } else {
-                optionsNumberMap.put(serviceId, value + 1);
-            }
-        }
-
-        for (var serviceId : optionsNumberMap.keySet()) {
-            logger.debug(String.format("Received %d options from service \"%s\".", optionsNumberMap.get(serviceId), serviceId));
-        }
     }
 
     private EfsRequest<List<Options>> buildOptionsRequest(
@@ -313,31 +281,47 @@ public class ConsumerService {
         var credentialsMap = extractConsumerCredentials(credentials);
 
         logger.info("Requesting bookings list from services...");
-        return services.parallelStream().flatMap(service -> {
-            try {
-                String serviceCredentials = credentialsMap.get(service.getId());
+        var requests = services.stream()
+                .map(service -> {
+                    var serviceCredentials = credentialsMap.get(service.getId());
 
-                ResponseEntity<List<Booking>> response = EfsRequest
-                        .get(service.getServiceUrl() + BOOKINGS_PATH)
-                        .credentials(serviceCredentials)
-                        .expect(new ParameterizedTypeReference<List<Booking>>() {
-                        })
-                        .go();
+                    return EfsRequest
+                            .get(service.getServiceUrl() + BOOKINGS_PATH)
+                            .credentials(serviceCredentials)
+                            .callOutgoingRequestAdapters() // Needed to be able to send off request in other thread.
+                            .expect(new ParameterizedTypeReference<List<Booking>>() {
+                            });
+                })
+                .collect(Collectors.toList());
 
-                List<Booking> body = response.getBody();
+        var bookings = requests.parallelStream()
+                .map(req -> {
+                    try {
+                        return req.go();
+                    } catch (Exception ex) {
+                        logger.warn(
+                                "Exception while getting bookings from url {}",
+                                req.uriBuilder().build().toUriString(), ex
+                        );
+                        return null;
+                    }
+                })
+                // Filtering null response (due to exceptions)...
+                .filter(response -> response != null)
+                // Mapping to body and filtering nulls (due to null-response)...
+                .map(response -> response.getBody())
+                .filter(serviceBookings -> serviceBookings != null)
+                // Flatmapping and collecting to get unified list of bookings...
+                .flatMap(serviceBookings -> serviceBookings.stream())
+                .collect(Collectors.toList());
 
-                if (body != null) {
-                    logger.warn("Service " + service.getId() + " returned " + body.size() + " bookings.");
-                    return body.stream();
-                } else {
-                    logger.warn("Service " + service.getId() + " returned null upon requesting all bookings.");
-                    return Stream.empty();
-                }
-            } catch (Exception e) {
-                logger.error("Exception while getting bookings from url {}", service.getServiceUrl(), e);
-                return Stream.empty();
-            }
-        }).collect(Collectors.toList());
+        if (logger.isDebugEnabled()) {
+            // Analyze the received options for faults and numbers...
+            debugAnalyzeReceivedOptionsOrBookings(bookings.stream().map(o -> o.getLeg()), "booking");
+            logger.debug("Received %d bookings in total.", bookings.size());
+        }
+
+        return bookings;
     }
 
     /**
@@ -443,4 +427,35 @@ public class ConsumerService {
     private String getBookingsUrlByServiceAndBookingId(String serviceId, String bookingId) {
         return String.format("%s/%s", getBookingsUrlByServiceId(serviceId), bookingId);
     }
+
+    private void debugAnalyzeReceivedOptionsOrBookings(Stream<Leg> legs, String optionOrBooking) {
+        var itemsNumberMap = new HashMap<String, Integer>();
+
+        legs.forEachOrdered(leg -> {
+            if (leg == null) {
+                logger.debug("Received an " + optionOrBooking + " with leg == null");
+                return;
+            }
+
+            var serviceId = leg.getServiceId();
+
+            if (serviceId == null) {
+                logger.debug("Received an " + optionOrBooking + " with leg.serviceId == null");
+                return;
+            }
+
+            var value = itemsNumberMap.get(serviceId);
+
+            if (value == null) {
+                itemsNumberMap.put(serviceId, 1);
+            } else {
+                itemsNumberMap.put(serviceId, value + 1);
+            }
+        });
+
+        for (var serviceId : itemsNumberMap.keySet()) {
+            logger.debug(String.format("Received %d " + optionOrBooking + "s from service \"%s\".", itemsNumberMap.get(serviceId), serviceId));
+        }
+    }
+
 }
