@@ -23,73 +23,55 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
+import de.hsesslingen.keim.efs.middleware.model.Coordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
+import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import io.swagger.annotations.Api;
-import java.time.ZonedDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * @author boesch, K.Sivarasah
+ *
+ * @author keim
  */
 @Validated
 @RestController
-@ConditionalOnBean(IOptionsService.class)
-@Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG})
-public class OptionsApi implements IOptionsApi {
+@ConditionalOnBean(IPlacesService.class)
+//@Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG
+public class PlacesApi implements IPlacesApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(OptionsApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlacesApi.class);
+    
+    public PlacesApi(){
+        logger.debug("Instantiating PlacesApi...");
+    }
 
     @Autowired
-    private IOptionsService optionsService;
+    private IPlacesService service;
 
     @Autowired
     private CredentialsUtils credentialsUtils;
 
     @Override
-    public List<Options> getOptions(
-            String from,
-            String fromPlaceId,
-            String to,
-            String toPlaceId,
-            ZonedDateTime startTime,
-            ZonedDateTime endTime,
-            Integer radius,
-            Boolean share,
+    public List<Place> search(
+            String searchQuery,
+            String searchCenterCoordinates,
+            Integer searchRadiusMeter,
             String credentials
     ) {
-        logger.info("Received request to get options.");
-
-        var placeFrom = new Place(from);
-
-        if (fromPlaceId != null && !fromPlaceId.isBlank()) {
-            placeFrom.setStopId(fromPlaceId);
-        }
-
-        Place placeTo = null;
-
-        if (positionIsValid(to)) {
-            placeTo = new Place(to);
-
-            if (toPlaceId != null && !toPlaceId.isBlank()) {
-                placeTo.setStopId(toPlaceId);
-            }
-        }
+        logger.info("Received search request for places");
+        logger.debug("Search params: searchQuery=%s, searchCenterCoordinates=%s, searchRadiusMeter=%d", searchQuery, searchCenterCoordinates, searchRadiusMeter);
 
         var creds = credentialsUtils.fromString(credentials);
 
-        return optionsService.getOptions(placeFrom, placeTo, startTime, endTime, radius, share, creds);
+        var coordinates = positionIsValid(searchCenterCoordinates) ? Coordinates.of(searchCenterCoordinates) : null;
+
+        return service.search(searchQuery, coordinates, searchRadiusMeter, creds);
     }
 
 }

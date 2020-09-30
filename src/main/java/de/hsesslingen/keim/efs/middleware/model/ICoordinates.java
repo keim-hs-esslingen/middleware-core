@@ -23,6 +23,9 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import de.hsesslingen.keim.efs.middleware.exception.InvalidParameterException;
+import org.springframework.util.StringUtils;
+
 /**
  * This interface describes the stereotype of 2 dimensional geo coordinates.
  * <p>
@@ -112,4 +115,25 @@ public interface ICoordinates {
     public static double radiansToDegrees(double rad) {
         return rad * D180_BY_PI;
     }
+
+    public static boolean positionIsValid(String latLonString) {
+        return !StringUtils.isEmpty(latLonString) && StringUtils.countOccurrencesOf(latLonString, ",") == 1;
+    }
+
+    public static boolean isValid(ICoordinates coordinates) {
+        return isValid(coordinates.getLat(), coordinates.getLon());
+    }
+
+    public static boolean isValid(Double lat, Double lon) {
+        return lat != null && lon != null
+                && lat >= -90.0 && lat <= 90.0
+                && lon >= -180.0 && lon <= 180.0;
+    }
+
+    public static void assertPositionIsValid(String latLonString) {
+        if (!positionIsValid(latLonString)) {
+            throw new InvalidParameterException("Invalid format for position " + latLonString);
+        }
+    }
+
 }

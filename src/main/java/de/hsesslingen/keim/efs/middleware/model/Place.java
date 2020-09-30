@@ -25,12 +25,11 @@ package de.hsesslingen.keim.efs.middleware.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.hsesslingen.keim.efs.middleware.exception.InvalidParameterException;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.assertPositionIsValid;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValid;
 import java.io.Serializable;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-
-import org.springframework.util.StringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -79,9 +78,13 @@ public class Place implements ICoordinates, Serializable {
      */
     private String name;
 
+    private String placeId;
+
     private String stopId;
 
     private String stopCode;
+
+    private String iconUrl;
 
     public Place(String latCommaLonString) {
         assertPositionIsValid(latCommaLonString);
@@ -122,12 +125,6 @@ public class Place implements ICoordinates, Serializable {
         this.name = name;
     }
 
-    private void assertPositionIsValid(String latLonString) {
-        if (StringUtils.isEmpty(latLonString) || StringUtils.countOccurrencesOf(latLonString, ",") != 1) {
-            throw new InvalidParameterException("Invalid format for position " + latLonString);
-        }
-    }
-
     /**
      * Updates this instance with the latitude and longitude values of the given
      * ICoordinates. If null is passed, nothing happens.
@@ -141,6 +138,10 @@ public class Place implements ICoordinates, Serializable {
 
         this.lat = coordinates.getLat();
         this.lon = coordinates.getLon();
+    }
+
+    public boolean hasCoordinates() {
+        return isValid(this);
     }
 
     public void updateSelfFrom(Object other) {

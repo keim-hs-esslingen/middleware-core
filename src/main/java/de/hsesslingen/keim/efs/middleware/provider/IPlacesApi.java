@@ -23,15 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
-import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import io.swagger.annotations.ApiParam;
-import java.time.ZonedDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,49 +39,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
+ * This API serves for querying information about locations belonging to a
+ * provider. This is intended to be used for fixed and permanent locations, not
+ * free-floating or dynamic assets.
  *
  * @author keim
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-public interface IOptionsApi {
+public interface IPlacesApi {
 
     /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional.If startTime is not provided, but required by
-     * the third party API, a default value of "Date.now()" is used.
+     * API for searching provider specific places.
      *
-     * @param from User's location in comma separated form e.g. 60.123,27.456.
-     * @param fromPlaceId An optional place ID that represents the entity at
-     * position {@link from}. This place ID is provider specific and can be
-     * obtained using the places API.
-     * @param radius Maximum distance a user wants to travel to reach asset in
-     * metres, e.g. 500 metres.
-     * @param toPlaceId An optional place ID that represents the entity at
-     * position {@link to}. This place ID is provider specific and can be
-     * obtained using the places API.
-     * @param to A desired destination e.g. 60.123,27.456.
-     * @param startTime Start time either in ms since epoch or as a zoned date
-     * time in ISO format.
-     * @param endTime End time either in ms since epoch or as a zoned date time
-     * in ISO format.
-     * @param share Defines if user can also share a ride. (Available values :
-     * YES, NO)
-     * @param credentials Credential data as json content string
-     * @return List of {@link Options}
+     * @param searchQuery
+     * @param searchCenterCoordinates
+     * @param searchRadiusMeter
+     * @param credentials
+     * @return
      */
-    @GetMapping("/options")
+    @GetMapping("/places")
     @ResponseStatus(HttpStatus.OK)
-    @EfsSwaggerGetBookingOptions
-    public List<Options> getOptions(
-            @RequestParam(required = true) @PositionAsString String from,
-            @RequestParam(required = false) String fromPlaceId,
-            @RequestParam(required = false) @PositionAsString String to,
-            @RequestParam(required = false) String toPlaceId,
-            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
-            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
-            @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
-            @RequestParam(required = false) Boolean share,
+    public List<Place> search(
+            @RequestParam String searchQuery,
+            @RequestParam(required = false) @PositionAsString String searchCenterCoordinates,
+            @RequestParam(required = false) Integer searchRadiusMeter,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
+
 }
