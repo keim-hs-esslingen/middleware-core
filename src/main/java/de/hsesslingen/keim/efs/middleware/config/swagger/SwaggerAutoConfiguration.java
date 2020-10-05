@@ -52,6 +52,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
+    public static final String PLACES_API_TAG = "Places Api";
     public static final String OPTIONS_API_TAG = "Options Api";
     public static final String BOOKING_API_TAG = "Booking Api";
     public static final String CREDENTIALS_API_TAG = "Credentials Api";
@@ -65,6 +66,9 @@ public class SwaggerAutoConfiguration {
 
     @Value("${spring.application.name:}")
     private String serviceName;
+
+    @Value("${middleware.provider.places-api.enabled:false}")
+    private boolean placesEnabled;
 
     @Value("${middleware.provider.options-api.enabled:false}")
     private boolean optionsEnabled;
@@ -100,20 +104,24 @@ public class SwaggerAutoConfiguration {
     private void setTags(Docket docket) {
         var tags = new ArrayList<Tag>(5);
 
+        if (placesEnabled) {
+            tags.add(new Tag(PLACES_API_TAG, "API for searching provider specific places, like bus stops...", 1));
+        }
+
         if (optionsEnabled) {
-            tags.add(new Tag(OPTIONS_API_TAG, "Options related API forsearching mobility options.", 1));
+            tags.add(new Tag(OPTIONS_API_TAG, "API for searching mobility options.", 1));
         }
 
         if (bookingEnabled) {
-            tags.add(new Tag(BOOKING_API_TAG, "Booking related APIs with CRUD functionality.", 2));
+            tags.add(new Tag(BOOKING_API_TAG, "Booking related API with CRUD functionality.", 2));
         }
 
         if (credentialsEnabled) {
-            tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related APIs for managing with credentials of remote APIs.", 3));
+            tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related API for managing with credentials of remote APIs.", 3));
         }
 
         if (consumerEnabled) {
-            tags.add(new Tag(CONSUMER_API_TAG, "APIs provided for consuming mobility services.", 4));
+            tags.add(new Tag(CONSUMER_API_TAG, "API provided for consuming mobility services.", 4));
         }
 
         if (!tags.isEmpty()) {

@@ -46,25 +46,25 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author keim
  */
 @EfsSwaggerApiResponseSupport
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/places", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IPlacesApi {
 
     /**
      * API for searching provider specific places.
      *
-     * @param searchQuery
-     * @param searchCenterCoordinates
-     * @param searchRadiusMeter
+     * @param query
+     * @param areaCenter
+     * @param radiusMeter
      * @param credentials
      * @return
      */
-    @GetMapping("/places")
+    @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<Place> search(
-            @RequestParam String searchQuery,
-            @RequestParam(required = false) @PositionAsString String searchCenterCoordinates,
-            @RequestParam(required = false) Integer searchRadiusMeter,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestParam String query,
+            @RequestParam(required = false) @PositionAsString String areaCenter,
+            @RequestParam(required = false) Integer radiusMeter,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(value = CREDENTIALS_HEADER_DESC) String credentials
     );
 
 }

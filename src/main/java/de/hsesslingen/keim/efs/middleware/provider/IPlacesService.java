@@ -35,11 +35,6 @@ import java.util.List;
  */
 public interface IPlacesService<C extends AbstractCredentials> {
 
-    public List<Place> search(
-            String searchQuery,
-            ICoordinates searchCenterCoordinates,
-            Integer searchRadiusMeter,
-            C credentials
-    );
+    public List<Place> search(String query, ICoordinates areaCenter, Integer radiusMeter, C credentials);
 
 }

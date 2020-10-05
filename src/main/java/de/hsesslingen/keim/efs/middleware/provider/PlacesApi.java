@@ -23,10 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.model.Coordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
+import io.swagger.annotations.Api;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +44,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @ConditionalOnBean(IPlacesService.class)
-//@Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG
+@Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
 public class PlacesApi implements IPlacesApi {
 
     private static final Logger logger = LoggerFactory.getLogger(PlacesApi.class);
-    
-    public PlacesApi(){
+
+    public PlacesApi() {
         logger.debug("Instantiating PlacesApi...");
     }
 
@@ -59,19 +61,19 @@ public class PlacesApi implements IPlacesApi {
 
     @Override
     public List<Place> search(
-            String searchQuery,
-            String searchCenterCoordinates,
-            Integer searchRadiusMeter,
+            String query,
+            String areaCenter,
+            Integer radiusMeter,
             String credentials
     ) {
         logger.info("Received search request for places");
-        logger.debug("Search params: searchQuery=%s, searchCenterCoordinates=%s, searchRadiusMeter=%d", searchQuery, searchCenterCoordinates, searchRadiusMeter);
+        logger.debug("Search params: searchQuery=%s, searchCenterCoordinates=%s, searchRadiusMeter=%d", query, areaCenter, radiusMeter);
 
         var creds = credentialsUtils.fromString(credentials);
 
-        var coordinates = positionIsValid(searchCenterCoordinates) ? Coordinates.of(searchCenterCoordinates) : null;
+        var coordinates = positionIsValid(areaCenter) ? Coordinates.of(areaCenter) : null;
 
-        return service.search(searchQuery, coordinates, searchRadiusMeter, creds);
+        return service.search(query, coordinates, radiusMeter, creds);
     }
 
 }
