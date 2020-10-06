@@ -78,13 +78,21 @@ public class Place implements ICoordinates, Serializable {
      */
     private String name;
 
-    private String placeId;
-
     private String stopId;
 
     private String stopCode;
 
-    private String iconUrl;
+    /**
+     * If this place belongs to a hierarichal location system, this field can
+     * contain a human friendly name of the parent place.
+     */
+    private String parentName;
+
+    /**
+     * If this place belongs to a hierarichal location system, this field can
+     * contain the id of the parent place.
+     */
+    private String parentId;
 
     public Place(String latCommaLonString) {
         assertPositionIsValid(latCommaLonString);
