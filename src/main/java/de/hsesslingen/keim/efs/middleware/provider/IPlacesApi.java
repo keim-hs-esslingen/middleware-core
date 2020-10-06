@@ -55,6 +55,7 @@ public interface IPlacesApi {
      * @param query
      * @param areaCenter
      * @param radiusMeter
+     * @param limitTo
      * @param credentials
      * @return
      */
@@ -64,6 +65,7 @@ public interface IPlacesApi {
             @RequestParam String query,
             @RequestParam(required = false) @PositionAsString String areaCenter,
             @RequestParam(required = false) Integer radiusMeter,
+            @RequestParam(required = false) Integer limitTo,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(value = CREDENTIALS_HEADER_DESC) String credentials
     );
 

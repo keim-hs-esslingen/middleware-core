@@ -64,6 +64,7 @@ public class PlacesApi implements IPlacesApi {
             String query,
             String areaCenter,
             Integer radiusMeter,
+            Integer limitTo,
             String credentials
     ) {
         logger.info("Received search request for places.");
@@ -73,7 +74,7 @@ public class PlacesApi implements IPlacesApi {
 
         var coordinates = positionIsValid(areaCenter) ? Coordinates.of(areaCenter) : null;
 
-        return service.search(query, coordinates, radiusMeter, creds);
+        return service.search(query, coordinates, radiusMeter, limitTo, creds);
     }
 
 }
