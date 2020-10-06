@@ -68,7 +68,7 @@ public class PlacesApi implements IPlacesApi {
             String credentials
     ) {
         logger.info("Received search request for places.");
-        logger.debug("Search params: query={}, areaCenter={}, radiusMeter={}", query, areaCenter, radiusMeter);
+        logger.debug("Search params: query={}, areaCenter={}, radiusMeter={}, limitTo={}", query, areaCenter, radiusMeter, limitTo);
 
         var creds = credentialsUtils.fromString(credentials);
 
