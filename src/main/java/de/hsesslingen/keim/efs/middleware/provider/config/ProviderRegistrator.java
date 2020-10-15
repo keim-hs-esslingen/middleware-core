@@ -62,7 +62,7 @@ public class ProviderRegistrator {
     private long retryDelay;
     @Value("${middleware.provider.api.registration.disabled:false}")
     private boolean registrationDisabled;
-    @Value("${middleware.service-directory-url:http://service-directory/api}")
+    @Value("${middleware.service-directory-url}")
     public String baseUrl;
 
     @Autowired(required = false)

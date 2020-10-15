@@ -50,7 +50,7 @@ public class ServiceDirectoryProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxy.class);
 
-    @Value("${middleware.service-directory-url:http://service-directory/api}")
+    @Value("${middleware.service-directory-url}")
     public String baseUrl;
     
     public ServiceDirectoryProxy(){
