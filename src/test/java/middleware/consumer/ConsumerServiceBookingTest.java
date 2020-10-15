@@ -67,12 +67,8 @@ public class ConsumerServiceBookingTest extends MiddlewareTestBase {
     ServiceDirectoryProxy serviceDirectory;
 
     @MockBean
-    @Qualifier("restTemplateLoadBalanced")
+    @Qualifier("middlewareRestTemplate")
     RestTemplate restTemplate;
-
-    @MockBean
-    @Qualifier("restTemplateSimple")
-    RestTemplate restTemplateSimple;
 
     public static final String BOOKING_JSON = "booking.json";
     public static final String NEWBOOKING_JSON = "newbooking.json";

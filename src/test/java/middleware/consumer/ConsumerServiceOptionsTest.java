@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,6 +55,7 @@ import java.net.URI;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import org.junit.Before;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author k.sivarasah 5 Oct 2019
@@ -71,16 +71,12 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
     ServiceDirectoryProxy serviceDirectory;
 
     @MockBean
-    @Qualifier("restTemplateLoadBalanced")
+    @Qualifier("middlewareRestTemplate")
     RestTemplate restTemplate;
-
-    @MockBean
-    @Qualifier("restTemplateSimple")
-    RestTemplate restTemplateSimple;
 
     @Before
     public void before() {
-        EfsRequest.configureRestTemplates(restTemplate, restTemplateSimple);
+        EfsRequest.configureRestTemplates(restTemplate);
     }
 
     @Test
@@ -120,30 +116,12 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
                 Mockito.any(ParameterizedTypeReference.class)
         )).thenReturn(entity);
 
-        when(restTemplateSimple.exchange(
-                Mockito.argThat((URI uri) -> {
-                    return uri.getPath().contains(OPTIONS_PATH);
-                }),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
-        )).thenReturn(entity);
-
-        when(restTemplateSimple.exchange(
-                Mockito.argThat((String uri) -> {
-                    return uri.contains(OPTIONS_PATH);
-                }),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
-        )).thenReturn(entity);
-
         List<Options> optionsResult = consumerService.getOptions(placeFrom, null, null, null, null, null, null, null, null, null);
         assertNotNull(optionsResult);
         assertEquals(1, optionsResult.size());
         assertEquals(SERVICE_ID, optionsResult.get(0).getLeg().getServiceId());
         assertEquals(new Place(placeFrom), optionsResult.get(0).getLeg().getFrom());
-        reset(serviceDirectory, restTemplate, restTemplateSimple);
+        reset(serviceDirectory, restTemplate, restTemplate);
     }
 
 }

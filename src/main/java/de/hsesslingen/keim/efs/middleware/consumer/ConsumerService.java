@@ -421,11 +421,11 @@ public class ConsumerService {
     }
 
     private String getBookingsUrlByServiceId(String serviceId) {
-        return String.format("%s%s", getServiceUrl(serviceId), BOOKINGS_PATH);
+        return getServiceUrl(serviceId) + BOOKINGS_PATH;
     }
 
     private String getBookingsUrlByServiceAndBookingId(String serviceId, String bookingId) {
-        return String.format("%s/%s", getBookingsUrlByServiceId(serviceId), bookingId);
+        return getBookingsUrlByServiceId(serviceId) + "/" + bookingId;
     }
 
     private void debugAnalyzeReceivedOptionsOrBookings(Stream<Leg> legs, String optionOrBooking) {

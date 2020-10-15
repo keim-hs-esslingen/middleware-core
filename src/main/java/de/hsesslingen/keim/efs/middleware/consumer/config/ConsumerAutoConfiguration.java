@@ -51,7 +51,7 @@ public class ConsumerAutoConfiguration {
     @Bean
     @Lazy // Initialize only if needed.
     public ConsumerService consumerService() {
-        logger.info("Initializing ConsumerService bean...");
+        logger.debug("Initializing ConsumerService.");
         return new ConsumerService();
     }
 

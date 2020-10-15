@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestUtilsAutoConfiguration {
 
-    @Bean()
+    @Bean("middlewareRestTemplate")
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, ResponseErrorHandler responseErrorHandler) {
         return restTemplateBuilder
                 .errorHandler(responseErrorHandler)
@@ -47,9 +47,8 @@ public class RestUtilsAutoConfiguration {
     }
 
     @Bean
-    public Object efsRequest(@Qualifier("restTemplateLoadBalanced") RestTemplate restTemplateLoadBalanced,
-            @Qualifier("restTemplateSimple") RestTemplate restTemplateSimple) {
-        EfsRequest.configureRestTemplates(restTemplateLoadBalanced, restTemplateSimple);
+    public Object efsRequest(@Qualifier("middlewareRestTemplate") RestTemplate restTemplate) {
+        EfsRequest.configureRestTemplates(restTemplate);
         return null;
     }
 

@@ -55,7 +55,7 @@ public class ServiceDirectoryProxy {
     
     public ServiceDirectoryProxy(){
         // Used for tracing lazy loading of beans.
-        logger.debug("Initializing ServiceDirectoryProxy bean...");
+        logger.debug("Initializing ServiceDirectoryProxy.");
     }
 
     /**
@@ -89,8 +89,7 @@ public class ServiceDirectoryProxy {
     }
 
     private String buildUri(Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds, boolean activeOnly) {
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search")
+        var uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search")
                 .queryParam("active", activeOnly);
 
         if (mobilityTypes != null) {
@@ -103,7 +102,7 @@ public class ServiceDirectoryProxy {
             uriBuilder.queryParam("serviceIds", serviceIds.toArray());
         }
 
-        String uri = uriBuilder.toUriString();
+        var uri = uriBuilder.toUriString();
 
         logger.trace("Using \"" + uri + "\" for querying the service directory.");
 
