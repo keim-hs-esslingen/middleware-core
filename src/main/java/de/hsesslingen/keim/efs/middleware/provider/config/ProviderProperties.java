@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import java.util.List;
 import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
  * Reads {@link MobilityService} details from Configuration file.
@@ -42,11 +42,10 @@ import lombok.Data;
 @Validated
 @Configuration
 @ConfigurationProperties(prefix = "middleware.provider")
+@ConditionalOnProperty(name = "middleware.provider", havingValue = "")
 public class ProviderProperties {
 
     @Valid
     private MobilityService mobilityService;
-
-    private List<String> healthCheckUrls;
 
 }

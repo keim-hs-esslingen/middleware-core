@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package middleware.config;
+package middleware.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,23 +34,28 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
+import middleware.MiddlewareTestApplication;
 
 /**
- * @author k.sivarasah
- * 20 Nov 2019
+ * @author k.sivarasah 20 Nov 2019
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {MiddlewareTestApplication.class})
 @ActiveProfiles("test")
-public class MiddlewareAutoConfigurationTest {
+public class ProviderPropertiesTest {
 
-	@Autowired 
-	private ProviderProperties properties;
-	
-	@Test
-	public void getServiceConfigPropertiesTest() {
-		assertNotNull(properties);
-		assertNotNull(properties.getMobilityService());
-		assertEquals("service-a", properties.getMobilityService().getId());
-	}
+    @Autowired(required = false)
+    private ProviderProperties properties;
+
+    @Test
+    public void assertPropertiesAreThere() {
+        assertNotNull(properties);
+    }
+
+    @Test
+    public void getServiceConfigPropertiesTest() {
+        assertNotNull(properties);
+        assertNotNull(properties.getMobilityService());
+        assertEquals("service-a", properties.getMobilityService().getId());
+    }
 }

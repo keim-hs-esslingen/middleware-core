@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
  * @author keim
  */
 @Component
-@ConditionalOnProperty(name = "middleware.provider.api.enabled", havingValue = "true")
+@ConditionalOnBean(ProviderProperties.class)
 public class ProviderRegistrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderRegistrator.class);
@@ -65,7 +65,11 @@ public class ProviderRegistrator {
     @Value("${middleware.service-directory-url}")
     public String baseUrl;
 
-    @Autowired(required = false)
+    public ProviderRegistrator() {
+        logger.debug("Instantiating ProviderRegistrator.");
+    }
+
+    @Autowired
     private ProviderProperties properties;
 
     // Requires the available rest controllers to check whether they exists or not.
@@ -155,7 +159,15 @@ public class ProviderRegistrator {
 
         for (var api : configApis) {
             if (!availableApis.contains(api)) {
-                logger.warn("The API \"{}\" is configured as API in your mobility service properties, but it's controller was not instantiated. This can be due to some error or misconfiguration. The API will be removed from your available APIs.", api);
+                logger.warn("The API \"{}\" is configured as available "
+                        + "API in your mobility service properties "
+                        + "(middleware.provider.mobility-service.apis:), "
+                        + "but it's controller was not instantiated. "
+                        + "This can be due to some error or misconfiguration. "
+                        + "Have you implemented the required backend services "
+                        + "for this controller? Have you added the required "
+                        + "spring annotations to them? The API will be removed "
+                        + "from your available APIs.", api);
             }
         }
 
