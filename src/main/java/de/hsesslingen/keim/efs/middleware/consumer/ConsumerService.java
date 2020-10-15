@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.lang.Nullable;
 
@@ -400,13 +400,13 @@ public class ConsumerService {
         var request = EfsRequest.post(bookingUrl + "/action/" + action)
                 .credentials(credentials);
 
-        if (StringUtils.isNotBlank(assetId)) {
+        if (isNotBlank(assetId)) {
             request.query("assetId", assetId);
         }
-        if (StringUtils.isNotBlank(secret)) {
+        if (isNotBlank(secret)) {
             request.query("secret", secret);
         }
-        if (StringUtils.isNotBlank(more)) {
+        if (isNotBlank(more)) {
             request.query("more", more);
         }
 

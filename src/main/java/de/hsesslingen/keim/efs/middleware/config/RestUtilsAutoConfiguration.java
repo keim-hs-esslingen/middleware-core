@@ -27,7 +27,6 @@ import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -40,15 +39,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestUtilsAutoConfiguration {
 
-    @Bean("restTemplateLoadBalanced")
-    @LoadBalanced
-    public RestTemplate restTemplateLoadBalanced(RestTemplateBuilder restTemplateBuilder, ResponseErrorHandler responseErrorHandler) {
-        return restTemplateBuilder
-                .errorHandler(responseErrorHandler)
-                .build();
-    }
-
-    @Bean("restTemplateSimple")
+    @Bean()
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder, ResponseErrorHandler responseErrorHandler) {
         return restTemplateBuilder
                 .errorHandler(responseErrorHandler)
