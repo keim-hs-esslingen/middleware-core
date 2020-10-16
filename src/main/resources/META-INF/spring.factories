@@ -4,6 +4,7 @@ de.hsesslingen.keim.efs.middleware.provider.PlacesApi,\
 de.hsesslingen.keim.efs.middleware.provider.OptionsApi,\
 de.hsesslingen.keim.efs.middleware.provider.BookingApi,\
 de.hsesslingen.keim.efs.middleware.provider.CredentialsApi,\
+de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi,\
 de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties,\
 de.hsesslingen.keim.efs.middleware.provider.config.ProviderRegistrator,\
 de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy,\
