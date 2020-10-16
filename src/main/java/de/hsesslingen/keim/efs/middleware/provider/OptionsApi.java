@@ -37,6 +37,7 @@ import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ public class OptionsApi implements IOptionsApi {
         if (positionIsValid(to)) {
             placeTo = new Place(to);
 
-            if (toPlaceId != null && !toPlaceId.isBlank()) {
+            if (isNotBlank(toPlaceId)) {
                 placeTo.setStopId(toPlaceId);
             }
         }
@@ -90,6 +91,25 @@ public class OptionsApi implements IOptionsApi {
         var creds = credentialsUtils.fromString(credentials);
 
         return optionsService.getOptions(placeFrom, placeTo, startTime, endTime, radius, share, creds);
+    }
+
+    @Override
+    public List<Options> getBookingOptions(
+            String from, 
+            String to,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radius,
+            Boolean share,
+            String credentials
+    ) {
+        logger.info("Received request to get options.");
+
+        Place placeTo = positionIsValid(to) ? new Place(to) : null;
+
+        var creds = credentialsUtils.fromString(credentials);
+
+        return optionsService.getOptions(new Place(from), placeTo, startTime, endTime, radius, share, creds);
     }
 
 }

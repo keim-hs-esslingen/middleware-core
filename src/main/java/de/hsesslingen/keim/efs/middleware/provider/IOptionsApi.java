@@ -87,4 +87,36 @@ public interface IOptionsApi {
             @RequestParam(required = false) Boolean share,
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     );
+
+    /**
+     * Returns available transport options for given coordinate.Start time can
+     * be defined, but is optional.If startTime is not provided, but required by
+     * the third party API, a default value of "Date.now()" is used.
+     *
+     * @param from User's location in comma separated form e.g. 60.123,27.456.
+     * @param radius Maximum distance a user wants to travel to reach asset in
+     * metres, e.g. 500 metres.
+     * @param to A desired destination e.g. 60.123,27.456.
+     * @param startTime Zoned start time in ISO format. If startTime and
+     * startTimeIso are given, startTime is preferred.
+     * @param endTime Zoned end time in ISO format. If endTime and endTimeIso
+     * are given, endTime is preferred.
+     * @param share Defines if user can also share a ride. (Available values :
+     * YES, NO)
+     * @param credentials Credential data as json content string
+     * @return List of {@link Options}
+     */
+    @GetMapping("/bookings/options")
+    @ResponseStatus(HttpStatus.OK)
+    @EfsSwaggerGetBookingOptions
+    @Deprecated // Due to new Options-API that takes care of this. This endpoint is kept for compatibility.
+    public List<Options> getBookingOptions(
+            @RequestParam @PositionAsString String from,
+            @RequestParam(required = false) @PositionAsString String to,
+            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
+            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
+            @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
+            @RequestParam(required = false) Boolean share,
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+    );
 }

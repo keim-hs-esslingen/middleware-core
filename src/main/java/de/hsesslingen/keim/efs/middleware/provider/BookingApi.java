@@ -32,7 +32,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,13 +41,10 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import static de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils.obfuscate;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
-import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
@@ -58,7 +54,7 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
  */
 @Validated
 @RestController
-@ConditionalOnBean({IBookingService.class, IOptionsService.class})
+@ConditionalOnBean({IBookingService.class})
 @Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
 public class BookingApi implements IBookingApi {
 
@@ -68,31 +64,10 @@ public class BookingApi implements IBookingApi {
     private IBookingService bookingService;
 
     @Autowired
-    private IOptionsService optionsService;
-
-    @Autowired
     private CredentialsUtils credentialsUtils;
 
     @Autowired
     private ObjectMapper mapper;
-
-    @Override
-    public List<Options> getBookingOptions(
-            String from, String to,
-            ZonedDateTime startTime,
-            ZonedDateTime endTime,
-            Integer radius,
-            Boolean share,
-            String credentials
-    ) {
-        logger.info("Received request to get options.");
-
-        Place placeTo = StringUtils.isEmpty(to) ? null : new Place(to);
-
-        var creds = credentialsUtils.fromString(credentials);
-
-        return optionsService.getOptions(new Place(from), placeTo, startTime, endTime, radius, share, creds);
-    }
 
     @Override
     public List<Booking> getBookings(BookingState state, String credentials) {
