@@ -40,7 +40,7 @@ import java.time.ZonedDateTime;
 /**
  * @author k.sivarasah 6 Oct 2019
  */
-public class BookingService implements IBookingService, IOptionsService {
+public class TestBookingAndOptionsService implements IBookingService, IOptionsService {
 
     /* (non-Javadoc)
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingsByState(de.hsesslingen.keim.efs.middleware.booking.BookingState)

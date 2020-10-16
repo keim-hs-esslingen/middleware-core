@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 
-import middleware.provider.BookingService;
+import middleware.provider.TestBookingAndOptionsService;
 
 @SpringBootApplication
 @ActiveProfiles("test")
@@ -39,8 +39,8 @@ public class MiddlewareTestApplication {
     }
 
     @Bean
-    public BookingService bookingService() {
-        return new BookingService();
+    public TestBookingAndOptionsService bookingService() {
+        return new TestBookingAndOptionsService();
     }
 
 }
