@@ -44,13 +44,8 @@ import middleware.MiddlewareTestApplication;
 @ActiveProfiles("test")
 public class ProviderPropertiesTest {
 
-    @Autowired(required = false)
+    @Autowired
     private ProviderProperties properties;
-
-    @Test
-    public void assertPropertiesAreThere() {
-        assertNotNull(properties);
-    }
 
     @Test
     public void getServiceConfigPropertiesTest() {
