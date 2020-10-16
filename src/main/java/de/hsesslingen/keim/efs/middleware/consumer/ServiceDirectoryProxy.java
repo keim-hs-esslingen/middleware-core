@@ -35,6 +35,7 @@ import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy
+@ConditionalOnProperty(name = "middleware.consumer.api.enabled", havingValue = "true")
 public class ServiceDirectoryProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxy.class);

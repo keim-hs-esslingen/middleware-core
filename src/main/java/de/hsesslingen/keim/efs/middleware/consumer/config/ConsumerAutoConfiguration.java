@@ -29,8 +29,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
+import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 
 /**
@@ -50,6 +52,7 @@ public class ConsumerAutoConfiguration {
     // initialized AFTER RestUtilsAutoConfiguration took place.
     @Bean
     @Lazy // Initialize only if needed.
+    @ConditionalOnBean(ServiceDirectoryProxy.class)
     public ConsumerService consumerService() {
         logger.debug("Initializing ConsumerService.");
         return new ConsumerService();
