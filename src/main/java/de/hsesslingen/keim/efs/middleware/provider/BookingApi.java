@@ -45,6 +45,7 @@ import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
+import static de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils.obfuscate;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
@@ -145,7 +146,7 @@ public class BookingApi implements IBookingApi {
     @Override
     public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, String credentials) {
         logger.info("Received request to perform an action on a booking.");
-        logger.debug(String.format("Received request to perform action %s on booking %s. (assetId=%s, (obfuscated) secret=%s) The value of field more is logged in the next line:\n%s", action, bookingId, assetId, CredentialsUtils.obfuscate(secret), more));
+        logger.debug("Received request to perform action {} on booking {}. (assetId={}, (obfuscated) secret={}) The value of field more is logged in the next line:\n{}", action, bookingId, assetId, obfuscate(secret), more);
 
         var creds = credentialsUtils.fromString(credentials);
 

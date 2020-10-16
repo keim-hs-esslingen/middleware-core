@@ -64,7 +64,7 @@ public class CredentialsUtils {
     private static ObjectMapper mapper; // Do not use directly. Use getMapper() to be safe from null pointers.
 
     public CredentialsUtils() {
-        logger.debug("Instantiating CredentialsUtils..."); // Used to trace lazy loading.
+        logger.debug("Instantiating CredentialsUtils...");
     }
 
     @Autowired(required = false)

@@ -49,10 +49,6 @@ public class PlacesApi implements IPlacesApi {
 
     private static final Logger logger = LoggerFactory.getLogger(PlacesApi.class);
 
-    public PlacesApi() {
-        logger.debug("Instantiating PlacesApi...");
-    }
-
     @Autowired
     private IPlacesService service;
 

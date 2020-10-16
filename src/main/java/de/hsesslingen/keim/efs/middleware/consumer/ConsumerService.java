@@ -160,8 +160,8 @@ public class ConsumerService {
         if (logger.isTraceEnabled()) {
             // Output all params for debugging purposes.
             logger.trace("Going to fetch options with following parameters: "
-                    + "from=%s, to=%s, startTime=%s, endTime=%s, radius=%d, share=%s, "
-                    + "mobilityTypes=%s, modes=%s, serviceIds=%s",
+                    + "from={}, to={}, startTime={}, endTime={}, radius={}, share={}, "
+                    + "mobilityTypes={}, modes={}, serviceIds={}",
                     from, to,
                     startTime == null ? "null" : startTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
                     endTime == null ? "null" : endTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
@@ -221,7 +221,7 @@ public class ConsumerService {
         if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
             debugAnalyzeReceivedOptionsOrBookings(options.stream().map(o -> o.getLeg()), "option");
-            logger.debug("Received %d options in total.", options.size());
+            logger.debug("Received {} options in total.", options.size());
         }
 
         return options;
@@ -318,7 +318,7 @@ public class ConsumerService {
         if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
             debugAnalyzeReceivedOptionsOrBookings(bookings.stream().map(o -> o.getLeg()), "booking");
-            logger.debug("Received %d bookings in total.", bookings.size());
+            logger.debug("Received {} bookings in total.", bookings.size());
         }
 
         return bookings;
@@ -454,7 +454,7 @@ public class ConsumerService {
         });
 
         for (var serviceId : itemsNumberMap.keySet()) {
-            logger.debug(String.format("Received %d " + optionOrBooking + "s from service \"%s\".", itemsNumberMap.get(serviceId), serviceId));
+            logger.debug("Received {} " + optionOrBooking + "s from service \"{}\".", itemsNumberMap.get(serviceId), serviceId);
         }
     }
 

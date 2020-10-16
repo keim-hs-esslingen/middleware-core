@@ -66,7 +66,7 @@ public class ProviderRegistrator {
     public String baseUrl;
 
     public ProviderRegistrator() {
-        logger.debug("Instantiating ProviderRegistrator.");
+        logger.debug("Instantiating ProviderRegistrator...");
     }
 
     @Autowired
