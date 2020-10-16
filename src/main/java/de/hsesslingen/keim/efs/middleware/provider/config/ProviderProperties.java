@@ -42,7 +42,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 @Validated
 @Configuration
 @ConfigurationProperties(prefix = "middleware.provider")
-@ConditionalOnProperty(name = "middleware.provider", havingValue = "")
+@ConditionalOnProperty({
+    "middleware.provider.mobility-service.id",
+    "middleware.provider.mobility-service.service-url"
+})
 public class ProviderProperties {
 
     @Valid
