@@ -86,7 +86,7 @@ public class ConsumerService {
 
     private static final String CREDENTIALS_PATH = "/credentials";
     private static final String BOOKINGS_PATH = "/bookings";
-    private static final String OPTIONS_PATH = "/bookings/options";
+    private static final String OPTIONS_PATH = "/options";
 
     private Map<String, String> extractConsumerCredentials(String credentials) {
         if (credentials == null || credentials.isEmpty()) {

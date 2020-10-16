@@ -43,7 +43,7 @@ import de.hsesslingen.keim.efs.mobility.service.Mode;
 public class MiddlewareTestBase {
 
     public static final String BOOKINGS_PATH = "/api/bookings";
-    public static final String OPTIONS_PATH = "/api/bookings/options";
+    public static final String OPTIONS_PATH = "/api/options";
 
     public static final String CONSUMER_API_BOOKINGS = "/consumer/api/bookings";
     public static final String CONSUMER_API_OPTIONS = "/consumer/api/bookings/options";

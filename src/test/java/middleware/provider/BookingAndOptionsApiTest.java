@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MiddlewareTestApplication.class})
 @AutoConfigureMockMvc
-public class BookingApiTest extends MiddlewareTestBase {
+public class BookingAndOptionsApiTest extends MiddlewareTestBase {
 
     @Autowired
     MockMvc mockMvc;
