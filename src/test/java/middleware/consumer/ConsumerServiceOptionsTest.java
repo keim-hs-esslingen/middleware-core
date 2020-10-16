@@ -56,12 +56,14 @@ import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * @author k.sivarasah 5 Oct 2019
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MiddlewareTestApplication.class})
+@TestPropertySource(properties = {"middleware.consumer.api.enabled=true"})
 public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
 
     @Autowired

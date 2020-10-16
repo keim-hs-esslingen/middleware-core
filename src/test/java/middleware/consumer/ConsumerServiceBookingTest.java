@@ -52,12 +52,14 @@ import java.net.URI;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import static org.mockito.Mockito.when;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * @author k.sivarasah 20 Nov 2019
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MiddlewareTestApplication.class})
+@TestPropertySource(properties = {"middleware.consumer.api.enabled=true"})
 public class ConsumerServiceBookingTest extends MiddlewareTestBase {
 
     @Autowired

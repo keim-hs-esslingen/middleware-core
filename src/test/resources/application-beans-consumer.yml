@@ -1,0 +1,3 @@
+middleware:
+  service-directory-url: http://localhost:9900/api
+  consumer.api.enabled: true
