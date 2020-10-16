@@ -93,23 +93,4 @@ public class OptionsApi implements IOptionsApi {
         return optionsService.getOptions(placeFrom, placeTo, startTime, endTime, radius, share, creds);
     }
 
-    @Override
-    public List<Options> getBookingOptions(
-            String from, 
-            String to,
-            ZonedDateTime startTime,
-            ZonedDateTime endTime,
-            Integer radius,
-            Boolean share,
-            String credentials
-    ) {
-        logger.info("Received request to get options.");
-
-        Place placeTo = positionIsValid(to) ? new Place(to) : null;
-
-        var creds = credentialsUtils.fromString(credentials);
-
-        return optionsService.getOptions(new Place(from), placeTo, startTime, endTime, radius, share, creds);
-    }
-
 }
