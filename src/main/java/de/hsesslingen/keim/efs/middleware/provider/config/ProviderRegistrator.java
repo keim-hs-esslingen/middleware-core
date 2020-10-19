@@ -207,13 +207,8 @@ public class ProviderRegistrator {
         try {
             register(properties.getMobilityService());
         } catch (Exception ex) {
-            var message = "Registration failed. Retrying after " + retryDelay + " seconds.";
-
-            if (logger.isTraceEnabled()) {
-                logger.trace(message + " {}", ex);
-            } else {
-                logger.info(message);
-            }
+            logger.info("Registration failed. Retrying after {} seconds.", retryDelay);
+            logger.trace("Fail reason:", ex);
 
             future = getScheduler().schedule(this::registerInServiceDirectory, Instant.now().plusSeconds(retryDelay));
 

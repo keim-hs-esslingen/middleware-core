@@ -93,9 +93,7 @@ public class BookingApi implements IBookingApi {
             String credentials) {
         logger.info("Received request to create a new booking.");
 
-        if (logger.isTraceEnabled()) {
-            debugLogAsJson(newBooking);
-        }
+        debugLogAsJson(newBooking);
 
         var creds = credentialsUtils.fromString(credentials);
 
@@ -104,14 +102,14 @@ public class BookingApi implements IBookingApi {
 
     @Override
     public Booking modifyBooking(@PathVariable String id,
-            @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
+            @RequestBody
+            @Valid
+            @ConsistentBookingDateParams Booking booking,
             String credentials) {
         logger.info("Received request to modify a booking.");
         logger.debug("Received request to modify booking with id \"" + id + "\".");
 
-        if (logger.isTraceEnabled()) {
-            debugLogAsJson(booking);
-        }
+        debugLogAsJson(booking);
 
         var creds = credentialsUtils.fromString(credentials);
 
@@ -134,10 +132,12 @@ public class BookingApi implements IBookingApi {
      * @param o
      */
     private void debugLogAsJson(Object o) {
-        try {
-            logger.trace(mapper.writeValueAsString(o));
-        } catch (JsonProcessingException ex) {
-            logger.trace("Could not serialize object for debug logging. Exception occured.", ex);
+        if (logger.isTraceEnabled()) {
+            try {
+                logger.trace(mapper.writeValueAsString(o));
+            } catch (JsonProcessingException ex) {
+                logger.trace("Could not serialize object for debug logging. Exception occured.", ex);
+            }
         }
     }
 }
