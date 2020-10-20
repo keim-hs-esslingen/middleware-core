@@ -25,6 +25,8 @@ package de.hsesslingen.keim.efs.middleware.consumer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static de.hsesslingen.keim.efs.middleware.consumer.ProviderProxy.buildBookingRequest;
+import static de.hsesslingen.keim.efs.middleware.consumer.ProviderProxy.buildOptionsRequest;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -60,7 +62,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 
@@ -89,7 +90,6 @@ public class ConsumerService {
 
     private static final String CREDENTIALS_PATH = "/credentials";
     private static final String BOOKINGS_PATH = "/bookings";
-    private static final String OPTIONS_PATH = "/options";
 
     /**
      * Creates a Map that maps a service id to it's corresponding credentials
@@ -219,11 +219,11 @@ public class ConsumerService {
                 // Building a matching options request for each service...
                 .map(service
                         -> buildOptionsRequest(service.getServiceUrl(),
-                        credentialsMap.get(service.getId()), from, to,
-                        startTime, endTime, radiusMeter, share)
+                        from, to, startTime, endTime, radiusMeter,
+                        share, credentialsMap.get(service.getId()))
                 )
                 // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
-                .map(request -> request.callOutgoingRequestAdapters())
+                .peek(request -> request.callOutgoingRequestAdapters())
                 // Collecting requests before sending them, to ensure usage of main thread.
                 .collect(toList());
 
@@ -258,63 +258,6 @@ public class ConsumerService {
         return options;
     }
 
-    private EfsRequest<List<Options>> buildOptionsRequest(
-            String serviceUrl, String serviceCredentials,
-            String from, String to,
-            ZonedDateTime startTime, ZonedDateTime endTime,
-            Integer radiusMeter, Boolean share
-    ) {
-
-        // Start build the request object...
-        var request = EfsRequest
-                .get(serviceUrl + OPTIONS_PATH)
-                .query("from", from)
-                .expect(new ParameterizedTypeReference<List<Options>>() {
-                });
-
-        if (serviceCredentials != null) {
-            request.credentials(serviceCredentials);
-        }
-
-        // Building query string by adding existing params...
-        if (to != null) {
-            request.query("to", to);
-        }
-        if (startTime != null) {
-            request.query("startTime", startTime.toInstant().toEpochMilli());
-        }
-        if (endTime != null) {
-            request.query("endTime", endTime.toInstant().toEpochMilli());
-        }
-        if (radiusMeter != null) {
-            request.query("radius", radiusMeter);
-        }
-        if (share != null) {
-            request.query("share", share);
-        }
-
-        return request;
-    }
-
-    /**
-     * Assembles a booking request for the given mobility service and
-     * credentials map.
-     *
-     * @param service
-     * @param credentialsMap
-     * @return
-     */
-    private EfsRequest<List<Booking>> createBookingRequest(MobilityService service, Map<String, String> credentialsMap) {
-        var serviceCredentials = credentialsMap.get(service.getId());
-
-        return EfsRequest
-                .get(service.getServiceUrl() + BOOKINGS_PATH)
-                .credentials(serviceCredentials)
-                .callOutgoingRequestAdapters() // Needed, to be able to send off request in other thread.
-                .expect(new ParameterizedTypeReference<List<Booking>>() {
-                });
-    }
-
     /**
      * Requests all bookings associated with the provided credentials from the
      * specified services.
@@ -332,9 +275,12 @@ public class ConsumerService {
         var credentialsMap = extractConsumerCredentials(credentials);
 
         logger.info("Requesting bookings list from services...");
-        
+
         var requests = services.stream()
-                .map(service -> createBookingRequest(service, credentialsMap))
+                .map(service -> buildBookingRequest(service, credentialsMap.get(service.getId())))
+                // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
+                .peek(request -> request.callOutgoingRequestAdapters())
+                // Collecting requests before sending them, to ensure usage of main thread.
                 .collect(Collectors.toList());
 
         var bookings = requests.parallelStream()
