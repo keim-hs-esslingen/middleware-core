@@ -47,7 +47,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
      */
     @Override
     public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) throws AbstractEfsException {
-        return null;
+        return List.of();
     }
 
     /* (non-Javadoc)
@@ -85,7 +85,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
     @Override
     public List<Options> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime,
             Integer radiusMeter, Boolean sharingAllowed, AbstractCredentials credentials) throws AbstractEfsException {
-        return null;
+        return List.of();
     }
 
     /* (non-Javadoc)
@@ -93,6 +93,6 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
      */
     @Override
     public List<Options> getOptions(Place from, ZonedDateTime startTime, AbstractCredentials credentials) throws AbstractEfsException {
-        return null;
+        return List.of();
     }
 }
