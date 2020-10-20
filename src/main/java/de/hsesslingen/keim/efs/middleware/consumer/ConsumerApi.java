@@ -23,8 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.keim.efs.middleware.common.ApiBase;
 import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +52,6 @@ import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
-import java.util.Collection;
-import static java.util.stream.Collectors.joining;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * This class receives the consumers requests for searching and booking mobility
@@ -67,18 +63,12 @@ import org.springframework.beans.factory.annotation.Value;
 @RestController
 @Api(tags = {SwaggerAutoConfiguration.CONSUMER_API_TAG})
 @ConditionalOnProperty(name = "middleware.consumer.api.enabled", havingValue = "true")
-public class ConsumerApi implements IConsumerApi {
+public class ConsumerApi extends ApiBase implements IConsumerApi {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsumerApi.class);
 
     @Autowired
     public ConsumerService consumerService;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Value("${middleware.logging.debug.obfuscate-credentials:true}")
-    private boolean obfuscateCredentialsForDebugLogging;
 
     @Override
     public List<Options> getOptions(
@@ -216,7 +206,7 @@ public class ConsumerApi implements IConsumerApi {
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug(
-                "Params of this request:\bookingId={}\naction={}\nserviceId={}\nassetId={}\nsecret={}\ncredentials={}\nThe value of param \"more\" will be put to the next line:\n{}",
+                "Params of this request:\bookingId={}\naction={}\nserviceId={}\nassetId={}\nsecret={}\ncredentials={}\nmore= (logged to next line)\n{}",
                 bookingId, action, serviceId, assetId,
                 obfuscateConditional(secret),
                 obfuscateConditional(credentials),
@@ -306,71 +296,4 @@ public class ConsumerApi implements IConsumerApi {
         return areValid;
     }
 
-    /**
-     * Serializes a collection of objects by calling {@code toString()} on each
-     * one and joining their results with commas.
-     *
-     * @param collection
-     * @return
-     */
-    private String stringifyCollection(Collection<?> collection) {
-        return collection != null ? collection.stream().map(t -> t.toString()).collect(joining(",")) : "null";
-    }
-
-    /**
-     * If the config property "middleware.logging.debug.obfuscate-credentials"
-     * is set to true (which is default), this method obfuscates the given
-     * input. Otherwise {@code any.toString()} will be returned.
-     *
-     * @param any
-     * @return
-     */
-    public String obfuscateConditional(Object any) {
-        if (this.obfuscateCredentialsForDebugLogging) {
-            return obfuscate(any);
-        }
-
-        return any.toString();
-    }
-
-    /**
-     * Can be used to obfuscate the given string value. In contrast to the
-     * instance method {@link conditionalObfuscate}, this method always
-     * obfuscates the input.
-     * <p>
-     * <ul>
-     * <li>{@code null} is rendered to {@code "null"}</li>
-     * <li>Empty string is rendered to {@code "\"\""}</li>
-     * <li>Everything else is rendered to {@code "***"}</li>
-     * </ul>
-     *
-     * @param any
-     * @return
-     */
-    public String obfuscate(Object any) {
-        if (any == null) {
-            return "null";
-        }
-
-        if (any.toString().isEmpty()) {
-            return "\"\"";
-        }
-
-        return "***";
-    }
-
-    /**
-     * Stringifies the given object. If serialization fails, a message string is
-     * returned. This method is inteded to be used for logging.
-     *
-     * @param o
-     * @return
-     */
-    private String stringify(Object o) {
-        try {
-            return mapper.writeValueAsString(o);
-        } catch (JsonProcessingException ex) {
-            return "Could not serialize object for logging. Exception occured.";
-        }
-    }
 }

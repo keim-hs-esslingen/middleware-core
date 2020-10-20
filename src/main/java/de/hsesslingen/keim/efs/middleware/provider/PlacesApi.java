@@ -27,7 +27,6 @@ import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguratio
 import de.hsesslingen.keim.efs.middleware.model.Coordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import io.swagger.annotations.Api;
 import java.util.List;
 import org.slf4j.Logger;
@@ -45,15 +44,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(IPlacesService.class)
 @Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
-public class PlacesApi implements IPlacesApi {
+public class PlacesApi extends ProviderApiBase implements IPlacesApi {
 
     private static final Logger logger = LoggerFactory.getLogger(PlacesApi.class);
 
     @Autowired
     private IPlacesService service;
-
-    @Autowired
-    private CredentialsUtils credentialsUtils;
 
     @Override
     public List<Place> search(
@@ -66,9 +62,8 @@ public class PlacesApi implements IPlacesApi {
         logger.info("Received request for searching places.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nquery={}\nareaCenter={}\radiusMeter={}\nlimitTo={}\ncredentials={}",
-                query, areaCenter, radiusMeter, limitTo,
-                credentialsUtils.obfuscateConditional(credentials)
+        logger.debug("Params of this request:\nquery={}\nareaCenter={}\radiusMeter={}\nlimitTo={}",
+                query, areaCenter, radiusMeter, limitTo
         );
         //</editor-fold>
 
@@ -78,7 +73,7 @@ public class PlacesApi implements IPlacesApi {
         // Delegate search to user implemented PlacesService...
         var places = service.search(
                 query, coordinates, radiusMeter, limitTo,
-                credentialsUtils.fromString(credentials)
+                parseCredentials(credentials)
         );
 
         logger.debug("Responding with a list of {} places.", places.size());

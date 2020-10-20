@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -48,15 +47,12 @@ import org.slf4j.LoggerFactory;
 @RestController
 @ConditionalOnBean(IOptionsService.class)
 @Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG})
-public class OptionsApi implements IOptionsApi {
+public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
     private static final Logger logger = LoggerFactory.getLogger(OptionsApi.class);
 
     @Autowired
     private IOptionsService optionsService;
-
-    @Autowired
-    private CredentialsUtils credentialsUtils;
 
     @Override
     public List<Options> getOptions(
@@ -73,10 +69,9 @@ public class OptionsApi implements IOptionsApi {
         logger.info("Received request to get options.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}\ncredentials={}",
+        logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}",
                 from, fromPlaceId, to, toPlaceId,
-                startTime, endTime, radius, share,
-                credentialsUtils.obfuscateConditional(credentials)
+                startTime, endTime, radius, share
         );
         //</editor-fold>
 
@@ -100,7 +95,7 @@ public class OptionsApi implements IOptionsApi {
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radius, share,
-                credentialsUtils.fromString(credentials)
+                parseCredentials(credentials)
         );
 
         logger.debug("Responding with a list of {} options.", options.size());

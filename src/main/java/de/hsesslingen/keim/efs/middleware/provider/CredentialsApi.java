@@ -25,7 +25,6 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
@@ -54,15 +53,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(ICredentialsService.class)
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
-public class CredentialsApi {
+public class CredentialsApi extends ProviderApiBase {
 
     private static final Logger logger = LoggerFactory.getLogger(CredentialsApi.class);
 
     @Autowired
     private ICredentialsService credentialsService;
-
-    @Autowired
-    private CredentialsUtils credentialsUtils;
 
     /**
      * Allows to create a login token associated to the provided credentials.
@@ -79,16 +75,9 @@ public class CredentialsApi {
     ) {
         logger.info("Received create login token request.");
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\ncredentials={}",
-                credentialsUtils.obfuscateConditional(credentials)
-        );
-        //</editor-fold>
+        var token = credentialsService.createLoginToken(parseCredentials(credentials));
 
-        var token = credentialsService.createLoginToken(credentialsUtils.fromString(credentials));
-
-        logger.debug("Responding with: {}", credentialsUtils.obfuscateConditional(token));
+        logger.debug("Responding with: {}", obfuscateConditional(token));
 
         return token;
     }
@@ -108,14 +97,7 @@ public class CredentialsApi {
     ) {
         logger.info("Received delete login token request.");
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\ncredentials={}",
-                credentialsUtils.obfuscateConditional(credentials)
-        );
-        //</editor-fold>
-
-        var wasSuccessful = credentialsService.deleteLoginToken(credentialsUtils.fromString(credentials));
+        var wasSuccessful = credentialsService.deleteLoginToken(parseCredentials(credentials));
 
         logger.debug("Responding with: {}", wasSuccessful);
 
@@ -141,20 +123,19 @@ public class CredentialsApi {
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug(
-                "Params of this request:\ncredentials={}\nuserData={}\nuserData.id={}\nuserData.firstName={}\nuserData.lastName={}\nuserData.email={}\nuserData.phone={}",
-                credentialsUtils.obfuscateConditional(credentials),
+                "Params of this request:\nuserData={}\nuserData.id={}\nuserData.firstName={}\nuserData.lastName={}\nuserData.email={}\nuserData.phone={}",
                 userData != null ? "(non-null value)" : "null",
-                userData != null ? credentialsUtils.obfuscateConditional(userData.getId()) : "(userData is null)",
-                userData != null ? credentialsUtils.obfuscateConditional(userData.getFirstName()) : "(userData is null)",
-                userData != null ? credentialsUtils.obfuscateConditional(userData.getLastName()) : "(userData is null)",
-                userData != null ? credentialsUtils.obfuscateConditional(userData.getEmail()) : "(userData is null)",
-                userData != null ? credentialsUtils.obfuscateConditional(userData.getPhone()) : "(userData is null)"
+                userData != null ? obfuscateConditional(userData.getId()) : "(userData is null)",
+                userData != null ? obfuscateConditional(userData.getFirstName()) : "(userData is null)",
+                userData != null ? obfuscateConditional(userData.getLastName()) : "(userData is null)",
+                userData != null ? obfuscateConditional(userData.getEmail()) : "(userData is null)",
+                userData != null ? obfuscateConditional(userData.getPhone()) : "(userData is null)"
         );
         //</editor-fold>
 
-        var newUser = credentialsService.registerUser(credentialsUtils.fromString(credentials), userData);
+        var newUser = credentialsService.registerUser(parseCredentials(credentials), userData);
 
-        logger.debug("Responding with: {}", credentialsUtils.obfuscateConditional(newUser));
+        logger.debug("Responding with: {}", obfuscateConditional(newUser));
 
         return newUser;
     }
@@ -175,14 +156,7 @@ public class CredentialsApi {
     ) {
         logger.info("Received check-credentials-are-valid request.");
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\ncredentials={}",
-                credentialsUtils.obfuscateConditional(credentials)
-        );
-        //</editor-fold>
-
-        var areValid = credentialsService.checkCredentialsAreValid(credentialsUtils.fromString(credentials));
+        var areValid = credentialsService.checkCredentialsAreValid(parseCredentials(credentials));
 
         logger.debug("Responding with: {}", areValid);
 

@@ -23,8 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
 import java.util.List;
 
@@ -41,7 +39,6 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -55,31 +52,22 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 @RestController
 @ConditionalOnBean({IBookingService.class})
 @Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
-public class BookingApi implements IBookingApi {
+public class BookingApi extends ProviderApiBase implements IBookingApi {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingApi.class);
 
     @Autowired
     private IBookingService bookingService;
 
-    @Autowired
-    private CredentialsUtils credentialsUtils;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @Override
     public List<Booking> getBookings(BookingState state, String credentials) {
         logger.info("Received request to get bookings.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\nstate={}\ncredentials={}",
-                state, credentialsUtils.obfuscateConditional(credentials)
-        );
+        logger.debug("Params of this request:\nstate={}", state);
         //</editor-fold>
 
-        var bookings = bookingService.getBookings(state, credentialsUtils.fromString(credentials));
+        var bookings = bookingService.getBookings(state, parseCredentials(credentials));
 
         logger.debug("Responding with a list of {} bookings.", bookings.size());
 
@@ -91,13 +79,10 @@ public class BookingApi implements IBookingApi {
         logger.info("Received request to get a booking by id.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\nid={}\ncredentials={}",
-                id, credentialsUtils.obfuscateConditional(credentials)
-        );
+        logger.debug("Params of this request:\nid={}\ncredentials={}", id);
         //</editor-fold>
 
-        var result = bookingService.getBookingById(id, credentialsUtils.fromString(credentials));
+        var result = bookingService.getBookingById(id, parseCredentials(credentials));
 
         if (logger.isTraceEnabled()) {
             logger.trace("Responding with: {}", stringify(result));
@@ -114,17 +99,12 @@ public class BookingApi implements IBookingApi {
         logger.info("Received request to create a new booking.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\ncredentials={}",
-                credentialsUtils.obfuscateConditional(credentials)
-        );
-
         if (logger.isTraceEnabled()) {
             logger.trace("Body of this request:\n{}", stringify(newBooking));
         }
         //</editor-fold>
 
-        var creds = credentialsUtils.fromString(credentials);
+        var creds = parseCredentials(credentials);
 
         var result = bookingService.createNewBooking(newBooking, creds);
 
@@ -146,17 +126,14 @@ public class BookingApi implements IBookingApi {
         logger.info("Received request to modify a booking.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\nid={}\ncredentials={}",
-                id, credentialsUtils.obfuscateConditional(credentials)
-        );
+        logger.debug("Params of this request:\nid={}", id);
 
         if (logger.isTraceEnabled()) {
             logger.trace("Body of this request:\n{}", stringify(booking));
         }
         //</editor-fold>
 
-        var creds = credentialsUtils.fromString(credentials);
+        var creds = parseCredentials(credentials);
 
         var result = bookingService.modifyBooking(id, booking, creds);
 
@@ -180,32 +157,17 @@ public class BookingApi implements IBookingApi {
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug(
-                "Params of this request:\nbookingId={}\naction={}\nassetId={}\nsecret={}\ncredentials={}\nThe value of field \"more\" is logged in the next line:\n{}",
+                "Params of this request:\nbookingId={}\naction={}\nassetId={}\nsecret={}\nmore= (logged to next line)\n{}",
                 action, bookingId, assetId,
-                credentialsUtils.obfuscateConditional(secret),
-                credentialsUtils.obfuscateConditional(credentials),
+                obfuscateConditional(secret),
                 more
         );
         //</editor-fold>
 
         bookingService.performAction(
                 bookingId, action, assetId, secret, more,
-                credentialsUtils.fromString(credentials)
+                parseCredentials(credentials)
         );
     }
 
-    /**
-     * Stringifies the given object. If serialization fails, a message string is
-     * returned. This method is inteded to be used for logging.
-     *
-     * @param o
-     * @return
-     */
-    private String stringify(Object o) {
-        try {
-            return mapper.writeValueAsString(o);
-        } catch (JsonProcessingException ex) {
-            return "Could not serialize object for logging. Exception occured.";
-        }
-    }
 }
