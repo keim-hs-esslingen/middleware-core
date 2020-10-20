@@ -86,7 +86,7 @@ public class ConsumerApi extends ApiBase implements IConsumerApi {
         logger.info("Received request to get options from providers.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}\ncredentials={}",
+        logger.debug("Params of this request:\nfrom={}\nto={}\nstartTime={}\nendTime={}\nradius={}\nshare={}\ncredentials={}",
                 from, to, startTime, endTime, radius, share,
                 stringifyCollection(mobilityTypes),
                 stringifyCollection(modes),
