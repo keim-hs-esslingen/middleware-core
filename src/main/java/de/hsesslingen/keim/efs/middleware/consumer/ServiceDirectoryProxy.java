@@ -54,8 +54,8 @@ public class ServiceDirectoryProxy {
 
     @Value("${middleware.service-directory-url}")
     public String baseUrl;
-    
-    public ServiceDirectoryProxy(){
+
+    public ServiceDirectoryProxy() {
         // Used for tracing lazy loading of beans.
         logger.debug("Initializing ServiceDirectoryProxy.");
     }
@@ -67,8 +67,11 @@ public class ServiceDirectoryProxy {
      */
     public List<MobilityService> search() {
         logger.info("Querying service directory for available mobility services...");
-        return EfsRequest.get(buildUri()).expect(new ParameterizedTypeReference<List<MobilityService>>() {
-        }).go().getBody();
+        return EfsRequest.get(buildUri(null, null, null, true))
+                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
+                })
+                .go()
+                .getBody();
     }
 
     /**
@@ -82,31 +85,29 @@ public class ServiceDirectoryProxy {
      */
     public List<MobilityService> search(Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return EfsRequest.get(buildUri(mobilityTypes, modes, serviceIds, true)).expect(new ParameterizedTypeReference<List<MobilityService>>() {
-        }).go().getBody();
-    }
-
-    private String buildUri() {
-        return buildUri(null, null, null, true);
+        return EfsRequest.get(buildUri(mobilityTypes, modes, serviceIds, true))
+                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
+                })
+                .go()
+                .getBody();
     }
 
     private String buildUri(Set<MobilityType> mobilityTypes, Set<Mode> modes, Set<String> serviceIds, boolean activeOnly) {
-        var uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search")
-                .queryParam("active", activeOnly);
+        var uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search").queryParam("active", activeOnly);
 
-        if (mobilityTypes != null) {
+        if (mobilityTypes != null && !mobilityTypes.isEmpty()) {
             uriBuilder.queryParam("mobilityTypes", mobilityTypes.toArray());
         }
-        if (modes != null) {
+        if (modes != null && !modes.isEmpty()) {
             uriBuilder.queryParam("modes", modes.toArray());
         }
-        if (serviceIds != null) {
+        if (serviceIds != null && !serviceIds.isEmpty()) {
             uriBuilder.queryParam("serviceIds", serviceIds.toArray());
         }
 
         var uri = uriBuilder.toUriString();
 
-        logger.trace("Using \"" + uri + "\" for querying the service directory.");
+        logger.trace("Using \"{}\" for querying the service directory.", uri);
 
         return uri;
     }
