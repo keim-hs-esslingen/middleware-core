@@ -29,14 +29,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,15 +44,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.consumer.ConsumerService;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.net.URI;
+import static java.util.Arrays.asList;
+import java.util.Set;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import org.junit.Before;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.TestPropertySource;
 
@@ -83,7 +86,7 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
 
     @Test
     public void getOptionsTest_ConstViolation_Exception() {
-        when(serviceDirectory.search(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
+        when(serviceDirectory.search(any(), any(), any())).thenReturn(List.of());
 
         assertThatThrownBy(() -> consumerService.getOptions(null, null, null, null, null, null, null, null, null, null))
                 .isInstanceOf(ConstraintViolationException.class)
@@ -95,30 +98,30 @@ public class ConsumerServiceOptionsTest extends MiddlewareTestBase {
     @SuppressWarnings("unchecked")
     @Test
     public void getOptionsTest_OK() {
-        when(serviceDirectory.search(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(getMobilityService(SERVICE_ID)));
+        when(serviceDirectory.search(any(), any(), any(), argThat((Set<API> apis) -> true)))
+                .thenReturn(asList(getMobilityService(SERVICE_ID)));
 
-        String placeFrom = "1.23,1.12";
-        ResponseEntity<List<Options>> entity = ResponseEntity.ok(getDummyOptions(SERVICE_ID, placeFrom));
+        when(serviceDirectory.search(any(), any(), any(), (API[]) any()))
+                .thenReturn(asList(getMobilityService(SERVICE_ID)));
 
-        when(restTemplate.exchange(
-                Mockito.argThat((URI uri) -> {
-                    return uri.getPath().contains(OPTIONS_PATH);
-                }),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
-        )).thenReturn(entity);
+        var placeFrom = "1.23,1.12";
+        var response = ResponseEntity.ok(getDummyOptions(SERVICE_ID, placeFrom));
 
         when(restTemplate.exchange(
-                Mockito.argThat((String uri) -> {
-                    return uri.contains(OPTIONS_PATH);
-                }),
-                Mockito.eq(HttpMethod.GET),
-                Mockito.any(),
-                Mockito.any(ParameterizedTypeReference.class)
-        )).thenReturn(entity);
+                argThat((URI uri) -> uri.getPath().contains(OPTIONS_PATH)),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        )).thenReturn(response);
 
-        List<Options> optionsResult = consumerService.getOptions(placeFrom, null, null, null, null, null, null, null, null, null);
+        when(restTemplate.exchange(
+                argThat((String uri) -> uri.contains(OPTIONS_PATH)),
+                eq(HttpMethod.GET),
+                any(),
+                any(ParameterizedTypeReference.class)
+        )).thenReturn(response);
+
+        var optionsResult = consumerService.getOptions(placeFrom, null, null, null, null, null, null, null, null, null);
         assertNotNull(optionsResult);
         assertEquals(1, optionsResult.size());
         assertEquals(SERVICE_ID, optionsResult.get(0).getLeg().getServiceId());
