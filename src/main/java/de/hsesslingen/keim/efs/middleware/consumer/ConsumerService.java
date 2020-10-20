@@ -44,6 +44,7 @@ import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.io.IOException;
@@ -55,10 +56,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 
 /**
@@ -88,6 +91,13 @@ public class ConsumerService {
     private static final String BOOKINGS_PATH = "/bookings";
     private static final String OPTIONS_PATH = "/options";
 
+    /**
+     * Creates a Map that maps a service id to it's corresponding credentials
+     * provided in the {@link credentials} string.
+     *
+     * @param credentials
+     * @return
+     */
     private Map<String, String> extractConsumerCredentials(String credentials) {
         if (credentials == null || credentials.isEmpty()) {
             return new HashMap<>();
@@ -99,6 +109,27 @@ public class ConsumerService {
         } catch (IOException ex) {
             logger.error("Credentials provided in wrong format. They must be a map of credentials, which maps each services credentials to its id...", ex);
             return new HashMap<>();
+        }
+    }
+
+    /**
+     * Simply sends off the request and returns the retrieved ResponseEntity. If
+     * the request fails, the exception is caught, a warning message is logged
+     * and {@code null} is returned.
+     *
+     * @param <R>
+     * @param req
+     * @return
+     */
+    private <R> ResponseEntity<R> trySendRequest(EfsRequest<R> req) {
+        try {
+            return req.go();
+        } catch (Exception ex) {
+            logger.warn(
+                    "Exception while requesting url \"{}\".",
+                    req.uriBuilder().build().toUriString(), ex
+            );
+            return null;
         }
     }
 
@@ -175,7 +206,7 @@ public class ConsumerService {
         //</editor-fold>
 
         logger.info("Requesting available services from Service-Directory...");
-        var services = serviceDirectory.search(mobilityTypes, modes, serviceIds);
+        var services = serviceDirectory.search(mobilityTypes, modes, serviceIds, API.OPTIONS_API);
 
         // Extract credentials for the various services from the credentials string which
         // should contain a JSON-object with JSON formatted credentials per service id.
@@ -194,26 +225,19 @@ public class ConsumerService {
                 // Calling outgoing request adapters from main thread to allow reading thread local storages in adapters.
                 .map(request -> request.callOutgoingRequestAdapters())
                 // Collecting requests before sending them, to ensure usage of main thread.
-                .collect(Collectors.toList());
+                .collect(toList());
 
         // Sending the actual requests in parallel to increase performance...
         var options = requests.parallelStream()
-                .map(request -> {
+                //<editor-fold defaultstate="collapsed" desc="Debug-logging options request url.">
+                .peek(request -> {
                     if (logger.isDebugEnabled()) {
                         var uri = request.uriBuilder().build().toUriString();
                         logger.debug("Sending options request: {}", uri);
                     }
-
-                    try {
-                        return request.go();
-                    } catch (Exception e) {
-                        logger.error(
-                                "Exception while getting options from url {}",
-                                request.uriBuilder().build().toUriString(), e
-                        );
-                        return null;
-                    }
                 })
+                //</editor-fold>
+                .map(request -> trySendRequest(request))
                 // Filtering null response (due to exceptions)...
                 .filter(response -> response != null)
                 // Mapping to body and filtering nulls (due to null-response)...
@@ -221,13 +245,15 @@ public class ConsumerService {
                 .filter(opts -> opts != null)
                 // Flatmapping and collecting to get unified list of options...
                 .flatMap(opts -> opts.stream())
-                .collect(Collectors.toList());
+                .collect(toList());
 
+        //<editor-fold defaultstate="collapsed" desc="Debug logging...">
         if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
             debugAnalyzeReceivedOptionsOrBookings(options.stream().map(o -> o.getLeg()), "option");
             logger.debug("Received {} options in total.", options.size());
         }
+        //</editor-fold>
 
         return options;
     }
@@ -236,7 +262,8 @@ public class ConsumerService {
             String serviceUrl, String serviceCredentials,
             String from, String to,
             ZonedDateTime startTime, ZonedDateTime endTime,
-            Integer radiusMeter, Boolean share) {
+            Integer radiusMeter, Boolean share
+    ) {
 
         // Start build the request object...
         var request = EfsRequest
@@ -270,6 +297,25 @@ public class ConsumerService {
     }
 
     /**
+     * Assembles a booking request for the given mobility service and
+     * credentials map.
+     *
+     * @param service
+     * @param credentialsMap
+     * @return
+     */
+    private EfsRequest<List<Booking>> createBookingRequest(MobilityService service, Map<String, String> credentialsMap) {
+        var serviceCredentials = credentialsMap.get(service.getId());
+
+        return EfsRequest
+                .get(service.getServiceUrl() + BOOKINGS_PATH)
+                .credentials(serviceCredentials)
+                .callOutgoingRequestAdapters() // Needed, to be able to send off request in other thread.
+                .expect(new ParameterizedTypeReference<List<Booking>>() {
+                });
+    }
+
+    /**
      * Requests all bookings associated with the provided credentials from the
      * specified services.
      *
@@ -279,38 +325,20 @@ public class ConsumerService {
      */
     public List<Booking> getBookings(Set<String> serviceIds, String credentials) {
         logger.info("Requesting available services from Service-Directory...");
-        var services = serviceDirectory.search(null, null, serviceIds);
+        var services = serviceDirectory.search(null, null, serviceIds, API.BOOKING_API);
 
         // Extract credentials for the various services from the credentials string which
         // should contain a JSON-object with JSON formatted credentials per service id.
         var credentialsMap = extractConsumerCredentials(credentials);
 
         logger.info("Requesting bookings list from services...");
+        
         var requests = services.stream()
-                .map(service -> {
-                    var serviceCredentials = credentialsMap.get(service.getId());
-
-                    return EfsRequest
-                            .get(service.getServiceUrl() + BOOKINGS_PATH)
-                            .credentials(serviceCredentials)
-                            .callOutgoingRequestAdapters() // Needed to be able to send off request in other thread.
-                            .expect(new ParameterizedTypeReference<List<Booking>>() {
-                            });
-                })
+                .map(service -> createBookingRequest(service, credentialsMap))
                 .collect(Collectors.toList());
 
         var bookings = requests.parallelStream()
-                .map(req -> {
-                    try {
-                        return req.go();
-                    } catch (Exception ex) {
-                        logger.warn(
-                                "Exception while getting bookings from url {}",
-                                req.uriBuilder().build().toUriString(), ex
-                        );
-                        return null;
-                    }
-                })
+                .map(request -> trySendRequest(request))
                 // Filtering null response (due to exceptions)...
                 .filter(response -> response != null)
                 // Mapping to body and filtering nulls (due to null-response)...
@@ -320,11 +348,13 @@ public class ConsumerService {
                 .flatMap(serviceBookings -> serviceBookings.stream())
                 .collect(Collectors.toList());
 
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging results...">
         if (logger.isDebugEnabled()) {
             // Analyze the received options for faults and numbers...
             debugAnalyzeReceivedOptionsOrBookings(bookings.stream().map(o -> o.getLeg()), "booking");
             logger.debug("Received {} bookings in total.", bookings.size());
         }
+        //</editor-fold>
 
         return bookings;
     }
@@ -338,8 +368,13 @@ public class ConsumerService {
      * @return the {@link Booking} object
      */
     public Booking getBookingById(@NotEmpty String id, @NotEmpty String serviceId, String credentials) {
-        String url = getBookingsUrlByServiceAndBookingId(serviceId, id);
-        return EfsRequest.get(url).credentials(credentials).expect(Booking.class).go().getBody();
+        var url = getBookingsUrlByServiceAndBookingId(serviceId, id);
+
+        return EfsRequest.get(url)
+                .credentials(credentials)
+                .expect(Booking.class)
+                .go()
+                .getBody();
     }
 
     /**
@@ -351,8 +386,14 @@ public class ConsumerService {
      * @return {@link Booking} that was created
      */
     public Booking createBooking(@Valid NewBooking newBooking, String credentials) {
-        String serviceId = newBooking.getLeg().getServiceId();
-        return EfsRequest.post(getBookingsUrlByServiceId(serviceId)).credentials(credentials).body(newBooking).expect(Booking.class).go().getBody();
+        var serviceId = newBooking.getLeg().getServiceId();
+
+        return EfsRequest.post(getBookingsUrlByServiceId(serviceId))
+                .credentials(credentials)
+                .body(newBooking)
+                .expect(Booking.class)
+                .go()
+                .getBody();
     }
 
     /**
@@ -364,7 +405,7 @@ public class ConsumerService {
      * @return the modified {@link Booking} object
      */
     public Booking modifyBooking(@NotEmpty String id, @Valid Booking booking, String credentials) {
-        String url = getBookingsUrlByServiceAndBookingId(booking.getLeg().getServiceId(), id);
+        var url = getBookingsUrlByServiceAndBookingId(booking.getLeg().getServiceId(), id);
 
         return EfsRequest.put(url)
                 .credentials(credentials)
@@ -421,7 +462,8 @@ public class ConsumerService {
     private String getServiceUrl(String serviceId) {
         return serviceDirectory.search().stream()
                 .filter(service -> service.getId().equalsIgnoreCase(serviceId))
-                .map(MobilityService::getServiceUrl).findAny()
+                .map(MobilityService::getServiceUrl)
+                .findAny()
                 .orElseThrow(() -> new ResourceAccessException(serviceId + " is not available"));
     }
 
