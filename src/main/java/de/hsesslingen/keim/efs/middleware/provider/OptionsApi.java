@@ -72,6 +72,15 @@ public class OptionsApi implements IOptionsApi {
     ) {
         logger.info("Received request to get options.");
 
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}\ncredentials={}",
+                from, fromPlaceId, to, toPlaceId,
+                startTime, endTime, radius, share,
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
+
+        // Converting input params...
         var placeFrom = new Place(from);
 
         if (fromPlaceId != null && !fromPlaceId.isBlank()) {
@@ -88,9 +97,15 @@ public class OptionsApi implements IOptionsApi {
             }
         }
 
-        var creds = credentialsUtils.fromString(credentials);
+        // Getting options from user implemented OptionsService.
+        var options = optionsService.getOptions(
+                placeFrom, placeTo, startTime, endTime, radius, share,
+                credentialsUtils.fromString(credentials)
+        );
 
-        return optionsService.getOptions(placeFrom, placeTo, startTime, endTime, radius, share, creds);
+        logger.debug("Responding with a list of {} options.", options.size());
+
+        return options;
     }
 
 }

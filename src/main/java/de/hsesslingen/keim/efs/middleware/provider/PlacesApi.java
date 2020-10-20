@@ -63,14 +63,27 @@ public class PlacesApi implements IPlacesApi {
             Integer limitTo,
             String credentials
     ) {
-        logger.info("Received search request for places.");
-        logger.debug("Search params: query={}, areaCenter={}, radiusMeter={}, limitTo={}", query, areaCenter, radiusMeter, limitTo);
+        logger.info("Received request for searching places.");
 
-        var creds = credentialsUtils.fromString(credentials);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug("Params of this request:\nquery={}\nareaCenter={}\radiusMeter={}\nlimitTo={}\ncredentials={}",
+                query, areaCenter, radiusMeter, limitTo,
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
 
+        // Convert input params...
         var coordinates = positionIsValid(areaCenter) ? Coordinates.of(areaCenter) : null;
 
-        return service.search(query, coordinates, radiusMeter, limitTo, creds);
+        // Delegate search to user implemented PlacesService...
+        var places = service.search(
+                query, coordinates, radiusMeter, limitTo,
+                credentialsUtils.fromString(credentials)
+        );
+
+        logger.debug("Responding with a list of {} places.", places.size());
+
+        return places;
     }
 
 }

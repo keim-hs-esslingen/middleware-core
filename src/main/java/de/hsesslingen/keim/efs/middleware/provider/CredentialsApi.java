@@ -32,6 +32,8 @@ import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEAD
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
 public class CredentialsApi {
 
+    private static final Logger logger = LoggerFactory.getLogger(CredentialsApi.class);
+
     @Autowired
     private ICredentialsService credentialsService;
 
@@ -73,7 +77,20 @@ public class CredentialsApi {
     public String createLoginToken(
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.createLoginToken(credentialsUtils.fromString(credentials));
+        logger.info("Received create login token request.");
+
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\ncredentials={}",
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
+
+        var token = credentialsService.createLoginToken(credentialsUtils.fromString(credentials));
+
+        logger.debug("Responding with: {}", credentialsUtils.obfuscateConditional(token));
+
+        return token;
     }
 
     /**
@@ -89,7 +106,20 @@ public class CredentialsApi {
     public boolean deleteLoginToken(
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.deleteLoginToken(credentialsUtils.fromString(credentials));
+        logger.info("Received delete login token request.");
+
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\ncredentials={}",
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
+
+        var wasSuccessful = credentialsService.deleteLoginToken(credentialsUtils.fromString(credentials));
+
+        logger.debug("Responding with: {}", wasSuccessful);
+
+        return wasSuccessful;
     }
 
     /**
@@ -107,7 +137,26 @@ public class CredentialsApi {
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
             @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
     ) {
-        return credentialsService.registerUser(credentialsUtils.fromString(credentials), userData);
+        logger.info("Received register user request.");
+
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\ncredentials={}\nuserData={}\nuserData.id={}\nuserData.firstName={}\nuserData.lastName={}\nuserData.email={}\nuserData.phone={}",
+                credentialsUtils.obfuscateConditional(credentials),
+                userData != null ? "(non-null value)" : "null",
+                userData != null ? credentialsUtils.obfuscateConditional(userData.getId()) : "(userData is null)",
+                userData != null ? credentialsUtils.obfuscateConditional(userData.getFirstName()) : "(userData is null)",
+                userData != null ? credentialsUtils.obfuscateConditional(userData.getLastName()) : "(userData is null)",
+                userData != null ? credentialsUtils.obfuscateConditional(userData.getEmail()) : "(userData is null)",
+                userData != null ? credentialsUtils.obfuscateConditional(userData.getPhone()) : "(userData is null)"
+        );
+        //</editor-fold>
+
+        var newUser = credentialsService.registerUser(credentialsUtils.fromString(credentials), userData);
+
+        logger.debug("Responding with: {}", credentialsUtils.obfuscateConditional(newUser));
+
+        return newUser;
     }
 
     /**
@@ -124,7 +173,19 @@ public class CredentialsApi {
     public boolean checkCredentialsAreValid(
             @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
     ) {
-        return credentialsService.checkCredentialsAreValid(credentialsUtils.fromString(credentials));
-    }
+        logger.info("Received check-credentials-are-valid request.");
 
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\ncredentials={}",
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
+
+        var areValid = credentialsService.checkCredentialsAreValid(credentialsUtils.fromString(credentials));
+
+        logger.debug("Responding with: {}", areValid);
+
+        return areValid;
+    }
 }

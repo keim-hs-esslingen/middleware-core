@@ -199,6 +199,11 @@ public class ConsumerService {
         // Sending the actual requests in parallel to increase performance...
         var options = requests.parallelStream()
                 .map(request -> {
+                    if (logger.isDebugEnabled()) {
+                        var uri = request.uriBuilder().build().toUriString();
+                        logger.debug("Sending options request: {}", uri);
+                    }
+
                     try {
                         return request.go();
                     } catch (Exception e) {

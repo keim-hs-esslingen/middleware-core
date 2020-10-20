@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -128,7 +127,7 @@ public class CredentialsUtils {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("Parsed credentials with following values: ");
 
@@ -136,7 +135,8 @@ public class CredentialsUtils {
         var fields = cl.getDeclaredFields();
 
         int count = 0;
-        for (Field field : fields) {
+
+        for (var field : fields) {
             field.setAccessible(true);
 
             sb.append(field.getName());
@@ -179,7 +179,26 @@ public class CredentialsUtils {
     }
 
     /**
-     * Can be used to obfuscate the given string value.
+     * If the config property "middleware.logging.debug.obfuscate-credentials"
+     * is set to true (which is default), this method obfuscates the given
+     * input. Otherwise {@code any.toString()} will be returned.
+     *
+     * @param any
+     * @return
+     */
+    public String obfuscateConditional(Object any) {
+        if (this.obfuscateCredentialsForDebugLogging) {
+            return obfuscate(any);
+        }
+
+        return any.toString();
+    }
+
+    /**
+     * Can be used to obfuscate the given string value. In contrast to the
+     * instance method {@link conditionalObfuscate}, this method always
+     * obfuscates the input.
+     * <p>
      * <ul>
      * <li>{@code null} is rendered to {@code "null"}</li>
      * <li>Empty string is rendered to {@code "\"\""}</li>

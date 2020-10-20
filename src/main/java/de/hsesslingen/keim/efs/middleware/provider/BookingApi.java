@@ -42,7 +42,6 @@ import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import static de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils.obfuscate;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -73,71 +72,140 @@ public class BookingApi implements IBookingApi {
     public List<Booking> getBookings(BookingState state, String credentials) {
         logger.info("Received request to get bookings.");
 
-        var creds = credentialsUtils.fromString(credentials);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\nstate={}\ncredentials={}",
+                state, credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
 
-        return bookingService.getBookings(state, creds);
+        var bookings = bookingService.getBookings(state, credentialsUtils.fromString(credentials));
+
+        logger.debug("Responding with a list of {} bookings.", bookings.size());
+
+        return bookings;
     }
 
     @Override
     public Booking getBookingById(@PathVariable String id, String credentials) {
         logger.info("Received request to get a booking by id.");
-        logger.debug("Received request to get booking with id \"" + id + "\".");
 
-        var creds = credentialsUtils.fromString(credentials);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\nid={}\ncredentials={}",
+                id, credentialsUtils.obfuscateConditional(credentials)
+        );
+        //</editor-fold>
 
-        return bookingService.getBookingById(id, creds);
+        var result = bookingService.getBookingById(id, credentialsUtils.fromString(credentials));
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Responding with: {}", stringify(result));
+        }
+
+        return result;
     }
 
     @Override
-    public Booking createNewBooking(@RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            String credentials) {
+    public Booking createNewBooking(
+            @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            String credentials
+    ) {
         logger.info("Received request to create a new booking.");
 
-        debugLogAsJson(newBooking);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\ncredentials={}",
+                credentialsUtils.obfuscateConditional(credentials)
+        );
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Body of this request:\n{}", stringify(newBooking));
+        }
+        //</editor-fold>
 
         var creds = credentialsUtils.fromString(credentials);
 
-        return bookingService.createNewBooking(newBooking, creds);
+        var result = bookingService.createNewBooking(newBooking, creds);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Responding with: {}", stringify(result));
+        }
+
+        return result;
     }
 
     @Override
-    public Booking modifyBooking(@PathVariable String id,
+    public Booking modifyBooking(
+            @PathVariable String id,
             @RequestBody
             @Valid
             @ConsistentBookingDateParams Booking booking,
-            String credentials) {
+            String credentials
+    ) {
         logger.info("Received request to modify a booking.");
-        logger.debug("Received request to modify booking with id \"" + id + "\".");
 
-        debugLogAsJson(booking);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\nid={}\ncredentials={}",
+                id, credentialsUtils.obfuscateConditional(credentials)
+        );
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Body of this request:\n{}", stringify(booking));
+        }
+        //</editor-fold>
 
         var creds = credentialsUtils.fromString(credentials);
 
-        return bookingService.modifyBooking(id, booking, creds);
+        var result = bookingService.modifyBooking(id, booking, creds);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Responding with: {}", stringify(result));
+        }
+
+        return result;
     }
 
     @Override
-    public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, String credentials) {
+    public void performAction(
+            String bookingId,
+            BookingAction action,
+            String assetId,
+            String secret,
+            String more,
+            String credentials
+    ) {
         logger.info("Received request to perform an action on a booking.");
-        logger.debug("Received request to perform action {} on booking {}. (assetId={}, (obfuscated) secret={}) The value of field more is logged in the next line:\n{}", action, bookingId, assetId, obfuscate(secret), more);
 
-        var creds = credentialsUtils.fromString(credentials);
+        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug(
+                "Params of this request:\nbookingId={}\naction={}\nassetId={}\nsecret={}\ncredentials={}\nThe value of field \"more\" is logged in the next line:\n{}",
+                action, bookingId, assetId,
+                credentialsUtils.obfuscateConditional(secret),
+                credentialsUtils.obfuscateConditional(credentials),
+                more
+        );
+        //</editor-fold>
 
-        bookingService.performAction(bookingId, action, assetId, secret, more, creds);
+        bookingService.performAction(
+                bookingId, action, assetId, secret, more,
+                credentialsUtils.fromString(credentials)
+        );
     }
 
     /**
-     * Log objects on debug level for debugging purposes.
+     * Stringifies the given object. If serialization fails, a message string is
+     * returned. This method is inteded to be used for logging.
      *
      * @param o
+     * @return
      */
-    private void debugLogAsJson(Object o) {
-        if (logger.isTraceEnabled()) {
-            try {
-                logger.trace(mapper.writeValueAsString(o));
-            } catch (JsonProcessingException ex) {
-                logger.trace("Could not serialize object for debug logging. Exception occured.", ex);
-            }
+    private String stringify(Object o) {
+        try {
+            return mapper.writeValueAsString(o);
+        } catch (JsonProcessingException ex) {
+            return "Could not serialize object for logging. Exception occured.";
         }
     }
 }
