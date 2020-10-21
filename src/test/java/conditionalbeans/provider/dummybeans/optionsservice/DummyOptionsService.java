@@ -45,9 +45,4 @@ public class DummyOptionsService extends DummyBean implements IOptionsService<Ab
         throw new UnsupportedOperationException("This should never be called.");
     }
 
-    @Override
-    public List<Options> getOptions(Place from, ZonedDateTime startTime, AbstractCredentials credentials) throws AbstractEfsException {
-        throw new UnsupportedOperationException("This should never be called.");
-    }
-
 }

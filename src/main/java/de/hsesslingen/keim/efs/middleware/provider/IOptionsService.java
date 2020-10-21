@@ -68,21 +68,4 @@ public interface IOptionsService<C extends AbstractCredentials> {
             @Nullable @Valid C credentials
     ) throws AbstractEfsException;
 
-    /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional. If startTime is not provided, but required
-     * by the third party API, a default value of "Date.now()" is used.
-     *
-     * @param from User's location
-     * @param startTime Planned start-time of the trip
-     * @param credentials Credential data
-     * @return List of {@link Options}
-     */
-    @NonNull
-    public List<Options> getOptions(
-            @NonNull Place from,
-            @Nullable ZonedDateTime startTime,
-            @Nullable @Valid C credentials
-    ) throws AbstractEfsException;
-
 }

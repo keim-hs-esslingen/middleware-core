@@ -88,11 +88,4 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
         return List.of();
     }
 
-    /* (non-Javadoc)
-	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingOptions(de.hsesslingen.keim.efs.middleware.common.Place, java.time.Instant)
-     */
-    @Override
-    public List<Options> getOptions(Place from, ZonedDateTime startTime, AbstractCredentials credentials) throws AbstractEfsException {
-        return List.of();
-    }
 }
