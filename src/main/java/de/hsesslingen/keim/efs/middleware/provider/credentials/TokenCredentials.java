@@ -21,34 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package conditionalbeans.provider.dummybeans.credentialsservice;
+package de.hsesslingen.keim.efs.middleware.provider.credentials;
 
-import conditionalbeans.provider.dummybeans.DummyBean;
-import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import org.springframework.stereotype.Component;
+import java.time.ZonedDateTime;
+import javax.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 /**
+ * This credentials object contains some kind of token that is used for
+ * authentication. This can be a session token or a JWT token or any other kind
+ * of token, depending on the provider that this credential is used with.
+ * <p>
+ * Because these tokens are provider specific, they must be retrieved at the
+ * provider itself, who is responsible for providing the token in the correct
+ * format. The consumer is supposed to use the token as provided by the
+ * provider.
  *
  * @author keim
  */
-@Component
-public class DummyCredentialsService extends DummyBean implements ICredentialsService<AbstractCredentials> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class TokenCredentials extends AbstractCredentials {
 
-    @Override
-    public TokenCredentials createToken(String userId, String secret) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    @NotBlank
+    private String token;
 
-    @Override
-    public void deleteToken(String token) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isTokenValid(String token) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    @Nullable
+    private ZonedDateTime validUntil;
 
 }

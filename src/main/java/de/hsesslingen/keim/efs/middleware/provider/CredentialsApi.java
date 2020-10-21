@@ -1,3 +1,4 @@
+
 /*
  * MIT License
  * 
@@ -24,25 +25,14 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.model.Customer;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
+import static de.hsesslingen.keim.efs.mobility.exception.HttpException.internalServerError;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -53,113 +43,79 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(ICredentialsService.class)
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
-public class CredentialsApi extends ProviderApiBase {
+public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(CredentialsApi.class);
+    private static final Logger logger = getLogger(CredentialsApi.class);
 
     @Autowired
     private ICredentialsService credentialsService;
 
-    /**
-     * Allows to create a login token associated to the provided credentials.
-     * This might be necessary for some providers, but not for all.
-     *
-     * @param credentials Credential data as json content string
-     * @return Login token data in a provider specific format.
-     */
-    @PostMapping("/credentials/login-token")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Create login token", notes = "Allows to create a login-token associated to the provided credentials. This might be necessary for some providers, but not for all.")
-    public String createLoginToken(
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
-    ) {
-        logger.info("Received create login token request.");
+    @Override
+    public TokenCredentials createToken(String userId, String secret) {
+        logger.info("Received create-token request.");
 
-        var token = credentialsService.createLoginToken(parseCredentials(credentials));
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
+        logger.debug(
+                "Params of this request:\nuserId={}\nsecret={}",
+                obfuscateConditional(userId),
+                obfuscateConditional(secret)
+        );
+        //</editor-fold>
 
-        logger.debug("Responding with: {}", obfuscateConditional(token));
+        var token = credentialsService.createToken(userId, secret);
+
+        //<editor-fold defaultstate="collapsed" desc="Checking output and doing debug-logging.">
+        if (token == null) {
+            logger.error(
+                    "Your implementation of ICredentialsService (class \"{}\") returned null upon calling the \"createToken\" method. This is a violation of the ICredentialsService interface contract. If you cannot create a token, throw a meaningful exception instead, but be aware to not reveal too much information about the underlying credentials.",
+                    credentialsService.getClass()
+            );
+
+            throw internalServerError("An error occured when trying to create a token with the given credentials.");
+        } else {
+            logger.debug(
+                    "Responding with the following token:\ntoken={}\nvalidUntil={}",
+                    obfuscateConditional(token.getToken()),
+                    token.getValidUntil()
+            );
+        }
+        //</editor-fold>
 
         return token;
     }
 
-    /**
-     * Logs out (invalidates) the given login-token.
-     *
-     * @param credentials Provider specific credentials.
-     * @return true if the logout was successful. false if some error occured.
-     * @throws AbstractEfsException
-     */
-    @DeleteMapping("/credentials/login-token")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Log out user", notes = "Logs out (invalidates) the given login-token.")
-    public boolean deleteLoginToken(
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
-    ) {
-        logger.info("Received delete login token request.");
+    @Override
+    public void deleteToken(String token) {
+        logger.info("Received delete-token request.");
 
-        var wasSuccessful = credentialsService.deleteLoginToken(parseCredentials(credentials));
-
-        logger.debug("Responding with: {}", wasSuccessful);
-
-        return wasSuccessful;
-    }
-
-    /**
-     * Registers a new user at this service.
-     *
-     * @param credentials Credential data as json content string
-     * @param userData Data about the user that might be required by some
-     * providers.
-     * @return Credentials data in a provider specific format.
-     */
-    @PostMapping("/credentials/user")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Register a new user", notes = "Registers a new user at this service.")
-    public String registerUser(
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
-            @RequestBody(required = false) @ApiParam("Possibly required extra data about the new user.") Customer userData
-    ) {
-        logger.info("Received register user request.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
         logger.debug(
-                "Params of this request:\nuserData={}\nuserData.id={}\nuserData.firstName={}\nuserData.lastName={}\nuserData.email={}\nuserData.phone={}",
-                userData != null ? "(non-null value)" : "null",
-                userData != null ? obfuscateConditional(userData.getId()) : "(userData is null)",
-                userData != null ? obfuscateConditional(userData.getFirstName()) : "(userData is null)",
-                userData != null ? obfuscateConditional(userData.getLastName()) : "(userData is null)",
-                userData != null ? obfuscateConditional(userData.getEmail()) : "(userData is null)",
-                userData != null ? obfuscateConditional(userData.getPhone()) : "(userData is null)"
+                "Params of this request:\ntoken={}",
+                obfuscateConditional(token)
         );
         //</editor-fold>
 
-        var newUser = credentialsService.registerUser(parseCredentials(credentials), userData);
-
-        logger.debug("Responding with: {}", obfuscateConditional(newUser));
-
-        return newUser;
+        credentialsService.deleteToken(token);
     }
 
-    /**
-     * Checks whether the given credentials are still valid and can be used for
-     * booking purposes etc.
-     *
-     * @param credentials Provider specific credentials.
-     * @return true if valid, false if not.
-     * @throws AbstractEfsException
-     */
-    @GetMapping("/credentials/check")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given credentials are still valid and can be used for booking purposes etc.")
-    public boolean checkCredentialsAreValid(
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = true) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
-    ) {
-        logger.info("Received check-credentials-are-valid request.");
+    @Override
+    public boolean isTokenValid(String token) {
+        logger.info("Received is-token-valid request.");
 
-        var areValid = credentialsService.checkCredentialsAreValid(parseCredentials(credentials));
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
+        logger.debug(
+                "Params of this request:\ntoken={}",
+                obfuscateConditional(token)
+        );
+        //</editor-fold>
 
-        logger.debug("Responding with: {}", areValid);
+        var result = credentialsService.isTokenValid(token);
 
-        return areValid;
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging output.">
+        logger.debug("Responding with the following result: {}", result);
+        //</editor-fold>
+
+        return result;
     }
+
 }
