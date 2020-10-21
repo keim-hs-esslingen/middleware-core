@@ -30,6 +30,8 @@ package de.hsesslingen.keim.efs.middleware.provider.credentials;
  */
 public interface ICredentialsDeserializer<C extends AbstractCredentials> {
 
-    public C fromString(String credentials);
+    public C parseCredentials(String credentials);
+
+    public C parseToken(String token);
 
 }

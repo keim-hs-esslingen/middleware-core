@@ -64,7 +64,8 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             ZonedDateTime endTime,
             Integer radius,
             Boolean share,
-            String credentials
+            String credentials, 
+            String token
     ) {
         logger.info("Received request to get options.");
 
@@ -95,7 +96,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radius, share,
-                parseCredentials(credentials)
+                parseCredentials(credentials, token)
         );
 
         logger.debug("Responding with a list of {} options.", options.size());

@@ -55,4 +55,8 @@ public class TokenCredentials extends AbstractCredentials {
     @Nullable
     private ZonedDateTime validUntil;
 
+    public TokenCredentials(String token) {
+        this.token = token;
+    }
+
 }

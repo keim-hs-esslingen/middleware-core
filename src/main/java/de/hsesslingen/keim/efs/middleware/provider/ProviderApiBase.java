@@ -25,8 +25,8 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.common.ApiBase;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import static de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils.toCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +45,8 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
     private ICredentialsDeserializer<C> deserializer;
 
     /**
-     * Attempts to deserialize the given String into a credentials object. If
-     * the given string value is {@code null} or empty, {@code null} is
-     * returned.
-     * <p>
+     * Attempts to deserialize the given String into a credentials object.If the
+     * given string value is {@code null} or empty, {@code null} is returned.<p>
      * Otherwise, if an implementation of the ICredentialsService interface is
      * given and discerevd as a spring bean, that one will be autowired and used
      * for deserialization. Using this mechanism, the particular type of the
@@ -58,27 +56,27 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
      * tried to be deserialized without knowledge of the underlying structure.
      *
      * @param credentials
+     * @param token
      * @return
      */
-    protected C parseCredentials(String credentials) {
-        if (credentials == null || credentials.isEmpty()) {
-            logger.debug("No credentials provided.");
-            return null;
-        }
-
-        C creds;
+    protected C parseCredentials(String credentials, String token) {
+        C result = null;
 
         if (deserializer != null) {
-            creds = deserializer.fromString(credentials);
-        } else {
-            creds = (C) toCredentials(credentials, AbstractCredentials.class);
+            if (isNotEmpty(token)) {
+                result = deserializer.parseToken(token);
+            } else if (isNotEmpty(credentials)) {
+                result = deserializer.parseCredentials(credentials);
+            }
         }
 
-        if (logger.isDebugEnabled()) {
-            debugOutputCredentials(creds);
+        if (result == null) {
+            logger.debug("No credentials provided by client.");
+        } else if (logger.isDebugEnabled()) {
+            debugOutputCredentials(result);
         }
 
-        return creds;
+        return result;
     }
 
     /**
@@ -94,7 +92,7 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
      */
     private void debugOutputCredentials(AbstractCredentials creds) {
         if (creds == null) {
-            logger.debug("Credentials are null.");
+            logger.debug("Credentials object is null.");
             return;
         }
 

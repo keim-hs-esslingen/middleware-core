@@ -23,7 +23,6 @@
  */
 package middleware.provider.credentials;
 
-
 import org.springframework.stereotype.Component;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
@@ -38,8 +37,13 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeser
 public class TestCredentialsFactory implements ICredentialsDeserializer<AbstractCredentials> {
 
     @Override
-    public AbstractCredentials fromString(String credentials) throws AbstractEfsException {
+    public AbstractCredentials parseCredentials(String credentials) throws AbstractEfsException {
         return CredentialsUtils.toCredentials(credentials, TestCredential.class);
+    }
+
+    @Override
+    public AbstractCredentials parseToken(String token) {
+        return CredentialsUtils.toCredentials(token, TestCredential.class);
     }
 
 }

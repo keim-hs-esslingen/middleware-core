@@ -26,6 +26,8 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.model.Options;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_HEADER;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
@@ -71,6 +73,8 @@ public interface IOptionsApi {
      * @param share Defines if user can also share a ride. (Available values :
      * YES, NO)
      * @param credentials Credential data as json content string
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      * @return List of {@link Options}
      */
     @GetMapping("/options")
@@ -85,7 +89,8 @@ public interface IOptionsApi {
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
             @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
             @RequestParam(required = false) Boolean share,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
 }

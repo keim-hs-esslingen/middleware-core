@@ -37,6 +37,8 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_HEADER;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
@@ -63,6 +65,8 @@ public interface IBookingApi {
      *
      * @param state The state for which to filter the bookings.
      * @param credentials Credential data as json content string
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      * @return List of {@link Booking}
      */
     @GetMapping("/bookings")
@@ -70,7 +74,8 @@ public interface IBookingApi {
     @ApiOperation(value = "Get Bookings", notes = "Returns a list of Booking optionally filtered by their state.")
     public List<Booking> getBookings(
             @RequestParam(required = false) BookingState state,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
     /**
@@ -79,6 +84,7 @@ public interface IBookingApi {
      *
      * @param id the booking id
      * @param credentials Credential data as json content string
+     * @param token
      * @return the {@link Booking} object
      */
     @GetMapping("/bookings/{id}")
@@ -86,15 +92,17 @@ public interface IBookingApi {
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(
             @PathVariable String id,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
-    
-    
+
     /**
      * Creates a new booking and returns it.
      *
      * @param newBooking {@link NewBooking} that should be created
      * @param credentials Credential data as json content string
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      * @return {@link Booking} that was created
      */
     @PostMapping("/bookings")
@@ -103,7 +111,8 @@ public interface IBookingApi {
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
             @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
     /**
@@ -112,6 +121,8 @@ public interface IBookingApi {
      * @param id the booking id
      * @param booking the {@link Booking} object containing modified data
      * @param credentials Credential data as json content string
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      * @return the modified {@link Booking} object
      */
     @PutMapping("/bookings/{id}")
@@ -120,11 +131,12 @@ public interface IBookingApi {
     public Booking modifyBooking(
             @PathVariable String id,
             @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
     /**
-     * Can be used to perform actions on bookings. This can be used to e.g.
+     * Can be used to perform actions on bookings.This can be used to e.g.
      * unlock the door of rented vehicles, or stamp tickets...
      *
      * @param bookingId The ID of the booking on which to perform the action.
@@ -138,6 +150,8 @@ public interface IBookingApi {
      * services in order to perform this action.
      * @param credentials The credentials needed to authorize oneself to perform
      * this action.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      */
     @PostMapping("/bookings/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -148,7 +162,8 @@ public interface IBookingApi {
             @RequestParam(required = false) String assetId,
             @RequestParam(required = false) String secret,
             @RequestBody(required = false) String more,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
 }

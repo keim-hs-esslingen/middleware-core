@@ -24,6 +24,8 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_HEADER;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
@@ -57,6 +59,8 @@ public interface IPlacesApi {
      * @param radiusMeter
      * @param limitTo
      * @param credentials
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity.
      * @return
      */
     @GetMapping("/search")
@@ -66,7 +70,8 @@ public interface IPlacesApi {
             @RequestParam(required = false) @PositionAsString String areaCenter,
             @RequestParam(required = false) Integer radiusMeter,
             @RequestParam(required = false) Integer limitTo,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(value = CREDENTIALS_HEADER_DESC) String credentials
+            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(value = CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
 }

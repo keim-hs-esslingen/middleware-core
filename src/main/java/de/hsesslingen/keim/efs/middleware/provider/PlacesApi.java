@@ -57,7 +57,8 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
             String areaCenter,
             Integer radiusMeter,
             Integer limitTo,
-            String credentials
+            String credentials, 
+            String token
     ) {
         logger.info("Received request for searching places.");
 
@@ -73,7 +74,7 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
         // Delegate search to user implemented PlacesService...
         var places = service.search(
                 query, coordinates, radiusMeter, limitTo,
-                parseCredentials(credentials)
+                parseCredentials(credentials, token)
         );
 
         logger.debug("Responding with a list of {} places.", places.size());

@@ -31,8 +31,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.hsesslingen.keim.efs.middleware.model.Booking;
@@ -60,14 +58,18 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     private IBookingService bookingService;
 
     @Override
-    public List<Booking> getBookings(BookingState state, String credentials) {
+    public List<Booking> getBookings(
+            BookingState state, String credentials, String token
+    ) {
         logger.info("Received request to get bookings.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug("Params of this request:\nstate={}", state);
         //</editor-fold>
 
-        var bookings = bookingService.getBookings(state, parseCredentials(credentials));
+        var bookings = bookingService.getBookings(
+                state, parseCredentials(credentials, token)
+        );
 
         logger.debug("Responding with a list of {} bookings.", bookings.size());
 
@@ -75,14 +77,18 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     }
 
     @Override
-    public Booking getBookingById(@PathVariable String id, String credentials) {
+    public Booking getBookingById(
+            String id, String credentials, String token
+    ) {
         logger.info("Received request to get a booking by id.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug("Params of this request:\nid={}\ncredentials={}", id);
         //</editor-fold>
 
-        var result = bookingService.getBookingById(id, parseCredentials(credentials));
+        var result = bookingService.getBookingById(
+                id, parseCredentials(credentials, token)
+        );
 
         if (logger.isTraceEnabled()) {
             logger.trace("Responding with: {}", stringify(result));
@@ -93,8 +99,9 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
 
     @Override
     public Booking createNewBooking(
-            @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            String credentials
+            @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            String credentials,
+            String token
     ) {
         logger.info("Received request to create a new booking.");
 
@@ -104,9 +111,9 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         }
         //</editor-fold>
 
-        var creds = parseCredentials(credentials);
-
-        var result = bookingService.createNewBooking(newBooking, creds);
+        var result = bookingService.createNewBooking(
+                newBooking, parseCredentials(credentials, token)
+        );
 
         if (logger.isTraceEnabled()) {
             logger.trace("Responding with: {}", stringify(result));
@@ -117,11 +124,10 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
 
     @Override
     public Booking modifyBooking(
-            @PathVariable String id,
-            @RequestBody
-            @Valid
-            @ConsistentBookingDateParams Booking booking,
-            String credentials
+            String id,
+            @Valid @ConsistentBookingDateParams Booking booking,
+            String credentials,
+            String token
     ) {
         logger.info("Received request to modify a booking.");
 
@@ -133,9 +139,9 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         }
         //</editor-fold>
 
-        var creds = parseCredentials(credentials);
-
-        var result = bookingService.modifyBooking(id, booking, creds);
+        var result = bookingService.modifyBooking(
+                id, booking, parseCredentials(credentials, token)
+        );
 
         if (logger.isTraceEnabled()) {
             logger.trace("Responding with: {}", stringify(result));
@@ -151,7 +157,8 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
             String assetId,
             String secret,
             String more,
-            String credentials
+            String credentials,
+            String token
     ) {
         logger.info("Received request to perform an action on a booking.");
 
@@ -166,7 +173,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
 
         bookingService.performAction(
                 bookingId, action, assetId, secret, more,
-                parseCredentials(credentials)
+                parseCredentials(credentials, token)
         );
     }
 

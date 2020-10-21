@@ -36,7 +36,12 @@ import org.springframework.stereotype.Component;
 public class DummyCredentialsDeserializer extends DummyBean implements ICredentialsDeserializer<AbstractCredentials> {
 
     @Override
-    public AbstractCredentials fromString(String credentials) {
+    public AbstractCredentials parseCredentials(String credentials) {
+        throw new UnsupportedOperationException("This should never be called.");
+    }
+
+    @Override
+    public AbstractCredentials parseToken(String token) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

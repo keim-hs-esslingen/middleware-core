@@ -38,17 +38,17 @@ public class DummyCredentialsService extends DummyBean implements ICredentialsSe
 
     @Override
     public TokenCredentials createToken(String userId, String secret) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("This should never be called.");
     }
 
     @Override
     public void deleteToken(String token) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("This should never be called.");
     }
 
     @Override
     public boolean isTokenValid(String token) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("This should never be called.");
     }
 
 }
