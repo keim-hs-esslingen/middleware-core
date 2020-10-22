@@ -57,24 +57,12 @@ public class TokenCredentials extends AbstractCredentials {
     private String token;
 
     /**
-     * The moment until this token is valid at most, independent of usage.
+     * The moment until this token is valid.
      */
     @Nullable
     private ZonedDateTime validUntil;
 
-    /**
-     * The moment until this token is valid is it's not used in the meantime.
-     * This value of course changes while this token is in use, so updating the
-     * token might be required from time to time.
-     */
-    @Nullable
-    private ZonedDateTime validUntilIfUnused;
-
     public TokenCredentials(String token) {
-        this.token = token;
-    }
-
-    public TokenCredentials(String token, ZonedDateTime validUntil) {
         this.token = token;
     }
 
