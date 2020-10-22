@@ -38,7 +38,7 @@ import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author boesch, K.Sivarasah
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG})
 public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(OptionsApi.class);
+    private static final Logger logger = getLogger(OptionsApi.class);
 
     @Autowired
     private IOptionsService optionsService;
@@ -64,7 +64,6 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             ZonedDateTime endTime,
             Integer radius,
             Boolean share,
-            String credentials, 
             String token
     ) {
         logger.info("Received request to get options.");
@@ -96,7 +95,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radius, share,
-                parseCredentials(credentials, token)
+                parseToken(token)
         );
 
         logger.debug("Responding with a list of {} options.", options.size());

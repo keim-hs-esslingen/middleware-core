@@ -73,7 +73,7 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
         // Delegate search to user implemented PlacesService...
         var places = service.search(
                 query, coordinates, radiusMeter, limitTo,
-                parseCredentials(null, token)
+                parseToken(token)
         );
 
         logger.debug("Responding with a list of {} places.", places.size());

@@ -26,9 +26,8 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.common.ApiBase;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,35 +38,30 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ProviderApiBase<C extends AbstractCredentials> extends ApiBase {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = getLogger(getClass());
 
     @Autowired(required = false)
     private ICredentialsDeserializer<C> deserializer;
 
     /**
-     * Attempts to deserialize the given String into a credentials object.If the
+     * Attempts to deserialize the given token into a credentials object.If the
      * given string value is {@code null} or empty, {@code null} is returned.<p>
-     * Otherwise, if an implementation of the ICredentialsService interface is
-     * given and discerevd as a spring bean, that one will be autowired and used
+     * Otherwise, if an implementation of the {@link ICredentialsDeserializer}
+     * interface available as a spring bean, that one will be autowired and used
      * for deserialization. Using this mechanism, the particular type of the
      * credentials object can be controlled.
      * <p>
      * Last but not least, if such a bean is not implemented, the string is
      * tried to be deserialized without knowledge of the underlying structure.
      *
-     * @param credentials
      * @param token
      * @return
      */
-    protected C parseCredentials(String credentials, String token) {
+    protected C parseToken(String token) {
         C result = null;
 
         if (deserializer != null) {
-            if (isNotEmpty(token)) {
-                result = deserializer.parseToken(token);
-            } else if (isNotEmpty(credentials)) {
-                result = deserializer.parseCredentials(credentials);
-            }
+            result = deserializer.parseToken(token);
         }
 
         if (result == null) {

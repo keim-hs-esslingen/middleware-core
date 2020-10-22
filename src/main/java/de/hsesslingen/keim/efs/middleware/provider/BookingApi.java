@@ -40,8 +40,8 @@ import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author boesch, K.Sivarasah
@@ -52,15 +52,13 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 @Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
 public class BookingApi extends ProviderApiBase implements IBookingApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(BookingApi.class);
+    private static final Logger logger = getLogger(BookingApi.class);
 
     @Autowired
     private IBookingService bookingService;
 
     @Override
-    public List<Booking> getBookings(
-            BookingState state, String credentials, String token
-    ) {
+    public List<Booking> getBookings(BookingState state, String token) {
         logger.info("Received request to get bookings.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
@@ -68,7 +66,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         //</editor-fold>
 
         var bookings = bookingService.getBookings(
-                state, parseCredentials(credentials, token)
+                state, parseToken(token)
         );
 
         logger.debug("Responding with a list of {} bookings.", bookings.size());
@@ -77,9 +75,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     }
 
     @Override
-    public Booking getBookingById(
-            String id, String credentials, String token
-    ) {
+    public Booking getBookingById(String id, String token) {
         logger.info("Received request to get a booking by id.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
@@ -87,7 +83,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         //</editor-fold>
 
         var result = bookingService.getBookingById(
-                id, parseCredentials(credentials, token)
+                id, parseToken(token)
         );
 
         if (logger.isTraceEnabled()) {
@@ -100,7 +96,6 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     @Override
     public Booking createNewBooking(
             @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            String credentials,
             String token
     ) {
         logger.info("Received request to create a new booking.");
@@ -112,7 +107,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         //</editor-fold>
 
         var result = bookingService.createNewBooking(
-                newBooking, parseCredentials(credentials, token)
+                newBooking, parseToken(token)
         );
 
         if (logger.isTraceEnabled()) {
@@ -126,7 +121,6 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     public Booking modifyBooking(
             String id,
             @Valid @ConsistentBookingDateParams Booking booking,
-            String credentials,
             String token
     ) {
         logger.info("Received request to modify a booking.");
@@ -140,7 +134,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         //</editor-fold>
 
         var result = bookingService.modifyBooking(
-                id, booking, parseCredentials(credentials, token)
+                id, booking, parseToken(token)
         );
 
         if (logger.isTraceEnabled()) {
@@ -157,7 +151,6 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
             String assetId,
             String secret,
             String more,
-            String credentials,
             String token
     ) {
         logger.info("Received request to perform an action on a booking.");
@@ -173,7 +166,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
 
         bookingService.performAction(
                 bookingId, action, assetId, secret, more,
-                parseCredentials(credentials, token)
+                parseToken(token)
         );
     }
 

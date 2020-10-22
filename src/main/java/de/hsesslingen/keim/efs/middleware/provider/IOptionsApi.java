@@ -96,7 +96,6 @@ public interface IOptionsApi {
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
             @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
             @RequestParam(required = false) Boolean share,
-            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
