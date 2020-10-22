@@ -66,6 +66,6 @@ public interface IOptionsService<C extends AbstractCredentials> {
             @Nullable Integer radiusMeter,
             @Nullable Boolean sharingAllowed,
             @Nullable @Valid C credentials
-    ) throws AbstractEfsException;
+    );
 
 }

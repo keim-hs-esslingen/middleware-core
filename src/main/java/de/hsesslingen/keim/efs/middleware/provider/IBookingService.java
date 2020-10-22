@@ -34,7 +34,6 @@ import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import javax.validation.Valid;
 
 /**
@@ -52,7 +51,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @return List of {@link Options}
      */
     public @NonNull
-    List<Booking> getBookings(BookingState state, @NonNull @Valid C credentials) throws AbstractEfsException;
+    List<Booking> getBookings(BookingState state, @NonNull @Valid C credentials);
 
     /**
      * Creates a new Booking in BOOKED state.
@@ -61,7 +60,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @param credentials Credential data
      * @return The newly created Booking
      */
-    public Booking createNewBooking(NewBooking newBooking, @NonNull @Valid C credentials) throws AbstractEfsException;
+    public Booking createNewBooking(NewBooking newBooking, @NonNull @Valid C credentials);
 
     /**
      * Returns the Booking for the given id.
@@ -70,7 +69,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @param credentials Credential data
      * @return Booking with the given id
      */
-    public Booking getBookingById(String id, @NonNull @Valid C credentials) throws AbstractEfsException;
+    public Booking getBookingById(String id, @NonNull @Valid C credentials);
 
     /**
      * Modifies a Booking using the given Booking object
@@ -80,7 +79,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @param credentials Credential data
      * @return The current Booking after update
      */
-    public Booking modifyBooking(String id, Booking booking, @NonNull @Valid C credentials) throws AbstractEfsException;
+    public Booking modifyBooking(String id, Booking booking, @NonNull @Valid C credentials);
 
     /**
      * Can be used to perform actions on bookings. This can be used to e.g.

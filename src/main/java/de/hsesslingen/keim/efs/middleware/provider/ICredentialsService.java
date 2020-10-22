@@ -47,7 +47,9 @@ public interface ICredentialsService<C extends AbstractCredentials> {
      * token, which can be used as is.
      */
     @NonNull
-    public TokenCredentials createToken(@Nullable String userId, @NonNull String secret);
+    public TokenCredentials createToken(
+            @Nullable String userId, @NonNull String secret
+    );
 
     /**
      * Invalidates (e.g. logs out) the given token.
