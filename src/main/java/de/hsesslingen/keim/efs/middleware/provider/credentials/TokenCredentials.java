@@ -49,12 +49,24 @@ import org.springframework.lang.Nullable;
 @EqualsAndHashCode(callSuper = true)
 public class TokenCredentials extends AbstractCredentials {
 
+    /**
+     * The actual token value that should be used when calling other APIs of the
+     * provider to which this token belongs to.
+     */
     @NotBlank
     private String token;
 
+    /**
+     * The moment until this token is valid at most, independent of usage.
+     */
     @Nullable
     private ZonedDateTime validUntil;
 
+    /**
+     * The moment until this token is valid is it's not used in the meantime.
+     * This value of course changes while this token is in use, so updating the
+     * token might be required from time to time.
+     */
     @Nullable
     private ZonedDateTime validUntilIfUnused;
 
