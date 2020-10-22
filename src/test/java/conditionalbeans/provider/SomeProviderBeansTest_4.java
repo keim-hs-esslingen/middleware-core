@@ -26,9 +26,7 @@ package conditionalbeans.provider;
 import conditionalbeans.BeansCollector;
 import conditionalbeans.provider.dummybeans.bookingservice.DummyBookingService;
 import conditionalbeans.provider.dummybeans.credentialsdeserializer.DummyCredentialsDeserializer;
-import conditionalbeans.provider.dummybeans.credentialsservice.DummyCredentialsService;
 import conditionalbeans.provider.dummybeans.optionsservice.DummyOptionsService;
-import conditionalbeans.provider.dummybeans.placesservice.DummyPlacesService;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
@@ -73,13 +71,11 @@ public class SomeProviderBeansTest_4 extends BeansCollector {
 
         assertNull(credentialsApi);
         assertNull(credentialsService);
-        
+
         assertNotNull(credentialsDeserializer);
 
         assertNotNull(serviceInfoApi);
 
-        assertNull(consumerApi);
-        assertNull(consumerService);
         assertNull(sdProxy);
     }
 

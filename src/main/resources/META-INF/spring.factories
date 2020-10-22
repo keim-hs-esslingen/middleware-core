@@ -8,8 +8,6 @@ de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi,\
 de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties,\
 de.hsesslingen.keim.efs.middleware.provider.config.ProviderRegistrator,\
 de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy,\
-de.hsesslingen.keim.efs.middleware.consumer.ConsumerApi,\
-de.hsesslingen.keim.efs.middleware.consumer.config.ConsumerAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser

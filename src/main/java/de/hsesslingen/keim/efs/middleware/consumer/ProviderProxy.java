@@ -133,17 +133,17 @@ public class ProviderProxy {
      * given credentials.
      *
      * @param service
-     * @param credentials JSON-serialized credentials object, specific to each
+     * @param token JSON-serialized credentials object, specific to each
      * mobility service provider.
      * @return
      */
     public static EfsRequest<List<Booking>> buildBookingRequest(
             MobilityService service,
-            String credentials
+            String token
     ) {
         return EfsRequest
                 .get(service.getServiceUrl() + BOOKINGS_PATH)
-                .credentials(credentials)
+                .token(token)
                 .expect(new ParameterizedTypeReference<List<Booking>>() {
                 });
     }
@@ -190,7 +190,7 @@ public class ProviderProxy {
      * @param endTime
      * @param radiusMeter
      * @param share
-     * @param credentials
+     * @param token
      * @return
      */
     public static EfsRequest<List<Options>> buildOptionsRequest(
@@ -203,7 +203,7 @@ public class ProviderProxy {
             ZonedDateTime endTime,
             Integer radiusMeter,
             Boolean share,
-            String credentials
+            String token
     ) {
         // Start build the request object...
         var request = EfsRequest
@@ -234,8 +234,8 @@ public class ProviderProxy {
         if (share != null) {
             request.query("share", share);
         }
-        if (isNotBlank(credentials)) {
-            request.credentials(credentials);
+        if (isNotBlank(token)) {
+            request.token(token);
         }
 
         return request;

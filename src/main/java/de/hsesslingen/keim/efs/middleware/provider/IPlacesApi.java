@@ -24,12 +24,10 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.CREDENTIALS_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_HEADER;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -39,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 
 /**
  * This API serves for querying information about locations belonging to a
@@ -70,7 +70,7 @@ public interface IPlacesApi {
             @RequestParam(required = false) @PositionAsString String areaCenter,
             @RequestParam(required = false) Integer radiusMeter,
             @RequestParam(required = false) Integer limitTo,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(value = CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(value = CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 

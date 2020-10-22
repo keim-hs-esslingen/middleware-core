@@ -76,8 +76,6 @@ public class SomeProviderBeansTest_2 extends BeansCollector {
 
         assertNotNull(serviceInfoApi);
 
-        assertNull(consumerApi);
-        assertNull(consumerService);
         assertNull(sdProxy);
     }
 

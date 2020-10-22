@@ -37,12 +37,8 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.CREDENTIALS_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_HEADER;
-import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
-import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_DESC;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER_NAME;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -52,6 +48,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
+import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
+import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 
 /**
  * @author k.sivarasah 17 Oct 2019
@@ -74,7 +74,7 @@ public interface IBookingApi {
     @ApiOperation(value = "Get Bookings", notes = "Returns a list of Booking optionally filtered by their state.")
     public List<Booking> getBookings(
             @RequestParam(required = false) BookingState state,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
@@ -92,7 +92,7 @@ public interface IBookingApi {
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(
             @PathVariable String id,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
@@ -111,7 +111,7 @@ public interface IBookingApi {
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
             @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
@@ -131,7 +131,7 @@ public interface IBookingApi {
     public Booking modifyBooking(
             @PathVariable String id,
             @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
@@ -162,7 +162,7 @@ public interface IBookingApi {
             @RequestParam(required = false) String assetId,
             @RequestParam(required = false) String secret,
             @RequestBody(required = false) String more,
-            @RequestHeader(name = CREDENTIALS_HEADER_NAME, required = false) @ApiParam(CREDENTIALS_HEADER_DESC) String credentials,
+            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 

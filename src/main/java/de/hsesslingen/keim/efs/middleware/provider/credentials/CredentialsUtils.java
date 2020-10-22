@@ -168,7 +168,7 @@ public class CredentialsUtils {
         }
 
         Map<String, String> headerElement = new HashMap<>();
-        headerElement.put(EfsRequest.CREDENTIALS_HEADER_NAME, toJsonString(credentialObject));
+        headerElement.put(EfsRequest.CREDENTIALS_HEADER, toJsonString(credentialObject));
         return headerElement;
     }
 }

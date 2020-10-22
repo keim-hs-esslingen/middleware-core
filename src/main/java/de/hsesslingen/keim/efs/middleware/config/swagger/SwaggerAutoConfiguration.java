@@ -56,7 +56,6 @@ public class SwaggerAutoConfiguration {
     public static final String OPTIONS_API_TAG = "Options Api";
     public static final String BOOKING_API_TAG = "Booking Api";
     public static final String CREDENTIALS_API_TAG = "Credentials Api";
-    public static final String CONSUMER_API_TAG = "Consumer Api";
     public static final String FLEX_DATETIME_DESC = "Date time value in a flexible format. "
             + "(Epoch millis, ISO zoned date time, ISO local date time, ISO date only, "
             + "ISO time only, ISO time only with offest e.g. +01:00, ... "
@@ -79,9 +78,6 @@ public class SwaggerAutoConfiguration {
     @Value("${middleware.provider.credentials-api.enabled:false}")
     private boolean credentialsEnabled;
 
-    @Value("${middleware.consumer.api.enabled:false}")
-    private boolean consumerEnabled;
-
     @Bean
     @ConditionalOnMissingBean
     public Docket api() {
@@ -102,7 +98,7 @@ public class SwaggerAutoConfiguration {
     }
 
     private void setTags(Docket docket) {
-        var tags = new ArrayList<Tag>(5);
+        var tags = new ArrayList<Tag>(4);
 
         if (placesEnabled) {
             tags.add(new Tag(PLACES_API_TAG, "API for searching provider specific places, like bus stops...", 1));
@@ -120,10 +116,6 @@ public class SwaggerAutoConfiguration {
             tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related API for managing with credentials of remote APIs.", 3));
         }
 
-        if (consumerEnabled) {
-            tags.add(new Tag(CONSUMER_API_TAG, "API provided for consuming mobility services.", 4));
-        }
-
         if (!tags.isEmpty()) {
             if (tags.size() > 1) {
                 docket.tags(tags.get(0), tags.subList(1, tags.size()).toArray(new Tag[0]));
@@ -136,7 +128,7 @@ public class SwaggerAutoConfiguration {
     private ApiInfo apiInfo() {
         String serviceInfo = String.format("Middleware Service (%s)", serviceName);
         return new ApiInfo(serviceInfo,
-                "API description of " + serviceInfo, "V1.1", null,
+                "API description of " + serviceInfo, "V1.2", null,
                 new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null),
                 null, null, Collections.emptyList());
     }

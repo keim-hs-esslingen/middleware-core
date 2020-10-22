@@ -62,9 +62,6 @@ public class ConsumerBeansTest extends BeansCollector {
         assertNull(credentialsDeserializer);
 
         assertNull(serviceInfoApi);
-
-        assertNotNull(consumerApi);
-        assertNotNull(consumerService);
         assertNotNull(sdProxy);
     }
 

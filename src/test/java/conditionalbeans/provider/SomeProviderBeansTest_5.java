@@ -25,9 +25,7 @@ package conditionalbeans.provider;
 
 import conditionalbeans.BeansCollector;
 import conditionalbeans.provider.dummybeans.bookingservice.DummyBookingService;
-import conditionalbeans.provider.dummybeans.credentialsdeserializer.DummyCredentialsDeserializer;
 import conditionalbeans.provider.dummybeans.credentialsservice.DummyCredentialsService;
-import conditionalbeans.provider.dummybeans.optionsservice.DummyOptionsService;
 import conditionalbeans.provider.dummybeans.placesservice.DummyPlacesService;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -49,8 +47,7 @@ import org.springframework.test.context.junit4.SpringRunner;
             DummyPlacesService.class,
             //DummyOptionsService.class,
             DummyBookingService.class,
-            DummyCredentialsService.class,
-            //DummyCredentialsDeserializer.class
+            DummyCredentialsService.class, //DummyCredentialsDeserializer.class
         }
 )
 @ActiveProfiles("beans-provider")
@@ -73,13 +70,11 @@ public class SomeProviderBeansTest_5 extends BeansCollector {
 
         assertNotNull(credentialsApi);
         assertNotNull(credentialsService);
-        
+
         assertNull(credentialsDeserializer);
 
         assertNotNull(serviceInfoApi);
 
-        assertNull(consumerApi);
-        assertNull(consumerService);
         assertNull(sdProxy);
     }
 

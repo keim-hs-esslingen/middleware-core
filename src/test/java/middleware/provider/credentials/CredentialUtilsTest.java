@@ -124,7 +124,7 @@ public class CredentialUtilsTest {
 		Map<String, String> result = CredentialsUtils.toHttpHeaderElement(credentialObject);
 		assertNotNull(result);
 		Map<String, String> headerMap = new HashMap<>();
-		headerMap.put(EfsRequest.CREDENTIALS_HEADER_NAME, credentialString);
+		headerMap.put(EfsRequest.CREDENTIALS_HEADER, credentialString);
 		assertEquals(headerMap, result);
 	}
 	

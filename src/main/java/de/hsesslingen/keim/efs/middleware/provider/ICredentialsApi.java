@@ -25,6 +25,9 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.USER_ID_HEADER;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
@@ -40,15 +43,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 public interface ICredentialsApi {
 
-    public static final String USER_ID_HEADER = "X-User-ID";
+    public static final String CREDENTIALS_DESCRIPTION = "Credential data as json content string";
     public static final String USER_ID_DESCRIPTION = "A string valud that uniquely identifies a user. (e.g. an email adress, a username, ...)";
-    public static final String SECRET_HEADER = "X-Secret";
     public static final String SECRET_DESCRIPTION = "The secret that authenticates a user.";
-    public static final String TOKEN_HEADER = "X-Token";
     public static final String TOKEN_DESCRIPTION = "A token that identifies and authenticates a user, sometimes with a limited duration of validity.";
 
     /**
-     * Allows creation of tokens based on the given user-id and secret.The
+     * Allows creation of tokens based on the given user-id and secret. The
      * content of this token is provider specific and can be used as is.
      *
      * @param userId A string valud that uniquely identifies a user. (e.g. an
