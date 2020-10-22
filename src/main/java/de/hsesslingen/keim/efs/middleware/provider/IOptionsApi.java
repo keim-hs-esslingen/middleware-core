@@ -129,7 +129,7 @@ public interface IOptionsApi {
             Boolean share,
             String token
     ) {
-        return buildOptionsRequest(serviceUrl, from, null, to, null, startTime, endTime, radiusMeter, share, token);
+        return buildSearchRequest(serviceUrl, from, null, to, null, startTime, endTime, radiusMeter, share, token);
     }
 
     /**
@@ -153,7 +153,7 @@ public interface IOptionsApi {
      * @param token
      * @return
      */
-    public static EfsRequest<List<Options>> buildOptionsRequest(
+    public static EfsRequest<List<Options>> buildSearchRequest(
             String serviceUrl,
             String from,
             String fromPlaceId,

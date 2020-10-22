@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
-import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildOptionsRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
 
 /**
  *
@@ -82,7 +82,7 @@ public class ProviderProxy {
             Boolean share,
             String token
     ) {
-        return buildOptionsRequest(service.getServiceUrl(), from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, share, token);
+        return buildSearchRequest(service.getServiceUrl(), from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, share, token);
     }
 
     /**
@@ -108,7 +108,7 @@ public class ProviderProxy {
             Boolean share,
             String token
     ) {
-        return buildOptionsRequest(service.getServiceUrl(), from, null, to, null, startTime, endTime, radiusMeter, share, token);
+        return buildSearchRequest(service.getServiceUrl(), from, null, to, null, startTime, endTime, radiusMeter, share, token);
     }
 
     /**
