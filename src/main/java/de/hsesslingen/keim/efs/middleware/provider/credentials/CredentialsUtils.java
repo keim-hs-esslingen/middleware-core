@@ -31,8 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,8 +51,6 @@ import org.springframework.util.StringUtils;
  * @author k.sivarasah 12 Nov 2019
  * @author b.oesch
  */
-@Service
-@Lazy
 public class CredentialsUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(CredentialsUtils.class);
