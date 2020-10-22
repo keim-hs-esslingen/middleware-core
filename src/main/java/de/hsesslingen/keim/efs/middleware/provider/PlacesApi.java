@@ -30,7 +30,7 @@ import de.hsesslingen.keim.efs.middleware.model.Place;
 import io.swagger.annotations.Api;
 import java.util.List;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
 public class PlacesApi extends ProviderApiBase implements IPlacesApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlacesApi.class);
+    private static final Logger logger = getLogger(PlacesApi.class);
 
     @Autowired
     private IPlacesService service;
@@ -57,7 +57,6 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
             String areaCenter,
             Integer radiusMeter,
             Integer limitTo,
-            String credentials, 
             String token
     ) {
         logger.info("Received request for searching places.");
@@ -74,7 +73,7 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
         // Delegate search to user implemented PlacesService...
         var places = service.search(
                 query, coordinates, radiusMeter, limitTo,
-                parseCredentials(credentials, token)
+                parseCredentials(null, token)
         );
 
         logger.debug("Responding with a list of {} places.", places.size());

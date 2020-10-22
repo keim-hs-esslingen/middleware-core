@@ -24,10 +24,12 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.CREDENTIALS_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.OPTIONS_PATH;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -37,8 +39,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 
 /**
  * This API serves for querying information about locations belonging to a
@@ -58,7 +62,6 @@ public interface IPlacesApi {
      * @param areaCenter
      * @param radiusMeter
      * @param limitTo
-     * @param credentials
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      * @return
@@ -70,8 +73,55 @@ public interface IPlacesApi {
             @RequestParam(required = false) @PositionAsString String areaCenter,
             @RequestParam(required = false) Integer radiusMeter,
             @RequestParam(required = false) Integer limitTo,
-            @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(value = CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
+
+    /**
+     * Assembles a get-places request for the service with the given url and the
+     * given params.The params are checked for null values and added only if
+     * they are present and sensible.<p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param query
+     * @param areaCenter
+     * @param radiusMeter
+     * @param limitTo
+     * @param token
+     * @return
+     */
+    public static EfsRequest<List<Place>> buildSearchRequest(
+            String serviceUrl,
+            String query,
+            String areaCenter,
+            Integer radiusMeter,
+            Integer limitTo,
+            String token
+    ) {
+        // Start build the request object...
+        var request = EfsRequest
+                .get(serviceUrl + OPTIONS_PATH)
+                .query("query", query)
+                .expect(new ParameterizedTypeReference<List<Place>>() {
+                });
+
+        // Building query string by adding existing params...
+        if (isNotBlank(areaCenter)) {
+            request.query("areaCenter", areaCenter);
+        }
+        if (radiusMeter != null) {
+            request.query("radiusMeter", radiusMeter);
+        }
+        if (limitTo != null) {
+            request.query("limitTo", limitTo);
+        }
+        if (isNotBlank(token)) {
+            request.token(token);
+        }
+
+        return request;
+    }
 
 }

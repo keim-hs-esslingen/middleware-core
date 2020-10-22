@@ -50,8 +50,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @author k.sivarasah 17 Oct 2019
@@ -59,6 +63,8 @@ import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IBookingApi {
+
+    public static final String BOOKINGS_PATH = "/bookings";
 
     /**
      * Returns a list of bookings.
@@ -69,7 +75,7 @@ public interface IBookingApi {
      * with a limited duration of validity.
      * @return List of {@link Booking}
      */
-    @GetMapping("/bookings")
+    @GetMapping(BOOKINGS_PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Bookings", notes = "Returns a list of Booking optionally filtered by their state.")
     public List<Booking> getBookings(
@@ -87,7 +93,7 @@ public interface IBookingApi {
      * @param token
      * @return the {@link Booking} object
      */
-    @GetMapping("/bookings/{id}")
+    @GetMapping(BOOKINGS_PATH + "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(
@@ -105,7 +111,7 @@ public interface IBookingApi {
      * with a limited duration of validity.
      * @return {@link Booking} that was created
      */
-    @PostMapping("/bookings")
+    @PostMapping(BOOKINGS_PATH)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider "
             + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
@@ -125,7 +131,7 @@ public interface IBookingApi {
      * with a limited duration of validity.
      * @return the modified {@link Booking} object
      */
-    @PutMapping("/bookings/{id}")
+    @PutMapping(BOOKINGS_PATH + "/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
     public Booking modifyBooking(
@@ -153,7 +159,7 @@ public interface IBookingApi {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      */
-    @PostMapping("/bookings/{bookingId}/action/{action}")
+    @PostMapping(BOOKINGS_PATH + "/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
     public void performAction(
@@ -165,5 +171,29 @@ public interface IBookingApi {
             @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
+
+    /**
+     * Assembles a booking request for the the service with the given url using
+     * the given credentials.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param token JSON-serialized credentials object, specific to each
+     * mobility service provider.
+     * @return
+     */
+    public static EfsRequest<List<Booking>> buildBookingRequest(
+            String serviceUrl,
+            String token
+    ) {
+        return EfsRequest
+                .get(serviceUrl + BOOKINGS_PATH)
+                .token(token)
+                .expect(new ParameterizedTypeReference<List<Booking>>() {
+                });
+    }
 
 }

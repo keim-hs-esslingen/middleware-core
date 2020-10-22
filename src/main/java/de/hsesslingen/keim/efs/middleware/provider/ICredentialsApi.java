@@ -25,12 +25,15 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.USER_ID_HEADER;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +45,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author keim
  */
 public interface ICredentialsApi {
+
+    public static final String CREDENTIALS_TOKEN_PATH = "/credentials/token";
 
     public static final String CREDENTIALS_DESCRIPTION = "Credential data as json content string";
     public static final String USER_ID_DESCRIPTION = "A string valud that uniquely identifies a user. (e.g. an email adress, a username, ...)";
@@ -58,7 +63,7 @@ public interface ICredentialsApi {
      * @return An instance of TokenCredentials that contains a provider specific
      * token, which can be used as is.
      */
-    @PostMapping("/credentials/token")
+    @PostMapping(CREDENTIALS_TOKEN_PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create tokens.", notes = "Allows creation of tokens based on the given user-id and secret. The content of this token is provider specific and can be used as is.")
     public TokenCredentials createToken(
@@ -73,7 +78,7 @@ public interface ICredentialsApi {
      * with a limited duration of validity.
      * @throws AbstractEfsException
      */
-    @DeleteMapping("/credentials/token")
+    @DeleteMapping(CREDENTIALS_TOKEN_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Invalidate tokens.", notes = "Invalidates (e.g. logs out) the given token.")
     public void deleteToken(
@@ -90,11 +95,75 @@ public interface ICredentialsApi {
      * @return true if valid, false if not.
      * @throws AbstractEfsException
      */
-    @GetMapping("/credentials/token")
+    @GetMapping(CREDENTIALS_TOKEN_PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given token is still valid.")
     public boolean isTokenValid(
             @RequestHeader(name = TOKEN_HEADER) @ApiParam(TOKEN_DESCRIPTION) String token
     );
 
+    /**
+     * Assembles a request to retrieve token credentials at the service with the
+     * given url.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param userId
+     * @param secret
+     * @return
+     */
+    public static EfsRequest<TokenCredentials> buildCreateTokenRequest(
+            String serviceUrl,
+            String userId,
+            String secret
+    ) {
+        return EfsRequest.post(serviceUrl + CREDENTIALS_TOKEN_PATH)
+                .expect(TokenCredentials.class)
+                .userIdAndSecret(userId, secret);
+    }
+
+    /**
+     * Assembles a request to invalidate (e.g. log out) a token at the service
+     * with the given url.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param token The token which should be invalidated.
+     * @return
+     */
+    public static EfsRequest<Void> buildDeleteTokenRequest(
+            String serviceUrl,
+            String token
+    ) {
+        return EfsRequest.delete(serviceUrl + CREDENTIALS_TOKEN_PATH)
+                .expect(Void.class)
+                .token(token);
+    }
+
+    /**
+     * Assembles a request to check the validity of a token at the service with
+     * the given url.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param token The token which should be invalidated.
+     * @return
+     */
+    public static EfsRequest<Boolean> buildIsTokenValidRequest(
+            String serviceUrl,
+            String token
+    ) {
+        return EfsRequest.get(serviceUrl + CREDENTIALS_TOKEN_PATH)
+                .expect(Boolean.class)
+                .token(token);
+    }
 }

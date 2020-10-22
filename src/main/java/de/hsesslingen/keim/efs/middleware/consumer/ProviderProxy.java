@@ -25,24 +25,21 @@ package de.hsesslingen.keim.efs.middleware.consumer;
 
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
+import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildBookingRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import org.springframework.core.ParameterizedTypeReference;
+import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildOptionsRequest;
 
 /**
  *
  * @author keim
  */
 public class ProviderProxy {
-
-    private static final String CREDENTIALS_PATH = "/credentials";
-    private static final String BOOKINGS_PATH = "/bookings";
-    private static final String OPTIONS_PATH = "/options";
 
     private final MobilityService service;
 
@@ -71,7 +68,7 @@ public class ProviderProxy {
      * @param endTime
      * @param radiusMeter
      * @param share
-     * @param credentials
+     * @param token
      * @return
      */
     public EfsRequest<List<Options>> createOptionsRequest(
@@ -83,9 +80,9 @@ public class ProviderProxy {
             ZonedDateTime endTime,
             Integer radiusMeter,
             Boolean share,
-            String credentials
+            String token
     ) {
-        return buildOptionsRequest(service.getServiceUrl(), from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, share, credentials);
+        return buildOptionsRequest(service.getServiceUrl(), from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, share, token);
     }
 
     /**
@@ -99,7 +96,7 @@ public class ProviderProxy {
      * @param endTime
      * @param radiusMeter
      * @param share
-     * @param credentials
+     * @param token
      * @return
      */
     public EfsRequest<List<Options>> createOptionsRequest(
@@ -109,136 +106,23 @@ public class ProviderProxy {
             ZonedDateTime endTime,
             Integer radiusMeter,
             Boolean share,
-            String credentials
+            String token
     ) {
-        return buildOptionsRequest(service.getServiceUrl(), from, null, to, null, startTime, endTime, radiusMeter, share, credentials);
+        return buildOptionsRequest(service.getServiceUrl(), from, null, to, null, startTime, endTime, radiusMeter, share, token);
     }
 
     /**
      * Assembles a get-booking request, specific to the mobility service
      * provider of this proxy, using the given credentials.
      *
-     * @param credentials JSON-serialized credentials object, specific to each
-     * mobility service provider.
-     * @return
-     */
-    public EfsRequest<List<Booking>> createGetBookingRequest(
-            String credentials
-    ) {
-        return buildBookingRequest(service, credentials);
-    }
-
-    /**
-     * Assembles a booking request for the given mobility service using the
-     * given credentials.
-     *
-     * @param service
      * @param token JSON-serialized credentials object, specific to each
      * mobility service provider.
      * @return
      */
-    public static EfsRequest<List<Booking>> buildBookingRequest(
-            MobilityService service,
+    public EfsRequest<List<Booking>> createGetBookingRequest(
             String token
     ) {
-        return EfsRequest
-                .get(service.getServiceUrl() + BOOKINGS_PATH)
-                .token(token)
-                .expect(new ParameterizedTypeReference<List<Booking>>() {
-                });
-    }
-
-    /**
-     * Assembles a get-options request for the given provider service url with
-     * the given params. The params are checked for null values and added only
-     * if they are present and sensible.
-     *
-     * @param serviceUrl
-     * @param from
-     * @param to
-     * @param startTime
-     * @param endTime
-     * @param radiusMeter
-     * @param share
-     * @param credentials
-     * @return
-     */
-    public static EfsRequest<List<Options>> buildOptionsRequest(
-            String serviceUrl,
-            String from,
-            String to,
-            ZonedDateTime startTime,
-            ZonedDateTime endTime,
-            Integer radiusMeter,
-            Boolean share,
-            String credentials
-    ) {
-        return buildOptionsRequest(serviceUrl, from, null, to, null, startTime, endTime, radiusMeter, share, credentials);
-    }
-
-    /**
-     * Assembles a get-options request for the given provider service url with
-     * the given params. The params are checked for null values and added only
-     * if they are present and sensible.
-     *
-     * @param serviceUrl
-     * @param from
-     * @param fromPlaceId
-     * @param to
-     * @param toPlaceId
-     * @param startTime
-     * @param endTime
-     * @param radiusMeter
-     * @param share
-     * @param token
-     * @return
-     */
-    public static EfsRequest<List<Options>> buildOptionsRequest(
-            String serviceUrl,
-            String from,
-            String fromPlaceId,
-            String to,
-            String toPlaceId,
-            ZonedDateTime startTime,
-            ZonedDateTime endTime,
-            Integer radiusMeter,
-            Boolean share,
-            String token
-    ) {
-        // Start build the request object...
-        var request = EfsRequest
-                .get(serviceUrl + OPTIONS_PATH)
-                .query("from", from)
-                .expect(new ParameterizedTypeReference<List<Options>>() {
-                });
-
-        // Building query string by adding existing params...
-        if (isNotBlank(fromPlaceId)) {
-            request.query("fromPlaceId", fromPlaceId);
-        }
-        if (isNotBlank(to)) {
-            request.query("to", to);
-        }
-        if (isNotBlank(toPlaceId)) {
-            request.query("toPlaceId", toPlaceId);
-        }
-        if (startTime != null) {
-            request.query("startTime", startTime.toInstant().toEpochMilli());
-        }
-        if (endTime != null) {
-            request.query("endTime", endTime.toInstant().toEpochMilli());
-        }
-        if (radiusMeter != null && radiusMeter >= 0) {
-            request.query("radius", radiusMeter);
-        }
-        if (share != null) {
-            request.query("share", share);
-        }
-        if (isNotBlank(token)) {
-            request.token(token);
-        }
-
-        return request;
+        return buildBookingRequest(service.getServiceUrl(), token);
     }
 
 }

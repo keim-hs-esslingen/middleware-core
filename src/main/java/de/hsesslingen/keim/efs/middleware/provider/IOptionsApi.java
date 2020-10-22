@@ -30,6 +30,8 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.CREDEN
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiParam;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -42,6 +44,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -50,6 +55,8 @@ import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IOptionsApi {
+
+    public static final String OPTIONS_PATH = "/options";
 
     /**
      * Returns available transport options for given coordinate.Start time can
@@ -77,7 +84,7 @@ public interface IOptionsApi {
      * with a limited duration of validity.
      * @return List of {@link Options}
      */
-    @GetMapping("/options")
+    @GetMapping(OPTIONS_PATH)
     @ResponseStatus(HttpStatus.OK)
     @EfsSwaggerGetBookingOptions
     public List<Options> getOptions(
@@ -92,5 +99,106 @@ public interface IOptionsApi {
             @RequestHeader(name = CREDENTIALS_HEADER, required = false) @ApiParam(CREDENTIALS_DESCRIPTION) String credentials,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
+
+    /**
+     * Assembles a get-options request for the given provider service url with
+     * the given params. The params are checked for null values and added only
+     * if they are present and sensible.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to et the API url of a
+     * mobility service. The returned request can be send using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param from
+     * @param to
+     * @param startTime
+     * @param endTime
+     * @param radiusMeter
+     * @param share
+     * @param token
+     * @return
+     */
+    public static EfsRequest<List<Options>> buildSearchRequest(
+            String serviceUrl,
+            String from,
+            String to,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radiusMeter,
+            Boolean share,
+            String token
+    ) {
+        return buildOptionsRequest(serviceUrl, from, null, to, null, startTime, endTime, radiusMeter, share, token);
+    }
+
+    /**
+     * Assembles a get-options request for the service with the given url and
+     * the given params. The params are checked for null values and added only
+     * if they are present and sensible.
+     * <p>
+     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
+     * mobility service. The returned request can be sent using
+     * {@code request.go()} which will return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl
+     * @param from
+     * @param fromPlaceId
+     * @param to
+     * @param toPlaceId
+     * @param startTime
+     * @param endTime
+     * @param radiusMeter
+     * @param share
+     * @param token
+     * @return
+     */
+    public static EfsRequest<List<Options>> buildOptionsRequest(
+            String serviceUrl,
+            String from,
+            String fromPlaceId,
+            String to,
+            String toPlaceId,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radiusMeter,
+            Boolean share,
+            String token
+    ) {
+        // Start build the request object...
+        var request = EfsRequest
+                .get(serviceUrl + OPTIONS_PATH)
+                .query("from", from)
+                .expect(new ParameterizedTypeReference<List<Options>>() {
+                });
+
+        // Building query string by adding existing params...
+        if (isNotBlank(fromPlaceId)) {
+            request.query("fromPlaceId", fromPlaceId);
+        }
+        if (isNotBlank(to)) {
+            request.query("to", to);
+        }
+        if (isNotBlank(toPlaceId)) {
+            request.query("toPlaceId", toPlaceId);
+        }
+        if (startTime != null) {
+            request.query("startTime", startTime.toInstant().toEpochMilli());
+        }
+        if (endTime != null) {
+            request.query("endTime", endTime.toInstant().toEpochMilli());
+        }
+        if (radiusMeter != null && radiusMeter >= 0) {
+            request.query("radius", radiusMeter);
+        }
+        if (share != null) {
+            request.query("share", share);
+        }
+        if (isNotBlank(token)) {
+            request.token(token);
+        }
+
+        return request;
+    }
 
 }
