@@ -26,8 +26,6 @@ package de.hsesslingen.keim.efs.middleware.provider.credentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,21 +152,4 @@ public class CredentialsUtils {
         return null;
     }
 
-    /**
-     * Converts the given credential-object to a Map that can be used as header
-     * parameter
-     *
-     * @param credentialObject The credential-object
-     * @return Map with "x-credentials" as key and JSON content String of
-     * credential-object as value
-     */
-    public static Map<String, String> toHttpHeaderElement(Object credentialObject) {
-        if (credentialObject == null) {
-            return null;
-        }
-
-        Map<String, String> headerElement = new HashMap<>();
-        headerElement.put(EfsRequest.CREDENTIALS_HEADER, toJsonString(credentialObject));
-        return headerElement;
-    }
 }

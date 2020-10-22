@@ -33,7 +33,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
-import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
 
 /**
  *

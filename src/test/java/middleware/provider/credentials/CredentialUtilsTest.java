@@ -34,7 +34,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 
 /**
  * @author k.sivarasah
@@ -118,19 +117,5 @@ public class CredentialUtilsTest {
 		Map<String, String> result = CredentialsUtils.toMap(null);
 		assertNull(result);
 	}
-	
-	@Test
-	public void testFromObjectToHeaderMap() {
-		Map<String, String> result = CredentialsUtils.toHttpHeaderElement(credentialObject);
-		assertNotNull(result);
-		Map<String, String> headerMap = new HashMap<>();
-		headerMap.put(EfsRequest.CREDENTIALS_HEADER, credentialString);
-		assertEquals(headerMap, result);
-	}
-	
-	@Test
-	public void testFromObjectToHeaderMap_null() {
-		Map<String, String> result = CredentialsUtils.toHttpHeaderElement(null);
-		assertNull(result);
-	}
+
 }

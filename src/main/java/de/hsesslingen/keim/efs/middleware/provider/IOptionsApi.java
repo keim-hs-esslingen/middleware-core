@@ -26,7 +26,6 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.CREDENTIALS_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.CREDENTIALS_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
@@ -79,7 +77,6 @@ public interface IOptionsApi {
      * in ISO format.
      * @param share Defines if user can also share a ride. (Available values :
      * YES, NO)
-     * @param credentials Credential data as json content string
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      * @return List of {@link Options}
