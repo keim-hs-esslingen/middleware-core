@@ -71,7 +71,7 @@ public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
                     credentialsService.getClass()
             );
 
-            throw internalServerError("An error occured when trying to create a token with the given credentials.");
+            throw internalServerError("An error occured when trying to create a token with the given userId and secret.");
         } else {
             logger.debug(
                     "Responding with the following token:\ntoken={}\nvalidUntil={}",

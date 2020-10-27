@@ -79,7 +79,9 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         logger.info("Received request to get a booking by id.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nid={}\ncredentials={}", id);
+        logger.debug("Params of this request:\nid={}\ntoken={}",
+                id, obfuscateConditional(token)
+        );
         //</editor-fold>
 
         var result = bookingService.getBookingById(

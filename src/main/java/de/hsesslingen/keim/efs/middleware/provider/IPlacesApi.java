@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.OPTIONS_PATH;
@@ -91,14 +92,15 @@ public interface IPlacesApi {
      * @param query
      * @param areaCenter
      * @param radiusMeter
-     * @param limitTo
+     * @param limitTo Limits the number of results to this value. If
+     * {@code null}, to limit is used.
      * @param token
      * @return
      */
     public static EfsRequest<List<Place>> buildSearchRequest(
             String serviceUrl,
             String query,
-            String areaCenter,
+            ICoordinates areaCenter,
             Integer radiusMeter,
             Integer limitTo,
             String token
@@ -111,8 +113,8 @@ public interface IPlacesApi {
                 });
 
         // Building query string by adding existing params...
-        if (isNotBlank(areaCenter)) {
-            request.query("areaCenter", areaCenter);
+        if (areaCenter != null) {
+            request.query("areaCenter", areaCenter.getLat() + "," + areaCenter.getLon());
         }
         if (radiusMeter != null) {
             request.query("radiusMeter", radiusMeter);
