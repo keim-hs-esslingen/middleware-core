@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -61,20 +62,25 @@ public class MiddlewareService {
     private static Logger logger = getLogger(MiddlewareService.class);
 
     private static final Function<String, String> defaultTokenGetter = (serviceId) -> null;
-    
+
     @Autowired
     private ServiceDirectoryProxy sdProxy;
 
-    private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
-    
+    private CompletableFuture<List<ProviderProxy>> providersFuture;
 
     @PostConstruct
-    void init() {
+    @Scheduled(fixedRateString = "${middleware.refresh-services-cache-rate:86400000}")
+    public void refreshAvailableServices() {
+        logger.info("Refreshing available services from service-directory.");
+
+        providersFuture = new CompletableFuture<>();
+
         var services = sdProxy.getAll().stream()
                 .map(s -> new ProviderProxy(s))
                 .collect(toList());
 
         providersFuture.complete(services);
+        logger.debug("Done refreshing available services.");
     }
 
     public List<ProviderProxy> getProviders() {
