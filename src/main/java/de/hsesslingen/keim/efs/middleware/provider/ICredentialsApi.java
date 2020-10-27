@@ -103,16 +103,17 @@ public interface ICredentialsApi {
     );
 
     /**
-     * Assembles a request to retrieve token credentials at the service with the
-     * given url.
+     * Assembles a request, matching the {@code POST /token} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
-     * @param userId
-     * @param secret
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param userId The provider specific user-id for which to create a token.
+     * @param secret The secret that belongs to the given user-id, which
+     * authenticates the user.
      * @return
      */
     public static EfsRequest<TokenCredentials> buildCreateTokenRequest(
@@ -126,14 +127,14 @@ public interface ICredentialsApi {
     }
 
     /**
-     * Assembles a request to invalidate (e.g. log out) a token at the service
-     * with the given url.
+     * Assembles a request, matching the {@code DELETE /token} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
      * @return
      */
@@ -147,14 +148,14 @@ public interface ICredentialsApi {
     }
 
     /**
-     * Assembles a request to check the validity of a token at the service with
-     * the given url.
+     * Assembles a request, matching the {@code GET /token} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
      * @return
      */

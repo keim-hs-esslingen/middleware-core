@@ -75,7 +75,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
     }
 
     @Override
-    public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, AbstractCredentials credentials) {
+    public void performAction(String bookingId, BookingAction action, String secret, AbstractCredentials credentials) {
 
     }
 

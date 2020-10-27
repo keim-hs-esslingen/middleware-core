@@ -62,7 +62,7 @@ public class DummyBookingService extends DummyBean implements IBookingService<Ab
     }
 
     @Override
-    public void performAction(String bookingId, BookingAction action, String assetId, String secret, String more, AbstractCredentials credentials) {
+    public void performAction(String bookingId, BookingAction action, String secret, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

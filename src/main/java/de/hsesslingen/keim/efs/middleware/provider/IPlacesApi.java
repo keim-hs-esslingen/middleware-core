@@ -77,14 +77,17 @@ public interface IPlacesApi {
     );
 
     /**
-     * Assembles a get-places request for the service with the given url and the
-     * given params.The params are checked for null values and added only if
-     * they are present and sensible.<p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * Assembles a request, matching the {@code GET /places/search} endpoint,
+     * for the service with the given url using the given token.
+     * <p>
+     * The params are checked for null values and added only if they are present
+     * (i.e. not {@code null} and not blank) and sensible.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param query
      * @param areaCenter
      * @param radiusMeter

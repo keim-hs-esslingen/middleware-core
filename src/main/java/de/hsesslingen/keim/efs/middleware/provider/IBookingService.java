@@ -88,21 +88,15 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @param bookingId The ID of the booking on which to perform the action.
      * @param action The action that should be performed on the booking with the
      * given bookingId.
-     * @param assetId The ID of the asset on which to perform this action. If
-     * none specified, the service can choose how to handle this situation.
      * @param secret A secret that might be required by some services to perform
      * this action. (e.g. a PIN)
-     * @param more Additional information that might be required by some
-     * services in order to perform this action.
      * @param credentials The credentials needed to authorize oneself to perform
      * this action.
      */
     public void performAction(
             @NonNull String bookingId,
             @NonNull BookingAction action,
-            @Nullable String assetId,
             @Nullable String secret,
-            @Nullable String more,
             @NonNull @Valid C credentials
     );
 }

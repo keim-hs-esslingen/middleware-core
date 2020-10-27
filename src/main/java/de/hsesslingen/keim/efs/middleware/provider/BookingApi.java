@@ -148,24 +148,20 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     public void performAction(
             String bookingId,
             BookingAction action,
-            String assetId,
             String secret,
-            String more,
             String token
     ) {
         logger.info("Received request to perform an action on a booking.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug(
-                "Params of this request:\nbookingId={}\naction={}\nassetId={}\nsecret={}\nmore= (logged to next line)\n{}",
-                action, bookingId, assetId,
-                obfuscateConditional(secret),
-                more
+                "Params of this request:\nbookingId={}\naction={}\nsecret={}",
+                bookingId, action, obfuscateConditional(secret)
         );
         //</editor-fold>
 
         bookingService.performAction(
-                bookingId, action, assetId, secret, more,
+                bookingId, action, secret,
                 parseToken(token)
         );
     }

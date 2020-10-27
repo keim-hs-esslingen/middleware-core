@@ -97,15 +97,17 @@ public interface IOptionsApi {
     );
 
     /**
-     * Assembles a get-options request for the given provider service url with
-     * the given params. The params are checked for null values and added only
-     * if they are present and sensible.
+     * Assembles a request, matching the {@code GET /options} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to et the API url of a
-     * mobility service. The returned request can be send using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The params are checked for null values and added only if they are present
+     * and sensible.
+     * <p>
+     * The returned request can be send using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param from
      * @param to
      * @param startTime
@@ -129,15 +131,17 @@ public interface IOptionsApi {
     }
 
     /**
-     * Assembles a get-options request for the service with the given url and
-     * the given params. The params are checked for null values and added only
-     * if they are present and sensible.
+     * Assembles a request, matching the {@code GET /options} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The params are checked for null values and added only if they are present
+     * and sensible.
+     * <p>
+     * The returned request can be send using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param from
      * @param fromPlaceId
      * @param to

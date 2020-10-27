@@ -69,7 +69,7 @@ public interface IBookingApi {
      *
      * @param state The state for which to filter the bookings.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. Can be {@code null}.
      * @return List of {@link Booking}
      */
     @GetMapping(BOOKINGS_PATH)
@@ -83,9 +83,9 @@ public interface IBookingApi {
     /**
      * Gets a {@link Booking} using the booking id
      *
-     *
-     * @param id the booking id
-     * @param token
+     * @param id The booking id.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
      * @return the {@link Booking} object
      */
     @GetMapping(BOOKINGS_PATH + "/{id}")
@@ -101,7 +101,7 @@ public interface IBookingApi {
      *
      * @param newBooking {@link NewBooking} that should be created
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. Can be {@code null}.
      * @return {@link Booking} that was created
      */
     @PostMapping(BOOKINGS_PATH)
@@ -119,7 +119,7 @@ public interface IBookingApi {
      * @param id the booking id
      * @param booking the {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. Can be {@code null}.
      * @return the modified {@link Booking} object
      */
     @PutMapping(BOOKINGS_PATH + "/{id}")
@@ -132,20 +132,15 @@ public interface IBookingApi {
     );
 
     /**
-     * Can be used to perform actions on bookings.This can be used to e.g.unlock
-     * the door of rented vehicles, or stamp tickets...
+     * Can be used to perform actions on bookings.
      *
      * @param bookingId The ID of the booking on which to perform the action.
      * @param action The action that should be performed on the booking with the
      * given bookingId.
-     * @param assetId The ID of the asset on which to perform this action. If
-     * none specified, the service can choose how to handle this situation.
      * @param secret A secret that might be required by some services to perform
      * this action. (e.g. a PIN)
-     * @param more Additional information that might be required by some
-     * services in order to perform this action.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. Can be {@code null}.
      */
     @PostMapping(BOOKINGS_PATH + "/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -153,26 +148,24 @@ public interface IBookingApi {
     public void performAction(
             @PathVariable String bookingId,
             @PathVariable BookingAction action,
-            @RequestParam(required = false) String assetId,
             @RequestParam(required = false) String secret,
-            @RequestBody(required = false) String more,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
     /**
-     * Assembles a booking request for the the service with the given url using
-     * the given credentials.
+     * Assembles a request, matching the {@code GET /bookings} endpoint, for the
+     * service with the given url using the given token.
      * <p>
-     * Use {@link MobilityService#getServiceUrl()} to get the API url of a
-     * mobility service. The returned request can be sent using
-     * {@code request.go()} which will return a {@link ResponseEntity}.
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl
-     * @param token JSON-serialized credentials object, specific to each
-     * mobility service provider.
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
      * @return
      */
-    public static EfsRequest<List<Booking>> buildBookingRequest(
+    public static EfsRequest<List<Booking>> buildGetBookingsRequest(
             String serviceUrl,
             String token
     ) {
@@ -183,4 +176,161 @@ public interface IBookingApi {
                 });
     }
 
+    /**
+     * Assembles a request, matching the {@code GET /bookings} endpoint, for the
+     * service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param state A booking state by which to filter the results.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
+     * @return
+     */
+    public static EfsRequest<List<Booking>> buildGetBookingsRequest(
+            String serviceUrl,
+            BookingState state,
+            String token
+    ) {
+        return buildGetBookingsRequest(serviceUrl, token).query("state", state);
+    }
+
+    /**
+     * Assembles a request, matching the {@code GET /bookings/{bookingId}}
+     * endpoint, for the service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param id The ID of the booking which shall be retrieved.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
+     * @return
+     */
+    public static EfsRequest<Booking> buildGetBookingByIdRequest(
+            String serviceUrl,
+            String id,
+            String token
+    ) {
+        return EfsRequest
+                .get(serviceUrl + BOOKINGS_PATH + "/" + id)
+                .token(token)
+                .expect(Booking.class);
+    }
+
+    /**
+     * Assembles a request, matching the {@code POST /bookings} endpoint, for
+     * the service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param newBooking
+     * @param token JSON-serialized credentials object, specific to each
+     * mobility service provider.
+     * @return
+     */
+    public static EfsRequest<Booking> buildCreateNewBookingRequest(
+            String serviceUrl,
+            NewBooking newBooking,
+            String token
+    ) {
+        return EfsRequest
+                .post(serviceUrl + BOOKINGS_PATH)
+                .token(token)
+                .body(newBooking)
+                .expect(Booking.class);
+    }
+
+    /**
+     * Assembles a request, matching the {@code PUT /bookings/{bookingId}}
+     * endpoint, for the service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param booking
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
+     * @return
+     */
+    public static EfsRequest<Booking> buildModifyBookingRequest(
+            String serviceUrl,
+            Booking booking,
+            String token
+    ) {
+        return EfsRequest
+                .put(serviceUrl + BOOKINGS_PATH + "/" + booking.getId())
+                .token(token)
+                .body(booking)
+                .expect(Booking.class);
+    }
+
+    /**
+     * Assembles a request, matching the
+     * {@code POST /bookings/{bookingId}/action/{action}} endpoint, for the
+     * service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param bookingId The id of the booking on which to perform the given
+     * action.
+     * @param action The action that should be performed.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
+     * @return
+     */
+    public static EfsRequest<Void> buildPerformActionRequest(
+            String serviceUrl,
+            String bookingId,
+            BookingAction action,
+            String token
+    ) {
+        return EfsRequest
+                .post(serviceUrl + BOOKINGS_PATH + "/" + bookingId + "/action/" + action.toString())
+                .token(token)
+                .expect(Void.class);
+    }
+
+    /**
+     * Assembles a request, matching the
+     * {@code POST /bookings/{bookingId}/action/{action}} endpoint, for the
+     * service with the given url using the given token.
+     * <p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service who should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param bookingId The id of the booking on which to perform the given
+     * action.
+     * @param action The action that should be performed.
+     * @param secret Some provdiders require an additional secret for performing
+     * the given action. (e.g. a PIN)
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. Can be {@code null}.
+     * @return
+     */
+    public static EfsRequest<Void> buildPerformActionRequest(
+            String serviceUrl,
+            String bookingId,
+            BookingAction action,
+            String secret,
+            String token
+    ) {
+        return buildPerformActionRequest(serviceUrl, bookingId, action, token)
+                .query("secret", secret);
+    }
 }

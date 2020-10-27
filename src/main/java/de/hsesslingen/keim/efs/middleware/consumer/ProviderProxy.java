@@ -25,7 +25,6 @@ package de.hsesslingen.keim.efs.middleware.consumer;
 
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.Options;
-import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildBookingRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
@@ -33,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildSearchRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingsRequest;
 
 /**
  *
@@ -121,7 +121,7 @@ public class ProviderProxy {
     public EfsRequest<List<Booking>> createGetBookingRequest(
             String token
     ) {
-        return buildBookingRequest(service.getServiceUrl(), token);
+        return buildGetBookingsRequest(service.getServiceUrl(), token);
     }
 
 }
