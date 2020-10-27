@@ -47,6 +47,8 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.buildI
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildGetOptionsRequest;
 import de.hsesslingen.keim.efs.middleware.provider.IPlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
+import de.hsesslingen.keim.efs.mobility.service.MobilityType;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 
 /**
  *
@@ -60,12 +62,24 @@ public class ProviderProxy {
         this.service = service;
     }
 
-    public Set<API> getSupportedApis() {
-        return service.getApis();
+    public String getServiceId() {
+        return service.getId();
+    }
+
+    public MobilityService getService() {
+        return service;
     }
 
     public boolean supportsApi(API api) {
         return service.getApis().contains(api);
+    }
+
+    public boolean supportsMode(Mode mode) {
+        return service.getModes().contains(mode);
+    }
+
+    public boolean supportsMobilityType(MobilityType mt) {
+        return service.getMobilityTypes().contains(mt);
     }
 
     public EfsRequest<List<Place>> createSearchPlacesRequest(
@@ -80,6 +94,18 @@ public class ProviderProxy {
         );
     }
 
+    public List<Place> searchPlaces(
+            String query,
+            ICoordinates areaCenter,
+            Integer radiusMeter,
+            Integer limitTo,
+            String token
+    ) {
+        return createSearchPlacesRequest(query, areaCenter, radiusMeter, limitTo, token)
+                .go()
+                .getBody();
+    }
+
     public EfsRequest<List<Options>> createGetOptionsRequest(
             String from,
             String fromPlaceId,
@@ -88,14 +114,36 @@ public class ProviderProxy {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            Boolean share,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
             String token
     ) {
-        return buildGetOptionsRequest(
-                service.getServiceUrl(),
-                from, fromPlaceId, to, toPlaceId,
-                startTime, endTime, radiusMeter, share, token
+        return buildGetOptionsRequest(service.getServiceUrl(),
+                from, fromPlaceId, to, toPlaceId, startTime, endTime,
+                radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
+                limitTo, token
         );
+    }
+
+    public List<Options> getOptions(
+            String from,
+            String fromPlaceId,
+            String to,
+            String toPlaceId,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radiusMeter,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
+            String token
+    ) {
+        return createGetOptionsRequest(from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, token)
+                .go()
+                .getBody();
     }
 
     public EfsRequest<List<Options>> createGetOptionsRequest(
@@ -104,18 +152,45 @@ public class ProviderProxy {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            Boolean share,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
             String token
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
-                from, to, startTime, endTime, radiusMeter, share, token
+                from, to, startTime, endTime, radiusMeter, sharingAllowed,
+                modesAllowed, mobilityTypesAllowed, limitTo, token
         );
+    }
+
+    public List<Options> getOptions(
+            String from,
+            String to,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            Integer radiusMeter,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
+            String token
+    ) {
+        return createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, token)
+                .go()
+                .getBody();
     }
 
     public EfsRequest<List<Booking>> createGetBookingsRequest(
             String token
     ) {
         return buildGetBookingsRequest(service.getServiceUrl(), token);
+    }
+
+    public List<Booking> getBookings(
+            String token
+    ) {
+        return createGetBookingsRequest(token).go().getBody();
     }
 
     public EfsRequest<List<Booking>> createGetBookingsRequest(
@@ -125,11 +200,25 @@ public class ProviderProxy {
         return buildGetBookingsRequest(service.getServiceUrl(), state, token);
     }
 
+    public List<Booking> getBookings(
+            BookingState state,
+            String token
+    ) {
+        return createGetBookingsRequest(state, token).go().getBody();
+    }
+
     public EfsRequest<Booking> createGetBookingByIdRequest(
             String id,
             String token
     ) {
         return buildGetBookingByIdRequest(service.getServiceUrl(), id, token);
+    }
+
+    public Booking getBookingById(
+            String id,
+            String token
+    ) {
+        return createGetBookingByIdRequest(id, token).go().getBody();
     }
 
     public EfsRequest<Booking> createCreateBookingRequest(
@@ -139,11 +228,25 @@ public class ProviderProxy {
         return buildCreateNewBookingRequest(service.getServiceUrl(), newBooking, token);
     }
 
+    public Booking createBooking(
+            NewBooking newBooking,
+            String token
+    ) {
+        return createCreateBookingRequest(newBooking, token).go().getBody();
+    }
+
     public EfsRequest<Booking> createModifyBookingRequest(
             Booking booking,
             String token
     ) {
         return buildModifyBookingRequest(service.getServiceUrl(), booking, token);
+    }
+
+    public Booking modifyBooking(
+            Booking booking,
+            String token
+    ) {
+        return createModifyBookingRequest(booking, token).go().getBody();
     }
 
     public EfsRequest<Void> createPerformActionRequest(
@@ -152,6 +255,14 @@ public class ProviderProxy {
             String token
     ) {
         return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, token);
+    }
+
+    public void performAction(
+            String bookingId,
+            BookingAction action,
+            String token
+    ) {
+        createPerformActionRequest(bookingId, action, token).go();
     }
 
     public EfsRequest<Void> createPerformActionRequest(
@@ -163,6 +274,15 @@ public class ProviderProxy {
         return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, secret, token);
     }
 
+    public void performAction(
+            String bookingId,
+            BookingAction action,
+            String secret,
+            String token
+    ) {
+        createPerformActionRequest(bookingId, action, secret, token).go();
+    }
+
     public EfsRequest<TokenCredentials> createCreateTokenRequest(
             String userId,
             String secret
@@ -170,16 +290,26 @@ public class ProviderProxy {
         return buildCreateTokenRequest(service.getServiceUrl(), userId, secret);
     }
 
-    public EfsRequest<Void> createDeleteTokenRequest(
-            String token
+    public TokenCredentials createToken(
+            String userId,
+            String secret
     ) {
+        return createCreateTokenRequest(userId, secret).go().getBody();
+    }
+
+    public EfsRequest<Void> createDeleteTokenRequest(String token) {
         return buildDeleteTokenRequest(service.getServiceUrl(), token);
     }
 
-    public EfsRequest<Boolean> createIsTokenValidRequest(
-            String token
-    ) {
+    public void deleteToken(String token) {
+        createDeleteTokenRequest(token).go();
+    }
+
+    public EfsRequest<Boolean> createIsTokenValidRequest(String token) {
         return buildIsTokenValidRequest(service.getServiceUrl(), token);
     }
 
+    public Boolean isTokenValid(String token) {
+        return createIsTokenValidRequest(token).go().getBody();
+    }
 }

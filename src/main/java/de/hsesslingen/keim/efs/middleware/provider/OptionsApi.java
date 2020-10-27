@@ -34,8 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
+import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -62,8 +64,11 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             String toPlaceId,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
-            Integer radius,
-            Boolean share,
+            Integer radiusMeter,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<Mode> mobilityTypesAllowed,
+            Integer limitTo,
             String token
     ) {
         logger.info("Received request to get options.");
@@ -71,7 +76,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
         logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}",
                 from, fromPlaceId, to, toPlaceId,
-                startTime, endTime, radius, share
+                startTime, endTime, radiusMeter, sharingAllowed
         );
         //</editor-fold>
 
@@ -94,7 +99,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
-                placeFrom, placeTo, startTime, endTime, radius, share,
+                placeFrom, placeTo, startTime, endTime, radiusMeter, sharingAllowed,
                 parseToken(token)
         );
 

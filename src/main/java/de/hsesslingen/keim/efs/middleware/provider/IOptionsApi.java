@@ -30,6 +30,8 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import de.hsesslingen.keim.efs.mobility.service.MobilityType;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiParam;
 import java.time.ZonedDateTime;
@@ -42,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import java.util.Set;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -65,8 +69,8 @@ public interface IOptionsApi {
      * @param fromPlaceId An optional place ID that represents the entity at
      * position {@link from}. This place ID is provider specific and can be
      * obtained using the places API.
-     * @param radius Maximum distance a user wants to travel to reach asset in
-     * metres, e.g. 500 metres.
+     * @param radiusMeter Maximum distance a user wants to travel to reach asset
+     * in metres, e.g. 500 metres.
      * @param toPlaceId An optional place ID that represents the entity at
      * position {@link to}. This place ID is provider specific and can be
      * obtained using the places API.
@@ -75,8 +79,11 @@ public interface IOptionsApi {
      * time in ISO format.
      * @param endTime End time either in ms since epoch or as a zoned date time
      * in ISO format.
-     * @param share Defines if user can also share a ride. (Available values :
-     * YES, NO)
+     * @param sharingAllowed Defines if user can also share a ride. (Available
+     * values : YES, NO)
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitTo
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      * @return List of {@link Options}
@@ -91,8 +98,11 @@ public interface IOptionsApi {
             @RequestParam(required = false) String toPlaceId,
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
             @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
-            @RequestParam(required = false) @ApiParam("Unit: meter") Integer radius,
-            @RequestParam(required = false) Boolean share,
+            @RequestParam(required = false) @ApiParam("Allowed search radius around \"from\" in meter.") Integer radiusMeter,
+            @RequestParam(required = false) Boolean sharingAllowed,
+            @RequestParam(required = false, defaultValue = "") Set<Mode> modesAllowed,
+            @RequestParam(required = false, defaultValue = "") Set<Mode> mobilityTypesAllowed,
+            @RequestParam(required = false) Integer limitTo,
             @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
     );
 
@@ -113,7 +123,10 @@ public interface IOptionsApi {
      * @param startTime
      * @param endTime
      * @param radiusMeter
-     * @param share
+     * @param sharingAllowed
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitTo
      * @param token
      * @return
      */
@@ -124,10 +137,17 @@ public interface IOptionsApi {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            Boolean share,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
             String token
     ) {
-        return buildGetOptionsRequest(serviceUrl, from, null, to, null, startTime, endTime, radiusMeter, share, token);
+        return buildGetOptionsRequest(
+                serviceUrl, from, null, to, null, startTime, endTime,
+                radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
+                limitTo, token
+        );
     }
 
     /**
@@ -149,7 +169,10 @@ public interface IOptionsApi {
      * @param startTime
      * @param endTime
      * @param radiusMeter
-     * @param share
+     * @param sharingAllowed
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitTo
      * @param token
      * @return
      */
@@ -162,7 +185,10 @@ public interface IOptionsApi {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            Boolean share,
+            Boolean sharingAllowed,
+            Set<Mode> modesAllowed,
+            Set<MobilityType> mobilityTypesAllowed,
+            Integer limitTo,
             String token
     ) {
         // Start build the request object...
@@ -189,10 +215,21 @@ public interface IOptionsApi {
             request.query("endTime", endTime.toInstant().toEpochMilli());
         }
         if (radiusMeter != null && radiusMeter >= 0) {
-            request.query("radius", radiusMeter);
+            request.query("radiusMeter", radiusMeter);
         }
-        if (share != null) {
-            request.query("share", share);
+        if (sharingAllowed != null) {
+            request.query("sharingAllowed", sharingAllowed);
+        }
+        if (modesAllowed != null && !modesAllowed.isEmpty()) {
+            var queryValue = modesAllowed.stream().map(Object::toString).collect(joining(","));
+            request.query("modesAllowed", queryValue);
+        }
+        if (mobilityTypesAllowed != null && !mobilityTypesAllowed.isEmpty()) {
+            var queryValue = mobilityTypesAllowed.stream().map(Object::toString).collect(joining(","));
+            request.query("mobilityTypesAllowed", queryValue);
+        }
+        if (limitTo != null) {
+            request.query("limitTo", limitTo);
         }
         if (isNotBlank(token)) {
             request.token(token);

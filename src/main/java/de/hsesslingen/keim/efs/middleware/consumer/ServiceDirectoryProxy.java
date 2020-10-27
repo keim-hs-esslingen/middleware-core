@@ -35,7 +35,7 @@ import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
@@ -51,7 +51,7 @@ import org.springframework.stereotype.Service;
 @ConditionalOnProperty(name = "middleware.consumer.api.enabled", havingValue = "true")
 public class ServiceDirectoryProxy {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServiceDirectoryProxy.class);
+    private static final Logger logger = getLogger(ServiceDirectoryProxy.class);
 
     @Value("${middleware.service-directory-url}")
     public String baseUrl;
@@ -62,13 +62,13 @@ public class ServiceDirectoryProxy {
     }
 
     /**
-     * Searches for available services in Service-Directory
+     * Gets all available services from the Service-Directory.
      *
      * @return List of {@link MobilityService}
      */
-    public List<MobilityService> search() {
-        logger.info("Querying service directory for available mobility services...");
-        return EfsRequest.get(buildUri(null, null, null, null, true))
+    public List<MobilityService> getAll() {
+        logger.info("Querying service directory for all available mobility services...");
+        return EfsRequest.get(buildUri(null, null, null, true))
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
                 .go()
@@ -76,56 +76,44 @@ public class ServiceDirectoryProxy {
     }
 
     /**
-     * Searches for available services in Service-Directory using
-     * {@link MobilityType} and {@link Mode}
+     * Searches for available services in the Service-Directory that match the
+     * given criteria.
      *
-     * @param mobilityTypes Set of {@link MobilityType}
-     * @param modes Set of {@link Mode}
-     * @param serviceIds Ids of preferred services
-     * @param apis The APIs that the returned services must support. (All of
-     * them.)
+     * @param mobilityTypes Providers support one of the given mobility types.
+     * @param modes Providers support one of the given modes.
+     * @param apis Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
             Set<MobilityType> mobilityTypes,
             Set<Mode> modes,
-            Set<String> serviceIds,
             API... apis
     ) {
-        logger.info("Querying service directory for specific set of available mobility services...");
-
         Set<API> apiSet = null;
 
         if (apis != null) {
             apiSet = Set.of(apis);
         }
 
-        return EfsRequest.get(buildUri(mobilityTypes, modes, serviceIds, apiSet, true))
-                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
-                })
-                .go()
-                .getBody();
+        return search(mobilityTypes, modes, apiSet);
     }
 
     /**
-     * Searches for available services in Service-Directory using
-     * {@link MobilityType} and {@link Mode}
+     * Searches for available services in the Service-Directory that match the
+     * given criteria.
      *
-     * @param mobilityTypes Set of {@link MobilityType}
-     * @param modes Set of {@link Mode}
-     * @param serviceIds Ids of preferred services
-     * @param apis The APIs that the returned services must support. (All of
-     * them.)
+     * @param mobilityTypes Providers support one of the given mobility types.
+     * @param modes Providers support one of the given modes.
+     * @param apis Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
             Set<MobilityType> mobilityTypes,
             Set<Mode> modes,
-            Set<String> serviceIds,
             Set<API> apis
     ) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return EfsRequest.get(buildUri(mobilityTypes, modes, serviceIds, apis, true))
+        return EfsRequest.get(buildUri(mobilityTypes, modes, apis, true))
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
                 .go()
@@ -135,7 +123,6 @@ public class ServiceDirectoryProxy {
     private String buildUri(
             Set<MobilityType> mobilityTypes,
             Set<Mode> modes,
-            Set<String> serviceIds,
             Set<API> apis,
             boolean activeOnly
     ) {
@@ -146,9 +133,6 @@ public class ServiceDirectoryProxy {
         }
         if (modes != null && !modes.isEmpty()) {
             uriBuilder.queryParam("modes", modes.toArray());
-        }
-        if (serviceIds != null && !serviceIds.isEmpty()) {
-            uriBuilder.queryParam("serviceIds", serviceIds.toArray());
         }
         if (apis != null && !apis.isEmpty()) {
             uriBuilder.queryParam("apis", apis.toArray());
