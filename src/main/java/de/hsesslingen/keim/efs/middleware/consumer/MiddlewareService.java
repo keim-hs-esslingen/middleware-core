@@ -100,6 +100,13 @@ public class MiddlewareService {
         return getProviders().stream().filter(p -> serviceIds.contains(p.getServiceId()));
     }
 
+    public ProviderProxy getProvider(String serviceId) {
+        return getProviders().stream()
+                .filter(p -> p.getServiceId().equals(serviceId))
+                .findAny()
+                .orElse(null);
+    }
+
     public Stream<ProviderProxy> getProviders(
             Set<Mode> anyOfTheseModesSupported,
             Set<MobilityType> anyOfTheseMobilityTypesSupported,

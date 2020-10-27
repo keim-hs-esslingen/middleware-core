@@ -24,8 +24,6 @@
 package conditionalbeans.consumer;
 
 import conditionalbeans.BeansCollector;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;

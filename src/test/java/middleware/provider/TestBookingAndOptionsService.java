@@ -36,6 +36,7 @@ import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 /**
  * @author k.sivarasah 6 Oct 2019
@@ -79,12 +80,8 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 
     }
 
-    /* (non-Javadoc)
-	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingOptions(de.hsesslingen.keim.efs.middleware.common.Place, de.hsesslingen.keim.efs.middleware.common.Place, java.time.Instant, java.time.Instant, java.lang.Integer, java.lang.Boolean)
-     */
     @Override
-    public List<Options> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime,
-            Integer radiusMeter, Boolean sharingAllowed, AbstractCredentials credentials) throws AbstractEfsException {
+    public List<Options> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set modesAllowed, Set mobilityTypesAllowed, Integer limitTo, AbstractCredentials credentials) {
         return List.of();
     }
 

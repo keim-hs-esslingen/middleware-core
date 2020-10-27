@@ -31,8 +31,10 @@ import org.springframework.lang.Nullable;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
+import de.hsesslingen.keim.efs.mobility.service.MobilityType;
+import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
+import java.util.Set;
 import javax.validation.Valid;
 
 /**
@@ -44,8 +46,8 @@ public interface IOptionsService<C extends AbstractCredentials> {
 
     /**
      * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional. If startTime is not provided, but required
-     * by the third party API, a default value of "Date.now()" is used.
+     * be defined, but is optional.If startTime is not provided, but required
+ by the third party API, a default value of "Date.now()" is used.
      *
      * @param from User's location
      * @param radiusMeter Maximum distance a user wants to travel to reach asset
@@ -54,6 +56,9 @@ public interface IOptionsService<C extends AbstractCredentials> {
      * allowed)
      * @param startTime Planned start-time of the trip
      * @param endTime Planned end-time of the trip
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitTo
      * @param credentials Credential data
      * @return List of {@link Options}
      */
@@ -65,6 +70,9 @@ public interface IOptionsService<C extends AbstractCredentials> {
             @Nullable ZonedDateTime endTime,
             @Nullable Integer radiusMeter,
             @Nullable Boolean sharingAllowed,
+            @Nullable Set<Mode> modesAllowed,
+            @Nullable Set<MobilityType> mobilityTypesAllowed,
+            @Nullable Integer limitTo,
             @Nullable @Valid C credentials
     );
 

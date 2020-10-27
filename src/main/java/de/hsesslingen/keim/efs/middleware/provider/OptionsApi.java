@@ -34,13 +34,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
+import static java.util.Collections.disjoint;
 import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author boesch, K.Sivarasah
@@ -52,9 +55,19 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
     private static final Logger logger = getLogger(OptionsApi.class);
+    private static final String RETURN_ZERO_UPON_MODES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-modes-mismatch";
+    private static final String RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-mobility-types-mismatch";
 
     @Autowired
     private IOptionsService optionsService;
+
+    @Autowired
+    private ProviderProperties properties;
+
+    @Value("${" + RETURN_ZERO_UPON_MODES_MISMATCH_KEY + ":true}")
+    private boolean returnZeroUponModesMismatch;
+    @Value("${" + RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY + ":true}")
+    private boolean returnZeroUponMobilityTypesMismatch;
 
     @Override
     public List<Options> getOptions(
@@ -80,6 +93,20 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         );
         //</editor-fold>
 
+        if (returnZeroUponModesMismatch
+                && modesAllowed != null && !modesAllowed.isEmpty()
+                && disjoint(properties.getMobilityService().getModes(), modesAllowed)) {
+            logger.info("Returning 0 options because the requested set of allowed modes has none in common with our provided ones. If you want to change this behavior, set property \"{}\" to \"false\".", RETURN_ZERO_UPON_MODES_MISMATCH_KEY);
+            return List.of();
+        }
+
+        if (returnZeroUponMobilityTypesMismatch
+                && mobilityTypesAllowed != null && !mobilityTypesAllowed.isEmpty()
+                && disjoint(properties.getMobilityService().getMobilityTypes(), mobilityTypesAllowed)) {
+            logger.info("Returning 0 options because the requested set of allowed mobility types has none in common with our provided ones. If you want to change this behavior, set property \"{}\" to \"false\".", RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY);
+            return List.of();
+        }
+
         // Converting input params...
         var placeFrom = new Place(from);
 
@@ -99,7 +126,8 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
-                placeFrom, placeTo, startTime, endTime, radiusMeter, sharingAllowed,
+                placeFrom, placeTo, startTime, endTime, radiusMeter,
+                sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo,
                 parseToken(token)
         );
 
