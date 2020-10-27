@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
@@ -40,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 /**
  * Helper Class used to make rest calls to service-directory
@@ -79,41 +79,43 @@ public class ServiceDirectoryProxy {
      * Searches for available services in the Service-Directory that match the
      * given criteria.
      *
-     * @param mobilityTypes Providers support one of the given mobility types.
-     * @param modes Providers support one of the given modes.
-     * @param apis Provders support ALL of the given apis.
+     * @param anyOfTheseMobilityTypesSupported Providers support one of the
+     * given mobility types.
+     * @param anyOfTheseModesSupported Providers support one of the given modes.
+     * @param allOfTheseApisSupported Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
-            Set<MobilityType> mobilityTypes,
-            Set<Mode> modes,
-            API... apis
+            Set<MobilityType> anyOfTheseMobilityTypesSupported,
+            Set<Mode> anyOfTheseModesSupported,
+            API... allOfTheseApisSupported
     ) {
         Set<API> apiSet = null;
 
-        if (apis != null) {
-            apiSet = Set.of(apis);
+        if (allOfTheseApisSupported != null) {
+            apiSet = Set.of(allOfTheseApisSupported);
         }
 
-        return search(mobilityTypes, modes, apiSet);
+        return search(anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, apiSet);
     }
 
     /**
      * Searches for available services in the Service-Directory that match the
      * given criteria.
      *
-     * @param mobilityTypes Providers support one of the given mobility types.
-     * @param modes Providers support one of the given modes.
-     * @param apis Provders support ALL of the given apis.
+     * @param anyOfTheseMobilityTypesSupported Providers support one of the
+     * given mobility types.
+     * @param anyOfTheseModesSupported Providers support one of the given modes.
+     * @param allOfTheseApisSupported Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
-            Set<MobilityType> mobilityTypes,
-            Set<Mode> modes,
-            Set<API> apis
+            Set<MobilityType> anyOfTheseMobilityTypesSupported,
+            Set<Mode> anyOfTheseModesSupported,
+            Set<API> allOfTheseApisSupported
     ) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return EfsRequest.get(buildUri(mobilityTypes, modes, apis, true))
+        return EfsRequest.get(buildUri(anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, allOfTheseApisSupported, true))
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
                 .go()
@@ -121,21 +123,21 @@ public class ServiceDirectoryProxy {
     }
 
     private String buildUri(
-            Set<MobilityType> mobilityTypes,
-            Set<Mode> modes,
-            Set<API> apis,
-            boolean activeOnly
+            Set<MobilityType> anyOfTheseMobilityTypesSupported,
+            Set<Mode> anyOfTheseModesSupported,
+            Set<API> allOfTheseApisSupported,
+            boolean excludeInactive
     ) {
-        var uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/search").queryParam("active", activeOnly);
+        var uriBuilder = fromHttpUrl(baseUrl + "/search").queryParam("active", excludeInactive);
 
-        if (mobilityTypes != null && !mobilityTypes.isEmpty()) {
-            uriBuilder.queryParam("mobilityTypes", mobilityTypes.toArray());
+        if (anyOfTheseMobilityTypesSupported != null && !anyOfTheseMobilityTypesSupported.isEmpty()) {
+            uriBuilder.queryParam("mobilityTypes", anyOfTheseMobilityTypesSupported.toArray());
         }
-        if (modes != null && !modes.isEmpty()) {
-            uriBuilder.queryParam("modes", modes.toArray());
+        if (anyOfTheseModesSupported != null && !anyOfTheseModesSupported.isEmpty()) {
+            uriBuilder.queryParam("modes", anyOfTheseModesSupported.toArray());
         }
-        if (apis != null && !apis.isEmpty()) {
-            uriBuilder.queryParam("apis", apis.toArray());
+        if (allOfTheseApisSupported != null && !allOfTheseApisSupported.isEmpty()) {
+            uriBuilder.queryParam("apis", allOfTheseApisSupported.toArray());
         }
 
         var uri = uriBuilder.toUriString();
