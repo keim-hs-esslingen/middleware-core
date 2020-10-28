@@ -31,7 +31,6 @@ import org.springframework.test.context.ActiveProfiles;
 import middleware.provider.TestBookingAndOptionsService;
 
 @SpringBootApplication
-@ActiveProfiles("test")
 public class MiddlewareTestApplication {
 
     public static void main(String[] args) {

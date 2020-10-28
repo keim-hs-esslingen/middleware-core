@@ -55,6 +55,7 @@ import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import middleware.provider.credentials.TestCredential;
+import org.springframework.test.context.ActiveProfiles;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -63,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MiddlewareTestApplication.class})
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class BookingAndOptionsApiTest extends MiddlewareTestBase {
 
     @Autowired
@@ -79,7 +81,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     @Test
     public void getOptionsTestIso_200() throws Exception {
         // Testing incomplete zoned date time decplarations...
-        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTimeIso", LocalDateTime.now().plusHours(1).toString().substring(0, 16))
+        mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2.345").param("startTime", LocalDateTime.now().plusHours(1).toString().substring(0, 16))
                 .header("x-credentials", CredentialsUtils.toJsonString(getDummyCredentials())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());

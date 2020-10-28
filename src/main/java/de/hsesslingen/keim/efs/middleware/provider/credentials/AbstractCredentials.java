@@ -23,19 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.credentials;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * @author k.sivarasah
- * 12 Nov 2019
+ * @author k.sivarasah 12 Nov 2019
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class AbstractCredentials {
 
-	private String serviceId;
-	
 }

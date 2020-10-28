@@ -45,8 +45,6 @@ public class CredentialUtilsTest {
 	private static final String ID_VALUE = "id_001";
 	private static final String LOGINKEY_KEY = "demoLoginKey";
 	private static final String LOGINKEY_VALUE = "loginkey_001";
-	private static final String PROVIDERID_KEY = "serviceId";
-	private static final String PROVIDERID_VALUE = "demo";
 	
 	private static Map<String, String> credentialMap;
 	private static TestCredential credentialObject;
@@ -57,12 +55,10 @@ public class CredentialUtilsTest {
 		credentialMap = new HashMap<>();
 		credentialMap.put(ID_KEY, ID_VALUE);
 		credentialMap.put(LOGINKEY_KEY, LOGINKEY_VALUE);
-		credentialMap.put(PROVIDERID_KEY, PROVIDERID_VALUE);
 		
 		credentialObject = new TestCredential(ID_VALUE, LOGINKEY_VALUE);
-		credentialObject.setServiceId(PROVIDERID_VALUE);
-		credentialString = String.format("{\"%s\":\"%s\",\"%s\":\"%s\",\"%s\":\"%s\"}", 
-				PROVIDERID_KEY, PROVIDERID_VALUE, ID_KEY, ID_VALUE, LOGINKEY_KEY, LOGINKEY_VALUE);
+		credentialString = String.format("{\"%s\":\"%s\",\"%s\":\"%s\"}", 
+				 ID_KEY, ID_VALUE, LOGINKEY_KEY, LOGINKEY_VALUE);
 		
 	}
 	

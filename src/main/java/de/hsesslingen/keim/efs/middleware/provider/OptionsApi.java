@@ -44,14 +44,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 
 /**
  * @author boesch, K.Sivarasah
  */
 @Validated
 @RestController
-@ConditionalOnBean(IOptionsService.class)
+@ConditionalOnBean({IOptionsService.class, ProviderProperties.class})
 @Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG})
+@AutoConfigureAfter(ProviderProperties.class)
 public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
     private static final Logger logger = getLogger(OptionsApi.class);
