@@ -66,7 +66,7 @@ public class Coordinates implements Serializable, ICoordinates {
     @DecimalMax("180.0")
     private Double lon;
 
-    public static Coordinates of(String latCommaLonString) {
+    public static Coordinates parse(String latCommaLonString) {
         assertPositionIsValid(latCommaLonString);
         String[] split = latCommaLonString.split(",");
         return new Coordinates(Double.valueOf(split[0]), Double.valueOf(split[1]));

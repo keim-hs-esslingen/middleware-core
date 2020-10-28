@@ -68,7 +68,7 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
         //</editor-fold>
 
         // Convert input params...
-        var coordinates = positionIsValid(areaCenter) ? Coordinates.of(areaCenter) : null;
+        var coordinates = positionIsValid(areaCenter) ? Coordinates.parse(areaCenter) : null;
 
         // Delegate search to user implemented PlacesService...
         var places = service.search(
