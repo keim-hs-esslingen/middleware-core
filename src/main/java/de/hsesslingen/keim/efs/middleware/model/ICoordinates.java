@@ -120,6 +120,10 @@ public interface ICoordinates {
         return !StringUtils.isEmpty(latLonString) && StringUtils.countOccurrencesOf(latLonString, ",") == 1;
     }
 
+    public static boolean isValidAndNotNull(ICoordinates coordinates) {
+        return coordinates != null && isValid(coordinates);
+    }
+
     public static boolean isValid(ICoordinates coordinates) {
         return isValid(coordinates.getLat(), coordinates.getLon());
     }
@@ -136,4 +140,11 @@ public interface ICoordinates {
         }
     }
 
+    public static String toLatLonString(ICoordinates coordinates) {
+        return toLatLonString(coordinates, false);
+    }
+
+    public static String toLatLonString(ICoordinates coordinates, boolean includeSpace) {
+        return coordinates.getLat() + "," + (includeSpace ? " " : "") + coordinates.getLon();
+    }
 }

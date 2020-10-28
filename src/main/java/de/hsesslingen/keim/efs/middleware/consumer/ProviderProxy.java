@@ -107,9 +107,9 @@ public class ProviderProxy {
     }
 
     public EfsRequest<List<Options>> createGetOptionsRequest(
-            String from,
+            ICoordinates from,
             String fromPlaceId,
-            String to,
+            ICoordinates to,
             String toPlaceId,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
@@ -128,9 +128,9 @@ public class ProviderProxy {
     }
 
     public List<Options> getOptions(
-            String from,
+            ICoordinates from,
             String fromPlaceId,
-            String to,
+            ICoordinates to,
             String toPlaceId,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
@@ -147,8 +147,8 @@ public class ProviderProxy {
     }
 
     public EfsRequest<List<Options>> createGetOptionsRequest(
-            String from,
-            String to,
+            ICoordinates from,
+            ICoordinates to,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
@@ -165,8 +165,8 @@ public class ProviderProxy {
     }
 
     public List<Options> getOptions(
-            String from,
-            String to,
+            ICoordinates from,
+            ICoordinates to,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,

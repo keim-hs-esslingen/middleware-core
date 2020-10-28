@@ -25,6 +25,9 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
 import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
+import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValidAndNotNull;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.toLatLonString;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
@@ -187,8 +190,8 @@ public interface IOptionsApi {
      */
     public static EfsRequest<List<Options>> buildGetOptionsRequest(
             String serviceUrl,
-            String from,
-            String to,
+            ICoordinates from,
+            ICoordinates to,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
@@ -258,9 +261,9 @@ public interface IOptionsApi {
      */
     public static EfsRequest<List<Options>> buildGetOptionsRequest(
             String serviceUrl,
-            String from,
+            ICoordinates from,
             String fromPlaceId,
-            String to,
+            ICoordinates to,
             String toPlaceId,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
@@ -274,7 +277,7 @@ public interface IOptionsApi {
         // Start build the request object...
         var request = EfsRequest
                 .get(serviceUrl + OPTIONS_PATH)
-                .query("from", from)
+                .query("from", toLatLonString(from))
                 .expect(new ParameterizedTypeReference<List<Options>>() {
                 });
 
@@ -282,8 +285,8 @@ public interface IOptionsApi {
         if (isNotBlank(fromPlaceId)) {
             request.query("fromPlaceId", fromPlaceId);
         }
-        if (isNotBlank(to)) {
-            request.query("to", to);
+        if (isValidAndNotNull(to)) {
+            request.query("to", toLatLonString(to));
         }
         if (isNotBlank(toPlaceId)) {
             request.query("toPlaceId", toPlaceId);

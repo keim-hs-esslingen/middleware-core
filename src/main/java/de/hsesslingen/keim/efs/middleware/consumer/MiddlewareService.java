@@ -176,8 +176,8 @@ public class MiddlewareService {
     }
 
     public Stream<Options> getOptions(
-            String from,
-            String to,
+            ICoordinates from,
+            ICoordinates to,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
@@ -203,8 +203,8 @@ public class MiddlewareService {
     }
 
     public Stream<Options> getOptions(
-            String from,
-            String to,
+            ICoordinates from,
+            ICoordinates to,
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
