@@ -36,8 +36,54 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * This converter is a flexible converter that adds missing default information
- * in order to be able to create a zoned date time.
+ * This is a flexible parser for ZonedDateTime objects that adds missing default
+ * information as necessary. It makes use of the static parse methods provided
+ * by many of the classes in the {@code java.time} package and therefore
+ * supports all the formats that those methods support.
+ * <p>
+ * You can enter a millisecond value since 01. Jan. 1970, a fully qualified
+ * zoned ISO-timestamp but also many parts of such a timestamp soley by
+ * themselves as well.
+ * <p>
+ * For example using the value "15:00" will cause the parser to parse this value
+ * as 15 o'clock on the current date of the parsing server. The server will add
+ * default date information as necessary.
+ * <p>
+ * If entering only a date, e.g. 2020-03-11, the parser will use the point in
+ * time at the start of this local date and convert it to a
+ * {@link ZonedDateTime} using his default {@link ZoneId}.
+ * <p>
+ * Of course this method leaves space for ambiguity, but it can make testing and
+ * querying the API easier. For production usage, using a millisecond value or a
+ * fully qualified ISO-timestamp including timezone should be used. This
+ * resolves any ambiguity.
+ * <p>
+ * The following methods for parsing a temporal object are used in the described
+ * order. If one succeeds, the result is returned immediately without trying the
+ * remaining methods:
+ * <ol>
+ * <li>Regex-Parsing a milliseconds value describing the milliseconds since 01.
+ * Jan. 1970.</li>
+ * <li>{@link ZonedDateTime#parse(CharSequence)}</li>
+ * <li>{@link OffsetDateTime#parse(CharSequence)} and if successful,
+ * {@link OffsetDateTime#toZonedDateTime()} on the returned object.</li>
+ * <li>{@link LocalDateTime#parse(CharSequence)} and if successful,
+ * {@link LocalDateTime#atZone(ZoneId)} on the returned object with
+ * {@link ZoneId#systemDefault()} as value.</li>
+ * <li>{@link LocalDate#parse(CharSequence)} and if successful,
+ * {@link LocalDate#atStartOfDay(ZoneId)} on the returned object with
+ * {@link ZoneId#systemDefault()} as value.</li>
+ * <li>{@link OffsetTime#parse(CharSequence)} and if successful,
+ * {@link OffsetTime#atDate(LocalDate)} on the returned object with
+ * {@link LocalDate#now()} as value, and then using
+ * {@link OffsetDateTime#toZonedDateTime()} to convert it to a
+ * {@link ZonedDateTime}.</li>
+ * <li>{@link LocalTime#parse(CharSequence)} and if successful,
+ * {@link LocalTime#atDate(LocalDate)} on the returned object with
+ * {@link LocalDate#now()} as value, and then using
+ * {@link LocalDateTime#atZone(ZoneId)} with {@link ZoneId#systemDefault()} to
+ * convert it to a {@link ZonedDateTime}.</li>
+ * </ol>
  *
  * @author boesch
  */
