@@ -27,6 +27,7 @@ import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOpt
 import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
@@ -51,6 +52,14 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
 /**
+ * This API serves for querying a mobility service provider for mobility
+ * {@link Options}. These options can be understood as possibilities for future
+ * bookings.
+ * <p>
+ * <h3>Additional note:</h3>
+ * This interface also provides static methods for building HTTP requests, that
+ * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * class.
  *
  * @author keim
  */
@@ -61,31 +70,56 @@ public interface IOptionsApi {
     public static final String OPTIONS_PATH = "/options";
 
     /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional.If startTime is not provided, but required by
-     * the third party API, a default value of "Date.now()" is used.
+     * Returns available mobility options for the given criteria.
+     * <p>
+     * Param {@link startTime} can be defined, but is optional. If
+     * {@link startTime} is not provided, but required by the remote API of the
+     * provider, a sensible default value is used automatically, which is usally
+     * the current point in time ("now").
+     * <p>
+     * Param {@link endTime} must be after param {@link startTime}, if
+     * {@link startTime} is given, but it is not dependent on {@link startTime}.
+     * Usually <em>either</em> {@link startTime} <em>or</em> {@link endTime} are
+     * given, defining one point of reference in time, that should be used for
+     * matching options. However, if both params are given, the provider can
+     * chose how to interpret this situation and return the best options based
+     * on that.
      *
-     * @param from User's location in comma separated form e.g. 60.123,27.456.
+     * @param from User's geo-location in comma separated form, e.g.
+     * 60.123,27.456.
      * @param fromPlaceId An optional place ID that represents the entity at
      * position {@link from}. This place ID is provider specific and can be
-     * obtained using the places API.
-     * @param radiusMeter Maximum distance a user wants to travel to reach asset
-     * in metres, e.g. 500 metres.
+     * obtained using the places API. (See {@link IPlacesApi})
+     * @param to A desired destination as geo-location in comma-separated form,
+     * e.g. 60.123,27.456.
      * @param toPlaceId An optional place ID that represents the entity at
      * position {@link to}. This place ID is provider specific and can be
-     * obtained using the places API.
-     * @param to A desired destination e.g. 60.123,27.456.
-     * @param startTime Start time either in ms since epoch or as a zoned date
-     * time in ISO format.
-     * @param endTime End time either in ms since epoch or as a zoned date time
-     * in ISO format.
-     * @param sharingAllowed Defines if user can also share a ride. (Available
-     * values : YES, NO)
-     * @param modesAllowed
-     * @param mobilityTypesAllowed
-     * @param limitTo
+     * obtained using the places API. (See {@link IPlacesApi})
+     * @param startTime Optional desired start time of mobility. Can <b>not</b>
+     * be in past. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param endTime Optional desired end time of mobility. Can <b>not</b> be
+     * in past and must be after {@link startTime}, if {@link startTime} is
+     * given. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param radiusMeter Maximum distance a user wants to travel to reach the
+     * start point of the mobility option in meters. This basically serves as a
+     * search radius around the geo-position given in param {@link from}.
+     * @param sharingAllowed Defines if user is ok with sharing his mobility
+     * option with others, potentially unknown people.
+     * @param modesAllowed Allowed modes for legs and potential sub-legs of all
+     * options returned.
+     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
+     * sub-legs of all options returned.
+     * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens. Most providers do not require a token for querying
+     * options using the {@link IOptionsApi}.
      * @return List of {@link Options}
      */
     @GetMapping(OPTIONS_PATH)
@@ -108,7 +142,9 @@ public interface IOptionsApi {
 
     /**
      * Assembles a request, matching the {@code GET /options} endpoint, for the
-     * service with the given url using the given token.
+     * service with the given url using the given token. See
+     * {@link IOptionsApi#getOptions(String, String, String, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
+     * for JavaDoc on that endpoint.
      * <p>
      * The params are checked for null values and added only if they are present
      * and sensible.
@@ -116,18 +152,37 @@ public interface IOptionsApi {
      * The returned request can be send using {@code request.go()} which will
      * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl The base url of the mobility service who should be
+     * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param from
-     * @param to
-     * @param startTime
-     * @param endTime
-     * @param radiusMeter
-     * @param sharingAllowed
-     * @param modesAllowed
-     * @param mobilityTypesAllowed
-     * @param limitTo
-     * @param token
+     * @param from User's geo-location in comma separated form, e.g.
+     * 60.123,27.456.
+     * @param to A desired destination as geo-location in comma-separated form,
+     * e.g. 60.123,27.456.
+     * @param startTime Optional desired start time of mobility. Can <b>not</b>
+     * be in past. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param endTime Optional desired end time of mobility. Can <b>not</b> be
+     * in past and must be after {@link startTime}, if {@link startTime} is
+     * given. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param radiusMeter Maximum distance a user wants to travel to reach the
+     * start point of the mobility option in meters. This basically serves as a
+     * search radius around the geo-position given in param {@link from}.
+     * @param sharingAllowed Defines if user is ok with sharing his mobility
+     * option with others, potentially unknown people.
+     * @param modesAllowed Allowed modes for legs and potential sub-legs of all
+     * options returned.
+     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
+     * sub-legs of all options returned.
+     * @param limitTo An optional upper limit of results for the response.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens. Most providers do not require a token for querying
+     * options using the {@link IOptionsApi}.
      * @return
      */
     public static EfsRequest<List<Options>> buildGetOptionsRequest(
@@ -152,7 +207,9 @@ public interface IOptionsApi {
 
     /**
      * Assembles a request, matching the {@code GET /options} endpoint, for the
-     * service with the given url using the given token.
+     * service with the given url using the given token. See
+     * {@link IOptionsApi#getOptions(String, String, String, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
+     * for JavaDoc on that endpoint.
      * <p>
      * The params are checked for null values and added only if they are present
      * and sensible.
@@ -160,20 +217,43 @@ public interface IOptionsApi {
      * The returned request can be send using {@code request.go()} which will
      * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl The base url of the mobility service who should be
+     * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param from
-     * @param fromPlaceId
-     * @param to
-     * @param toPlaceId
-     * @param startTime
-     * @param endTime
-     * @param radiusMeter
-     * @param sharingAllowed
-     * @param modesAllowed
-     * @param mobilityTypesAllowed
-     * @param limitTo
-     * @param token
+     * @param from User's geo-location in comma separated form, e.g.
+     * 60.123,27.456.
+     * @param fromPlaceId An optional place ID that represents the entity at
+     * position {@link from}. This place ID is provider specific and can be
+     * obtained using the places API. (See {@link IPlacesApi})
+     * @param to A desired destination as geo-location in comma-separated form,
+     * e.g. 60.123,27.456.
+     * @param toPlaceId An optional place ID that represents the entity at
+     * position {@link to}. This place ID is provider specific and can be
+     * obtained using the places API. (See {@link IPlacesApi})
+     * @param startTime Optional desired start time of mobility. Can <b>not</b>
+     * be in past. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param endTime Optional desired end time of mobility. Can <b>not</b> be
+     * in past and must be after {@link startTime}, if {@link startTime} is
+     * given. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param radiusMeter Maximum distance a user wants to travel to reach the
+     * start point of the mobility option in meters. This basically serves as a
+     * search radius around the geo-position given in param {@link from}.
+     * @param sharingAllowed Defines if user is ok with sharing his mobility
+     * option with others, potentially unknown people.
+     * @param modesAllowed Allowed modes for legs and potential sub-legs of all
+     * options returned.
+     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
+     * sub-legs of all options returned.
+     * @param limitTo An optional upper limit of results for the response.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens. Most providers do not require a token for querying
+     * options using the {@link IOptionsApi}.
      * @return
      */
     public static EfsRequest<List<Options>> buildGetOptionsRequest(

@@ -46,9 +46,14 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
 /**
- * This API serves for querying information about locations belonging to a
- * provider. This is intended to be used for fixed and permanent locations, not
- * free-floating or dynamic assets.
+ * This API serves for querying information about locations (places) belonging
+ * to a provider. This is intended to be used for fixed and permanent locations,
+ * not free-floating or dynamic asset locations.
+ * <p>
+ * <h3>Additional note:</h3>
+ * This interface also provides static methods for building HTTP requests, that
+ * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * class.
  *
  * @author keim
  */
@@ -57,14 +62,22 @@ import org.springframework.http.ResponseEntity;
 public interface IPlacesApi {
 
     /**
-     * API for searching provider specific places.
+     * API for searching provider specific places by text. The text is used as a
+     * query to find places, whose properties match this text at least
+     * partially. This can be understood as a way to find places by arbitrary
+     * text searches, such as names of places, or addresses or even coordinates
+     * or ids.
      *
-     * @param query
-     * @param areaCenter
-     * @param radiusMeter
-     * @param limitTo
+     * @param query The text that is to be used as query for searching places.
+     * @param areaCenter An optional geo-location that defines the center of a
+     * circular search area contrained by param {@link radiusMeter}. If no
+     * radius is given, a default radius is chosen by the provider.
+     * @param radiusMeter A radius in unit meter, that serves as a constraint
+     * for param {@link areaCenter}. Only applied together with areaCenter.
+     * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity.
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens.
      * @return
      */
     @GetMapping("/search")
@@ -79,7 +92,9 @@ public interface IPlacesApi {
 
     /**
      * Assembles a request, matching the {@code GET /places/search} endpoint,
-     * for the service with the given url using the given token.
+     * for the service with the given url using the given token. See
+     * {@link IPlacesApi#search(String, String, Integer, Integer, String)} for JavaDoc on that
+     * endpoint.
      * <p>
      * The params are checked for null values and added only if they are present
      * (i.e. not {@code null} and not blank) and sensible.
@@ -87,14 +102,19 @@ public interface IPlacesApi {
      * The returned request can be sent using {@code request.go()} which will
      * return a {@link ResponseEntity}.
      *
-     * @param serviceUrl The base url of the mobility service who should be
+     * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param query
-     * @param areaCenter
-     * @param radiusMeter
-     * @param limitTo Limits the number of results to this value. If
-     * {@code null}, to limit is used.
-     * @param token
+     * @param query The text that is to be used as query for searching places.
+     * @param areaCenter An optional geo-location that defines the center of a
+     * circular search area contrained by param {@link radiusMeter}. If no
+     * radius is given, a default radius is chosen by the provider.
+     * @param radiusMeter A radius in unit meter, that serves as a constraint
+     * for param {@link areaCenter}. Only applied together with areaCenter.
+     * @param limitTo An optional upper limit of results for the response.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens. Most providers do not require a token for querying
+     * locations using the {@link IPlacesApi}.
      * @return
      */
     public static EfsRequest<List<Place>> buildSearchRequest(
