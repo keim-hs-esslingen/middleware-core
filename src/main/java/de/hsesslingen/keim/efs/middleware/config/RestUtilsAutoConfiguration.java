@@ -48,7 +48,7 @@ public class RestUtilsAutoConfiguration {
 
     @Bean
     public Object efsRequest(@Qualifier("middlewareRestTemplate") RestTemplate restTemplate) {
-        EfsRequest.configureRestTemplates(restTemplate);
+        EfsRequest.configureRestTemplate(restTemplate);
         return null;
     }
 
