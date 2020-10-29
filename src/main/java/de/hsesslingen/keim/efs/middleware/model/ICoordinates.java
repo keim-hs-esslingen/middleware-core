@@ -136,7 +136,7 @@ public interface ICoordinates {
 
     public static void assertPositionIsValid(String latLonString) {
         if (!positionIsValid(latLonString)) {
-            throw new InvalidParameterException("Invalid format for position " + latLonString);
+            throw new InvalidParameterException("Invalid format for position \"" + latLonString + "\".");
         }
     }
 
