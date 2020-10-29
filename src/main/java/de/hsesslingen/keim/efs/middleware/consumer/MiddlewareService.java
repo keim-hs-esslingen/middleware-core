@@ -43,11 +43,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +57,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy
+@EnableScheduling
 public class MiddlewareService {
 
     private static Logger logger = getLogger(MiddlewareService.class);
@@ -66,18 +67,41 @@ public class MiddlewareService {
     @Autowired
     private ServiceDirectoryProxy sdProxy;
 
-    private CompletableFuture<List<ProviderProxy>> providersFuture;
+    private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
 
-    @PostConstruct
-    @Scheduled(fixedRateString = "${middleware.refresh-services-cache-rate:86400000}")
+    private synchronized CompletableFuture<List<ProviderProxy>> getProvidersFuture() {
+        return providersFuture;
+    }
+
+    private synchronized void setProvidersFuture(CompletableFuture<List<ProviderProxy>> providersFuture) {
+        this.providersFuture = providersFuture;
+    }
+
+    //@EventListener(ApplicationStartedEvent.class)
+    @Scheduled(initialDelay = 1000, fixedRateString = "${middleware.refresh-services-cache-rate:86400000}")
     public void refreshAvailableServices() {
         logger.info("Refreshing available services from service-directory.");
 
-        providersFuture = new CompletableFuture<>();
-
-        var services = sdProxy.getAll().stream()
-                .map(s -> new ProviderProxy(s))
+        var all = sdProxy.getAll();
+        var services = all.stream()
+                // Sanitize invalid services to prevent NPEs
+                .peek(s -> {
+                    if (s.getApis() == null) {
+                        s.setApis(Set.of());
+                    }
+                    if (s.getModes() == null) {
+                        s.setModes(Set.of());
+                    }
+                    if (s.getMobilityTypes() == null) {
+                        s.setMobilityTypes(Set.of());
+                    }
+                })
+                .map(ProviderProxy::new)
                 .collect(toList());
+
+        if (providersFuture.isDone()) {
+            setProvidersFuture(new CompletableFuture<>());
+        }
 
         providersFuture.complete(services);
         logger.debug("Done refreshing available services.");
@@ -85,7 +109,7 @@ public class MiddlewareService {
 
     public List<ProviderProxy> getProviders() {
         try {
-            return providersFuture.get();
+            return getProvidersFuture().get();
         } catch (InterruptedException | ExecutionException ex) {
             logger.warn("Thread got interrupted while waiting for services to be retrieved.");
             return getProviders();
@@ -112,7 +136,8 @@ public class MiddlewareService {
             Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<API> allOfTheseApisSupported
     ) {
-        var stream = getProviders().stream();
+        var providers = getProviders();
+        var stream = providers.stream();
 
         if (allOfTheseApisSupported != null && !allOfTheseApisSupported.isEmpty()) {
             stream = stream.filter(s -> s.getService().getApis().containsAll(allOfTheseApisSupported));
