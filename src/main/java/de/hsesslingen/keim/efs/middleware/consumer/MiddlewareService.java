@@ -23,12 +23,10 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKING_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
@@ -40,17 +38,11 @@ import static java.util.Collections.disjoint;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -59,95 +51,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy
-@EnableScheduling
 public class MiddlewareService {
-
-    private static Logger logger = getLogger(MiddlewareService.class);
 
     private static final Function<String, String> defaultTokenGetter = (serviceId) -> null;
 
-    @Value("${middleware.service-directory-url}")
-    public String baseUrl;
-
-    private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
-
-    private synchronized CompletableFuture<List<ProviderProxy>> getProvidersFuture() {
-        return providersFuture;
-    }
-
-    private synchronized void setProvidersFuture(CompletableFuture<List<ProviderProxy>> providersFuture) {
-        this.providersFuture = providersFuture;
-    }
-
-    private List<MobilityService> fetchAvailableProviders() {
-        var response = buildGetAllRequest(baseUrl)
-                .toInternal()
-                .go();
-
-        if (response == null) {
-            logger.warn("Services request returned \"null\" as response. This must be some kind of error.");
-            return List.of();
-        }
-
-        var list = response.getBody();
-
-        if (list == null) {
-            logger.warn("The retunred services list from ServiceDirectory is \"null\".");
-            return List.of();
-        }
-
-        return list;
-    }
-
-    /**
-     * Makes some sanity checks on retrieved mobility service objects to prevent
-     * exceptions in later processing of them. Semantical changes to the objects
-     * are reduced to minimum.
-     *
-     * @param service
-     */
-    private void sanitizeMobilityService(MobilityService service) {
-        if (service.getApis() == null) {
-            service.setApis(Set.of());
-        }
-        if (service.getModes() == null) {
-            service.setModes(Set.of());
-        }
-        if (service.getMobilityTypes() == null) {
-            service.setMobilityTypes(Set.of());
-        }
-    }
-
-    @Scheduled(
-            initialDelayString = "${middleware.refresh-services-cache-initial-delay:0}",
-            fixedRateString = "${middleware.refresh-services-cache-rate:86400000}"
-    )
-    public void refreshAvailableProviders() {
-        logger.info("Refreshing available services from service-directory.");
-
-        var all = fetchAvailableProviders();
-        
-        var services = all.stream()
-                // Sanitize invalid services to prevent null pointers and other stuff.
-                .peek(this::sanitizeMobilityService)
-                .map(ProviderProxy::new)
-                .collect(toList());
-
-        if (providersFuture.isDone()) {
-            setProvidersFuture(new CompletableFuture<>());
-        }
-
-        providersFuture.complete(services);
-        logger.debug("Done refreshing available services.");
-    }
+    @Autowired
+    private ProviderCache providerCache;
 
     public List<ProviderProxy> getProviders() {
-        try {
-            return getProvidersFuture().get();
-        } catch (InterruptedException | ExecutionException ex) {
-            logger.warn("Thread got interrupted while waiting for services to be retrieved.");
-            return getProviders();
-        }
+        return providerCache.getProviders();
     }
 
     public Stream<ProviderProxy> getProviders(Set<String> serviceIds) {
