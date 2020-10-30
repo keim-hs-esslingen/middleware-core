@@ -23,10 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
+import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKING_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
@@ -45,7 +47,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -64,8 +66,8 @@ public class MiddlewareService {
 
     private static final Function<String, String> defaultTokenGetter = (serviceId) -> null;
 
-    @Autowired
-    private ServiceDirectoryProxy sdProxy;
+    @Value("${middleware.service-directory-url}")
+    public String baseUrl;
 
     private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
 
@@ -77,25 +79,44 @@ public class MiddlewareService {
         this.providersFuture = providersFuture;
     }
 
-    //@EventListener(ApplicationStartedEvent.class)
-    @Scheduled(initialDelay = 1000, fixedRateString = "${middleware.refresh-services-cache-rate:86400000}")
-    public void refreshAvailableServices() {
+    private List<MobilityService> fetchAvailableProviders() {
+        logger.info("Querying service directory for all available mobility services...");
+        return buildGetAllRequest(baseUrl)
+                .toInternal()
+                .go()
+                .getBody();
+    }
+
+    /**
+     * Makes some sanity checks on retrieved mobility service objects to prevent
+     * exceptions in later processing of them. Semantical changes to the objects
+     * are reduced to minimum.
+     *
+     * @param service
+     */
+    private void sanitizeMobilityService(MobilityService service) {
+        if (service.getApis() == null) {
+            service.setApis(Set.of());
+        }
+        if (service.getModes() == null) {
+            service.setModes(Set.of());
+        }
+        if (service.getMobilityTypes() == null) {
+            service.setMobilityTypes(Set.of());
+        }
+    }
+
+    @Scheduled(
+            initialDelayString = "${middleware.refresh-services-initial-delay:0}", 
+            fixedRateString = "${middleware.refresh-services-cache-rate:86400000}"
+    )
+    public void refreshAvailableProviders() {
         logger.info("Refreshing available services from service-directory.");
 
-        var all = sdProxy.getAll();
+        var all = fetchAvailableProviders();
         var services = all.stream()
-                // Sanitize invalid services to prevent NPEs
-                .peek(s -> {
-                    if (s.getApis() == null) {
-                        s.setApis(Set.of());
-                    }
-                    if (s.getModes() == null) {
-                        s.setModes(Set.of());
-                    }
-                    if (s.getMobilityTypes() == null) {
-                        s.setMobilityTypes(Set.of());
-                    }
-                })
+                // Sanitize invalid services to prevent null pointers and other stuff.
+                .peek(this::sanitizeMobilityService)
                 .map(ProviderProxy::new)
                 .collect(toList());
 

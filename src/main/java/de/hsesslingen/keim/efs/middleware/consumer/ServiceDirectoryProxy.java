@@ -39,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 /**
  * Helper Class used to make rest calls to service-directory
@@ -68,11 +67,7 @@ public class ServiceDirectoryProxy {
      */
     public List<MobilityService> getAll() {
         logger.info("Querying service directory for all available mobility services...");
-        return EfsRequest.get(buildUri(null, null, null, true))
-                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
-                })
-                .go()
-                .getBody();
+        return buildGetAllRequest(baseUrl).go().getBody();
     }
 
     /**
@@ -115,36 +110,39 @@ public class ServiceDirectoryProxy {
             Set<API> allOfTheseApisSupported
     ) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return EfsRequest.get(buildUri(anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, allOfTheseApisSupported, true))
-                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
-                })
+        return buildSearchRequest(baseUrl, anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, allOfTheseApisSupported, true)
                 .go()
                 .getBody();
     }
 
-    private String buildUri(
+    public static EfsRequest<List<MobilityService>> buildSearchRequest(
+            String serviceDirectoryUrl,
             Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<Mode> anyOfTheseModesSupported,
             Set<API> allOfTheseApisSupported,
             boolean excludeInactive
     ) {
-        var uriBuilder = fromHttpUrl(baseUrl + "/search").queryParam("active", excludeInactive);
+        var request = EfsRequest.get(serviceDirectoryUrl + "/search")
+                .expect(new ParameterizedTypeReference<List<MobilityService>>() {
+                })
+                .query("active", excludeInactive);
 
         if (anyOfTheseMobilityTypesSupported != null && !anyOfTheseMobilityTypesSupported.isEmpty()) {
-            uriBuilder.queryParam("mobilityTypes", anyOfTheseMobilityTypesSupported.toArray());
+            request.query("mobilityTypes", anyOfTheseMobilityTypesSupported.toArray());
         }
         if (anyOfTheseModesSupported != null && !anyOfTheseModesSupported.isEmpty()) {
-            uriBuilder.queryParam("modes", anyOfTheseModesSupported.toArray());
+            request.query("modes", anyOfTheseModesSupported.toArray());
         }
         if (allOfTheseApisSupported != null && !allOfTheseApisSupported.isEmpty()) {
-            uriBuilder.queryParam("apis", allOfTheseApisSupported.toArray());
+            request.query("apis", allOfTheseApisSupported.toArray());
         }
 
-        var uri = uriBuilder.toUriString();
-
-        logger.trace("Using \"{}\" for querying the service directory.", uri);
-
-        return uri;
+        return request;
     }
 
+    public static EfsRequest<List<MobilityService>> buildGetAllRequest(
+            String serviceDirectoryUrl
+    ) {
+        return buildSearchRequest(serviceDirectoryUrl, null, null, null, true);
+    }
 }
