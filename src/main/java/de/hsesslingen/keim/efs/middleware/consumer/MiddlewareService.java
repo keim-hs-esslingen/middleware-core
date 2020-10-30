@@ -119,7 +119,7 @@ public class MiddlewareService {
     }
 
     @Scheduled(
-            initialDelayString = "${middleware.refresh-services-initial-delay:0}",
+            initialDelayString = "${middleware.refresh-services-cache-initial-delay:0}",
             fixedRateString = "${middleware.refresh-services-cache-rate:86400000}"
     )
     public void refreshAvailableProviders() {
