@@ -126,6 +126,7 @@ public class MiddlewareService {
         logger.info("Refreshing available services from service-directory.");
 
         var all = fetchAvailableProviders();
+        
         var services = all.stream()
                 // Sanitize invalid services to prevent null pointers and other stuff.
                 .peek(this::sanitizeMobilityService)
@@ -142,8 +143,7 @@ public class MiddlewareService {
 
     public List<ProviderProxy> getProviders() {
         try {
-            var list = getProvidersFuture().get();
-            return list;
+            return getProvidersFuture().get();
         } catch (InterruptedException | ExecutionException ex) {
             logger.warn("Thread got interrupted while waiting for services to be retrieved.");
             return getProviders();
@@ -170,8 +170,7 @@ public class MiddlewareService {
             Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<API> allOfTheseApisSupported
     ) {
-        var providers = getProviders();
-        var stream = providers.stream();
+        var stream = getProviders().stream();
 
         if (allOfTheseApisSupported != null && !allOfTheseApisSupported.isEmpty()) {
             stream = stream.filter(s -> s.getService().getApis().containsAll(allOfTheseApisSupported));
