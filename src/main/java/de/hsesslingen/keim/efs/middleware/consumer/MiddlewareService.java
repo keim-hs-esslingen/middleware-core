@@ -80,11 +80,23 @@ public class MiddlewareService {
     }
 
     private List<MobilityService> fetchAvailableProviders() {
-        logger.info("Querying service directory for all available mobility services...");
-        return buildGetAllRequest(baseUrl)
+        var response = buildGetAllRequest(baseUrl)
                 .toInternal()
-                .go()
-                .getBody();
+                .go();
+
+        if (response == null) {
+            logger.warn("Services request returned \"null\" as response. This must be some kind of error.");
+            return List.of();
+        }
+
+        var list = response.getBody();
+
+        if (list == null) {
+            logger.warn("The retunred services list from ServiceDirectory is \"null\".");
+            return List.of();
+        }
+
+        return list;
     }
 
     /**
@@ -107,7 +119,7 @@ public class MiddlewareService {
     }
 
     @Scheduled(
-            initialDelayString = "${middleware.refresh-services-initial-delay:0}", 
+            initialDelayString = "${middleware.refresh-services-initial-delay:0}",
             fixedRateString = "${middleware.refresh-services-cache-rate:86400000}"
     )
     public void refreshAvailableProviders() {
@@ -130,7 +142,8 @@ public class MiddlewareService {
 
     public List<ProviderProxy> getProviders() {
         try {
-            return getProvidersFuture().get();
+            var list = getProvidersFuture().get();
+            return list;
         } catch (InterruptedException | ExecutionException ex) {
             logger.warn("Thread got interrupted while waiting for services to be retrieved.");
             return getProviders();
