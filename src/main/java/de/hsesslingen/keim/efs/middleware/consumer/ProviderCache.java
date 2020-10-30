@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -71,9 +72,15 @@ public class ProviderCache {
      * @return
      */
     private List<MobilityService> fetchAvailableProviders() {
-        var response = buildGetAllRequest(baseUrl)
-                .toInternal()
-                .go();
+        ResponseEntity<List<MobilityService>> response;
+
+        try {
+            response = buildGetAllRequest(baseUrl)
+                    .toInternal()
+                    .go();
+        } catch (Exception ex) {
+            return List.of();
+        }
 
         if (response == null) {
             logger.warn("Services request returned \"null\" as response. This must be some kind of error.");
