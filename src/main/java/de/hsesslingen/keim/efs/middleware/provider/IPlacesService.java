@@ -29,12 +29,33 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentia
 import java.util.List;
 
 /**
+ * This interface represents the API, that the places rest controller uses to
+ * perform the possible actions provided by the placse API. That API will only
+ * be available if this interface is implemented and provided as a spring bean.
  *
  * @author keim
  * @param <C>
  */
 public interface IPlacesService<C extends AbstractCredentials> {
 
+    /**
+     * API for searching provider specific places by text.The text is used as a
+     * query to find places, whose properties match this text at least
+     * partially.This can be understood as a way to find places by arbitrary
+     * text searches, such as names of places, or addresses or even coordinates
+     * or ids.
+     *
+     * @param query The text that is to be used as query for searching places.
+     * @param areaCenter An optional geo-location that defines the center of a
+     * circular search area contrained by param {@link radiusMeter}. If no
+     * radius is given, a default radius is chosen by the provider.
+     * @param radiusMeter A radius in unit meter, that serves as a constraint
+     * for param {@link areaCenter}. Only applied together with areaCenter.
+     * @param limitTo An optional upper limit of results for the response.
+     * @param credentials The credentials needed to authenticate and authorize
+     * oneself to perform this action
+     * @return
+     */
     public List<Place> search(
             String query,
             ICoordinates areaCenter,

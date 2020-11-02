@@ -131,7 +131,7 @@ public interface IBookingApi {
     /**
      * Updates an existing {@link Booking} with new details.
      *
-     * @param id The booking id
+     * @param id The booking id.
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more

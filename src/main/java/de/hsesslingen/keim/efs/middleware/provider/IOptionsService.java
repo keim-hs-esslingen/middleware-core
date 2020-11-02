@@ -31,6 +31,7 @@ import org.springframework.lang.Nullable;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.model.Options;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
@@ -38,6 +39,9 @@ import java.util.Set;
 import javax.validation.Valid;
 
 /**
+ * This interface represents the API, that the options rest controller uses to
+ * perform the possible actions provided by the options API. That API will only
+ * be available if this interface is implemented and provided as a spring bean.
  *
  * @author boesch, K.Sivarasah
  * @param <C>
@@ -45,21 +49,48 @@ import javax.validation.Valid;
 public interface IOptionsService<C extends AbstractCredentials> {
 
     /**
-     * Returns available transport options for given coordinate.Start time can
-     * be defined, but is optional.If startTime is not provided, but required
- by the third party API, a default value of "Date.now()" is used.
+     * Returns available mobility options for the given criteria.
+     * <p>
+     * Param {@link startTime} can be defined, but is optional. If
+     * {@link startTime} is not provided, but required by the remote API of the
+     * provider, a sensible default value is used automatically, which is usally
+     * the current point in time ("now").
+     * <p>
+     * Param {@link endTime} must be after param {@link startTime}, if
+     * {@link startTime} is given, but it is not dependent on {@link startTime}.
+     * Usually <em>either</em> {@link startTime} <em>or</em> {@link endTime} are
+     * given, defining one point of reference in time, that should be used for
+     * matching options. However, if both params are given, the provider can
+     * chose how to interpret this situation and return the best options based
+     * on that.
      *
-     * @param from User's location
-     * @param radiusMeter Maximum distance a user wants to travel to reach asset
-     * @param to A desired destination
-     * @param sharingAllowed Defines if user can also share a ride. (Null
-     * allowed)
-     * @param startTime Planned start-time of the trip
-     * @param endTime Planned end-time of the trip
-     * @param modesAllowed
-     * @param mobilityTypesAllowed
-     * @param limitTo
-     * @param credentials Credential data
+     * @param from The starting place of the travel for which options are
+     * requested.
+     * @param to An optional end place of the travel for which options are
+     * requested.
+     * @param startTime Optional desired start time of mobility. Can <b>not</b>
+     * be in past. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param endTime Optional desired end time of mobility. Can <b>not</b> be
+     * in past and must be after {@link startTime}, if {@link startTime} is
+     * given. Values up to 10 seconds in past from "now" are tolerated in
+     * validation, to respect network and processing delays for HTTP requests.
+     * Format is flexible. See {@link FlexibleZonedDateTimeParser} for details
+     * on possible formats.
+     * @param radiusMeter Maximum distance a user wants to travel to reach the
+     * start point of the mobility option in meters. This basically serves as a
+     * search radius around the geo-position given in param {@link from}.
+     * @param sharingAllowed Defines if user is ok with sharing his mobility
+     * option with others, potentially unknown people.
+     * @param modesAllowed Allowed modes for legs and potential sub-legs of all
+     * options returned.
+     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
+     * sub-legs of all options returned.
+     * @param limitTo An optional upper limit of results for the response.
+     * @param credentials The credentials needed to authenticate and authorize
+     * oneself to perform this action.
      * @return List of {@link Options}
      */
     @NonNull
