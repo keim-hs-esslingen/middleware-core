@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
         <action>
-            <actionName>CUSTOM-release:prepare</actionName>
-            <displayName>release:prepare</displayName>
+            <actionName>CUSTOM-Maven-Release</actionName>
+            <displayName>Maven-Release</displayName>
             <goals>
-                <goal>release:prepare</goal>
+                <goal>clean</goal>
+                <goal>deploy</goal>
             </goals>
-        </action>
-        <action>
-            <actionName>CUSTOM-release:clean</actionName>
-            <displayName>release:clean</displayName>
-            <goals>
-                <goal>release:clean</goal>
-            </goals>
-        </action>
-        <action>
-            <actionName>CUSTOM-release:perform</actionName>
-            <displayName>release:perform</displayName>
-            <goals>
-                <goal>release:perform</goal>
-            </goals>
+            <activatedProfiles>
+                <activatedProfile>release</activatedProfile>
+            </activatedProfiles>
         </action>
     </actions>
