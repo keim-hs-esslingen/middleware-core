@@ -125,7 +125,7 @@ public class ServiceDirectoryProxy {
         var request = EfsRequest.get(serviceDirectoryUrl + "/search")
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
-                .query("active", excludeInactive);
+                .query("excludeInactive", excludeInactive);
 
         if (anyOfTheseMobilityTypesSupported != null && !anyOfTheseMobilityTypesSupported.isEmpty()) {
             request.query("mobilityTypes", anyOfTheseMobilityTypesSupported.toArray());
