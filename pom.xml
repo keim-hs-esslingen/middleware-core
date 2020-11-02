@@ -19,9 +19,10 @@
     <url>https://github.com/keim-hs-esslingen/efs-middleware-core</url>
     
     <scm>
-        <connection>scm:git:git://github.com:keim-hs-esslingen/efs-middleware-core.git</connection>
-        <developerConnection>scm:git:ssh://github.com:keim-hs-esslingen/efs-middleware-core.git</developerConnection>
+        <connection>scm:git:https://github.com/keim-hs-esslingen/efs-middleware-core.git</connection>
+        <developerConnection>scm:git:https://github.com/keim-hs-esslingen/efs-middleware-core.git</developerConnection>
         <url>https://github.com/keim-hs-esslingen/efs-middleware-core</url>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
@@ -115,6 +116,15 @@
                         <exclude>de/hsesslingen/keim/efs/middleware/config/actuator/**</exclude>
                         <exclude>de/hsesslingen/keim/efs/middleware/controller/IConsumerApi.class</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <configuration>
+                    <tagNameFormat>Release-@{project.version}</tagNameFormat>
+                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
         </plugins>
