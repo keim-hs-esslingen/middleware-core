@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,7 +129,7 @@ public class ProviderCache {
                 // Sanitize invalid services to prevent null pointers and other stuff.
                 .peek(this::sanitizeMobilityService)
                 .map(ProviderProxy::new)
-                .collect(toList());
+                .collect(toUnmodifiableList());
 
         if (providersFuture.isDone()) {
             setProvidersFuture(new CompletableFuture<>());
