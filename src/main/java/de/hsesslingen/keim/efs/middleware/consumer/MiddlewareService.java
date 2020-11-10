@@ -25,7 +25,7 @@ package de.hsesslingen.keim.efs.middleware.consumer;
 
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKING_API;
@@ -145,7 +145,7 @@ public class MiddlewareService {
                 .flatMap(places -> places.stream());
     }
 
-    public Stream<Options> getOptions(
+    public Stream<Option> getOptions(
             ICoordinates from,
             ICoordinates to,
             ZonedDateTime startTime,
@@ -172,7 +172,7 @@ public class MiddlewareService {
                 .flatMap(options -> options.stream());
     }
 
-    public Stream<Options> getOptions(
+    public Stream<Option> getOptions(
             ICoordinates from,
             ICoordinates to,
             ZonedDateTime startTime,

@@ -25,6 +25,8 @@ package conditionalbeans;
 
 import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
 import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
+import de.hsesslingen.keim.efs.middleware.provider.IAssetsApi;
+import de.hsesslingen.keim.efs.middleware.provider.IAssetsService;
 import de.hsesslingen.keim.efs.middleware.provider.IBookingApi;
 import de.hsesslingen.keim.efs.middleware.provider.IBookingService;
 import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
@@ -46,6 +48,11 @@ public abstract class BeansCollector {
     protected IPlacesApi placesApi;
     @Autowired(required = false)
     protected IPlacesService placesService;
+    
+    @Autowired(required = false)
+    protected IAssetsApi assetsApi;
+    @Autowired(required = false)
+    protected IAssetsService assetsService;
 
     @Autowired(required = false)
     protected IOptionsApi optionsApi;

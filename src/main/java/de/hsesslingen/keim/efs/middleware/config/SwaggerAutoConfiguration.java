@@ -21,11 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package de.hsesslingen.keim.efs.middleware.config.swagger;
+package de.hsesslingen.keim.efs.middleware.config;
 
+import de.hsesslingen.keim.efs.middleware.provider.AssetsApi;
+import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
+import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
+import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
+import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
+import de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -52,10 +59,12 @@ import springfox.documentation.spring.web.plugins.Docket;
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
-    public static final String PLACES_API_TAG = "Places Api";
-    public static final String OPTIONS_API_TAG = "Options Api";
-    public static final String BOOKING_API_TAG = "Booking Api";
-    public static final String CREDENTIALS_API_TAG = "Credentials Api";
+    public static final String PLACES_API_TAG = "Places API";
+    public static final String ASSETS_API_TAG = "Assets API";
+    public static final String OPTIONS_API_TAG = "Options API";
+    public static final String BOOKING_API_TAG = "Booking API";
+    public static final String CREDENTIALS_API_TAG = "Credentials API";
+    public static final String SERVICE_INFO_API_TAG = "Service Info API";
     public static final String FLEX_DATETIME_DESC = "Date time value in a flexible format. "
             + "(Epoch millis, ISO zoned date time, ISO local date time, ISO date only, "
             + "ISO time only, ISO time only with offest e.g. +01:00, ... "
@@ -66,17 +75,23 @@ public class SwaggerAutoConfiguration {
     @Value("${spring.application.name:}")
     private String serviceName;
 
-    @Value("${middleware.provider.places-api.enabled:false}")
-    private boolean placesEnabled;
+    @Autowired(required = false)
+    private PlacesApi placesApi;
 
-    @Value("${middleware.provider.options-api.enabled:false}")
-    private boolean optionsEnabled;
+    @Autowired(required = false)
+    private AssetsApi assetsApi;
 
-    @Value("${middleware.provider.booking-api.enabled:false}")
-    private boolean bookingEnabled;
+    @Autowired(required = false)
+    private OptionsApi optionsApi;
 
-    @Value("${middleware.provider.credentials-api.enabled:false}")
-    private boolean credentialsEnabled;
+    @Autowired(required = false)
+    private BookingApi bookingApi;
+
+    @Autowired(required = false)
+    private CredentialsApi credentialsApi;
+
+    @Autowired(required = false)
+    private ServiceInfoApi serviceInfoApi;
 
     @Bean
     @ConditionalOnMissingBean
@@ -100,20 +115,28 @@ public class SwaggerAutoConfiguration {
     private void setTags(Docket docket) {
         var tags = new ArrayList<Tag>(4);
 
-        if (placesEnabled) {
+        if (placesApi != null) {
             tags.add(new Tag(PLACES_API_TAG, "API for searching provider specific places, like bus stops...", 1));
         }
 
-        if (optionsEnabled) {
-            tags.add(new Tag(OPTIONS_API_TAG, "API for searching mobility options.", 1));
+        if (assetsApi != null) {
+            tags.add(new Tag(ASSETS_API_TAG, "API for getting information about assets of this provider.", 2));
         }
 
-        if (bookingEnabled) {
-            tags.add(new Tag(BOOKING_API_TAG, "Booking related API with CRUD functionality.", 2));
+        if (optionsApi != null) {
+            tags.add(new Tag(OPTIONS_API_TAG, "API for searching mobility options.", 3));
         }
 
-        if (credentialsEnabled) {
-            tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related API for managing with credentials of remote APIs.", 3));
+        if (bookingApi != null) {
+            tags.add(new Tag(BOOKING_API_TAG, "Booking related API with CRUD functionality.", 4));
+        }
+
+        if (credentialsApi != null) {
+            tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related API for managing with credentials of remote APIs.", 5));
+        }
+
+        if (serviceInfoApi != null) {
+            tags.add(new Tag(SERVICE_INFO_API_TAG, "API for getting information about this mobility service.", 99));
         }
 
         if (!tags.isEmpty()) {
@@ -133,7 +156,7 @@ public class SwaggerAutoConfiguration {
                 null, null, Collections.emptyList());
     }
 
-    private static <T> Predicate<T> or(Predicate... predicates) {
+    private static <T> Predicate<T> or(Predicate<T>... predicates) {
         return t -> {
             for (var predicate : predicates) {
                 if (predicate.test(t)) {

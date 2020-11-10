@@ -64,7 +64,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 public interface ICredentialsApi {
 
-    public static final String CREDENTIALS_TOKEN_PATH = "/credentials/token";
+    public static final String TOKEN_PATH = "/credentials/token";
 
     public static final String CREDENTIALS_DESCRIPTION = "Credential data as json content string";
     public static final String USER_ID_DESCRIPTION = "A string valud that uniquely identifies a user. (e.g. an email adress, a username, ...)";
@@ -98,12 +98,15 @@ public interface ICredentialsApi {
      * @return An instance of TokenCredentials that contains a provider specific
      * token, which can be used as is.
      */
-    @PostMapping(CREDENTIALS_TOKEN_PATH)
+    @PostMapping(TOKEN_PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create tokens.", notes = "Allows creation of tokens based on the given user-id and secret. The content of this token is provider specific and can be used as is.")
     public TokenCredentials createToken(
-            @RequestHeader(name = USER_ID_HEADER, required = false) @ApiParam(USER_ID_DESCRIPTION) String userId,
-            @RequestHeader(name = SECRET_HEADER) @ApiParam(SECRET_DESCRIPTION) String secret
+            @ApiParam(USER_ID_DESCRIPTION)
+            @RequestHeader(name = USER_ID_HEADER, required = false) String userId,
+            //
+            @ApiParam(SECRET_DESCRIPTION)
+            @RequestHeader(name = SECRET_HEADER) String secret
     );
 
     /**
@@ -113,7 +116,7 @@ public interface ICredentialsApi {
      * with a limited duration of validity.
      * @throws AbstractEfsException
      */
-    @DeleteMapping(CREDENTIALS_TOKEN_PATH)
+    @DeleteMapping(TOKEN_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Invalidate tokens.", notes = "Invalidates (e.g. logs out) the given token.")
     public void deleteToken(
@@ -130,7 +133,7 @@ public interface ICredentialsApi {
      * @return true if valid, false if not.
      * @throws AbstractEfsException
      */
-    @GetMapping(CREDENTIALS_TOKEN_PATH)
+    @GetMapping(TOKEN_PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given token is still valid.")
     public boolean isTokenValid(
@@ -163,7 +166,7 @@ public interface ICredentialsApi {
             String userId,
             String secret
     ) {
-        return EfsRequest.post(serviceUrl + CREDENTIALS_TOKEN_PATH)
+        return EfsRequest.post(serviceUrl + TOKEN_PATH)
                 .expect(TokenCredentials.class)
                 .userIdAndSecret(userId, secret);
     }
@@ -185,7 +188,7 @@ public interface ICredentialsApi {
             String serviceUrl,
             String token
     ) {
-        return EfsRequest.delete(serviceUrl + CREDENTIALS_TOKEN_PATH)
+        return EfsRequest.delete(serviceUrl + TOKEN_PATH)
                 .expect(Void.class)
                 .token(token);
     }
@@ -208,7 +211,7 @@ public interface ICredentialsApi {
             String serviceUrl,
             String token
     ) {
-        return EfsRequest.get(serviceUrl + CREDENTIALS_TOKEN_PATH)
+        return EfsRequest.get(serviceUrl + TOKEN_PATH)
                 .expect(Boolean.class)
                 .token(token);
     }

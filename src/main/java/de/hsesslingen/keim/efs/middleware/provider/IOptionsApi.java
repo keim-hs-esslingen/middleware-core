@@ -23,12 +23,11 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.EfsSwaggerGetBookingOptions;
-import static de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
+import static de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValidAndNotNull;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.toLatLonString;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
@@ -56,7 +55,7 @@ import org.springframework.http.ResponseEntity;
 
 /**
  * This API serves for querying a mobility service provider for mobility
- * {@link Options}. These options can be understood as possibilities for future
+ * {@link Option}. These options can be understood as possibilities for future
  * bookings.
  * <p>
  * <h3>Additional note:</h3>
@@ -70,7 +69,7 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IOptionsApi {
 
-    public static final String OPTIONS_PATH = "/options";
+    public static final String PATH = "/options";
 
     /**
      * Returns available mobility options for the given criteria.
@@ -88,13 +87,13 @@ public interface IOptionsApi {
      * chose how to interpret this situation and return the best options based
      * on that.
      *
-     * @param from User's geo-location in comma separated form, e.g.
-     * 60.123,27.456.
+     * @param from The desired starting location (coordinates) in
+     * comma-separated form, e.g. 60.123,27.456.
      * @param fromPlaceId An optional place ID that represents the entity at
      * position {@link from}. This place ID is provider specific and can be
      * obtained using the places API. (See {@link IPlacesApi})
-     * @param to A desired destination as geo-location in comma-separated form,
-     * e.g. 60.123,27.456.
+     * @param to A desired destination location (coordinates) in comma-separated
+     * form, e.g. 60.123,27.456.
      * @param toPlaceId An optional place ID that represents the entity at
      * position {@link to}. This place ID is provider specific and can be
      * obtained using the places API. (See {@link IPlacesApi})
@@ -123,24 +122,46 @@ public interface IOptionsApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
-     * @return List of {@link Options}
+     * @return List of {@link Option}
      */
-    @GetMapping(OPTIONS_PATH)
+    @GetMapping(PATH)
     @ResponseStatus(HttpStatus.OK)
-    @EfsSwaggerGetBookingOptions
-    public List<Options> getOptions(
-            @RequestParam(required = true) @PositionAsString String from,
+    public List<Option> getOptions(
+            @ApiParam("The desired starting location (coordinates) in comma-separated form, e.g. 60.123,27.456.")
+            @RequestParam @PositionAsString String from,
+            //
+            @ApiParam("An optional place ID that represents the entity at position \"from\". This place ID is provider specific and can be obtained using the Places-API.")
             @RequestParam(required = false) String fromPlaceId,
+            //
+            @ApiParam("A desired destination location (coordinates) in comma-separated form, e.g. 60.123,27.456.")
             @RequestParam(required = false) @PositionAsString String to,
+            //
+            @ApiParam("An optional place ID that represents the entity at position \"to\". This place ID is provider specific and can be obtained using the Places-API.")
             @RequestParam(required = false) String toPlaceId,
-            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime startTime,
-            @RequestParam(required = false) @ApiParam(FLEX_DATETIME_DESC) ZonedDateTime endTime,
-            @RequestParam(required = false) @ApiParam("Allowed search radius around \"from\" in meter.") Integer radiusMeter,
+            //
+            @ApiParam("Desired departure time of mobility. Format: " + FLEX_DATETIME_DESC)
+            @RequestParam(required = false) ZonedDateTime startTime,
+            //
+            @ApiParam("Desired arrival time of mobility. Format: " + FLEX_DATETIME_DESC)
+            @RequestParam(required = false) ZonedDateTime endTime,
+            //
+            @ApiParam("Allowed search radius around \"from\" in meter.")
+            @RequestParam(required = false) Integer radiusMeter,
+            //
+            @ApiParam("Whether the assets used can be shared with other people. (Potentially unknown to the user)")
             @RequestParam(required = false) Boolean sharingAllowed,
+            //
+            @ApiParam("Allowed modes for the legs in the returned options.")
             @RequestParam(required = false, defaultValue = "") Set<Mode> modesAllowed,
+            //
+            @ApiParam("Allowed mobility types for the legs in the returned options.")
             @RequestParam(required = false, defaultValue = "") Set<Mode> mobilityTypesAllowed,
+            //
+            @ApiParam("Limit number of results to this value.")
             @RequestParam(required = false) Integer limitTo,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            //
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
@@ -188,7 +209,7 @@ public interface IOptionsApi {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public static EfsRequest<List<Options>> buildGetOptionsRequest(
+    public static EfsRequest<List<Option>> buildGetOptionsRequest(
             String serviceUrl,
             ICoordinates from,
             ICoordinates to,
@@ -259,7 +280,7 @@ public interface IOptionsApi {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public static EfsRequest<List<Options>> buildGetOptionsRequest(
+    public static EfsRequest<List<Option>> buildGetOptionsRequest(
             String serviceUrl,
             ICoordinates from,
             String fromPlaceId,
@@ -276,9 +297,9 @@ public interface IOptionsApi {
     ) {
         // Start build the request object...
         var request = EfsRequest
-                .get(serviceUrl + OPTIONS_PATH)
+                .get(serviceUrl + PATH)
                 .query("from", toLatLonString(from))
-                .expect(new ParameterizedTypeReference<List<Options>>() {
+                .expect(new ParameterizedTypeReference<List<Option>>() {
                 });
 
         // Building query string by adding existing params...

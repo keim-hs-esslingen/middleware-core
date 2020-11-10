@@ -179,7 +179,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     }
 
     private NewBooking getDummyNewBooking() {
-        Place dummyPlace = new Place("1.23,2.34");
+        Place dummyPlace = Place.fromCoordinates("1.23,2.34");
         Leg dummyLeg = new Leg().setMode(Mode.BICYCLE);
         dummyLeg.setFrom(dummyPlace).setTo(dummyPlace).setStartTime(Instant.now().plusSeconds(1000)).setEndTime(Instant.now().plusSeconds(10000)).setServiceId("dummy-service");
         return new NewBooking().setLeg(dummyLeg);

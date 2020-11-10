@@ -42,6 +42,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
+import java.util.List;
 
 /**
  * Contains the route data about a mobility option.
@@ -56,15 +57,15 @@ public class Leg implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Leg(Instant startTime, Place from, Mode mode) {
-        this.startTime = startTime;
+    public Leg(Place from, Instant startTime, Mode mode) {
         this.from = from;
+        this.startTime = startTime;
         this.mode = mode;
     }
 
-    public Leg(Instant startTime, Place from) {
-        this.startTime = startTime;
+    public Leg(Place from, Instant startTime) {
         this.from = from;
+        this.startTime = startTime;
     }
 
     @JsonSerialize(using = InstantEpochMilliSerializer.class)
@@ -85,9 +86,38 @@ public class Leg implements Serializable {
 
     @NotEmpty()
     @JsonProperty(required = true)
+    @Deprecated(since = "3.0.2", forRemoval = true)
     private String serviceId;
 
-    @JsonProperty(required = true)
+    /**
+     * An optional assetId that identifies the optional {@link asset} that
+     * belongs to this leg. See {@link asset} for more details. If
+     * {@link assetId} is not given, this ID might still be available in the
+     * {@link asset} object, if that one is present.
+     */
+    private String assetId;
+
+    /**
+     * An optional asset that belongs to this leg. This means that this asset
+     * will/can/must be used to move along this leg.
+     */
+    private Asset asset;
+
+    /**
+     * An optional list of sub-legs that describe this leg in higher detail.
+     */
+    private List<Leg> subLegs;
+
+    /**
+     * A list of coordinates describing the path of this leg. The resolution of
+     * this path is unspecified and can therefore be very rough or highly
+     * detailed. If sub legs are present, those sub legs can again contain a
+     * path, allowing this leg to contain are rather rough or symbolic
+     * representation of the path and leaving the higher resolution to the sub
+     * legs.
+     */
+    private List<ICoordinates> path;
+
     private Mode mode;
 
     /**

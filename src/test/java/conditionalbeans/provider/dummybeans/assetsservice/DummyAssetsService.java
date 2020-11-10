@@ -21,18 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package conditionalbeans.provider.dummybeans.optionsservice;
+package conditionalbeans.provider.dummybeans.assetsservice;
 
 import conditionalbeans.provider.dummybeans.DummyBean;
-import de.hsesslingen.keim.efs.middleware.model.Option;
-import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
+import de.hsesslingen.keim.efs.middleware.model.Asset;
+import de.hsesslingen.keim.efs.middleware.provider.IAssetsService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
-import de.hsesslingen.keim.efs.mobility.service.Mode;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,11 +34,11 @@ import org.springframework.stereotype.Component;
  * @author keim
  */
 @Component
-public class DummyOptionsService extends DummyBean implements IOptionsService<AbstractCredentials> {
+public class DummyAssetsService extends DummyBean implements IAssetsService<AbstractCredentials> {
 
     @Override
-    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set<Mode> modesAllowed, Set<MobilityType> mobilityTypesAllowed, Integer limitTo, AbstractCredentials credentials) {
-        throw new UnsupportedOperationException("This should never be called.");
+    public Asset getAssetById(String assetId, AbstractCredentials credentials) {
+        throw new UnsupportedOperationException("Should never be called.");
     }
 
 }

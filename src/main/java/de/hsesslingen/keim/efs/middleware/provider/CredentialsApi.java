@@ -24,7 +24,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
+import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import static de.hsesslingen.keim.efs.mobility.exception.HttpException.internalServerError;
 import io.swagger.annotations.Api;

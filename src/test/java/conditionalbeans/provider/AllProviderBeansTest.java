@@ -24,6 +24,7 @@
 package conditionalbeans.provider;
 
 import conditionalbeans.BeansCollector;
+import conditionalbeans.provider.dummybeans.assetsservice.DummyAssetsService;
 import conditionalbeans.provider.dummybeans.bookingservice.DummyBookingService;
 import conditionalbeans.provider.dummybeans.credentialsdeserializer.DummyCredentialsDeserializer;
 import conditionalbeans.provider.dummybeans.credentialsservice.DummyCredentialsService;
@@ -50,7 +51,8 @@ import org.springframework.test.context.junit4.SpringRunner;
             DummyOptionsService.class,
             DummyBookingService.class,
             DummyCredentialsService.class,
-            DummyCredentialsDeserializer.class
+            DummyCredentialsDeserializer.class,
+            DummyAssetsService.class
         }
 )
 @ActiveProfiles("beans-provider")
@@ -64,6 +66,9 @@ public class AllProviderBeansTest extends BeansCollector {
     public void testBeanExistence() {
         assertNotNull(placesService);
         assertNotNull(placesApi);
+
+        assertNotNull(assetsService);
+        assertNotNull(assetsApi);
 
         assertNotNull(optionsApi);
         assertNotNull(optionsService);

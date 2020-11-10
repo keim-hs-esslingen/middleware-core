@@ -37,6 +37,7 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -70,7 +71,7 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IBookingApi {
 
-    public static final String BOOKINGS_PATH = "/bookings";
+    public static final String PATH = "/bookings";
 
     /**
      * Returns a list of bookings associated with the account that is
@@ -83,12 +84,15 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return List of {@link Booking}
      */
-    @GetMapping(BOOKINGS_PATH)
+    @GetMapping(PATH)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Bookings", notes = "Returns a list of Booking optionally filtered by their state.")
     public List<Booking> getBookings(
+            @ApiParam("An optional state by which to filter the bookings.")
             @RequestParam(required = false) BookingState state,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            //
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
@@ -101,37 +105,48 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the {@link Booking} object
      */
-    @GetMapping(BOOKINGS_PATH + "/{id}")
+    @GetMapping(PATH + "/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get Booking by Id", notes = "Returns the Booking with the given unique booking id")
     public Booking getBookingById(
+            @ApiParam("The ID of the booking which shall be retrieved.")
             @PathVariable String id,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            //
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
      * Creates a new booking and returns it.
      *
      * @param newBooking The {@link NewBooking} that should be created.
+     * @param optionReference An optional reference to an {@link Option} that
+     * unambiguously references this option for booking. This reference is
+     * sometimes given in instances of {@link Option}.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return {@link Booking} that was created
      */
-    @PostMapping(BOOKINGS_PATH)
+    @PostMapping(PATH)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider "
-            + "in BOOKED or STARTED state using the provided NewBooking object and returns it")
+    @ApiOperation(value = "Create a new Booking", notes = "Creates a new Booking for a service-provider in BOOKED or STARTED state using the provided NewBooking object and returns it")
     public Booking createNewBooking(
+            @ApiParam("The booking that should be created.")
             @RequestBody @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            //
+            @ApiParam("An optional reference to an \"Option\" that unambiguously references this option for booking. This reference is sometimes given in instances of \"Option\".")
+            @RequestParam(required = false) String optionReference,
+            //
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
      * Updates an existing {@link Booking} with new details.
      *
-     * @param id The booking id.
+     * @param id The ID of the booking that shall be modified.
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
@@ -139,13 +154,18 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the modified {@link Booking} object
      */
-    @PutMapping(BOOKINGS_PATH + "/{id}")
+    @PutMapping(PATH + "/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiOperation(value = "Modify a Booking", notes = "Updates an existing Booking with the provided details")
     public Booking modifyBooking(
+            @ApiParam("The ID of the booking that shall be modified.")
             @PathVariable String id,
+            //
+            @ApiParam("The Booking object containing the modified data.")
             @RequestBody @Valid @ConsistentBookingDateParams Booking booking,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            //
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
@@ -161,14 +181,20 @@ public interface IBookingApi {
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      */
-    @PostMapping(BOOKINGS_PATH + "/{bookingId}/action/{action}")
+    @PostMapping(PATH + "/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
     public void performAction(
+            @ApiParam("The ID of the booking on which to perform the action.")
             @PathVariable String bookingId,
+            //
+            @ApiParam("The action that should be performed on the booking with the given \"bookingId\".")
             @PathVariable BookingAction action,
+            //
+            @ApiParam("An optional secret that might be required by some mobility service providers to perform this action. (e.g. a PIN)")
             @RequestParam(required = false) String secret,
-            @RequestHeader(name = TOKEN_HEADER, required = false) @ApiParam(value = TOKEN_DESCRIPTION) String token
+            @ApiParam(value = TOKEN_DESCRIPTION)
+            @RequestHeader(name = TOKEN_HEADER, required = false) String token
     );
 
     /**
@@ -193,7 +219,7 @@ public interface IBookingApi {
             String token
     ) {
         return EfsRequest
-                .get(serviceUrl + BOOKINGS_PATH)
+                .get(serviceUrl + PATH)
                 .token(token)
                 .expect(new ParameterizedTypeReference<List<Booking>>() {
                 });
@@ -249,7 +275,7 @@ public interface IBookingApi {
             String token
     ) {
         return EfsRequest
-                .get(serviceUrl + BOOKINGS_PATH + "/" + id)
+                .get(serviceUrl + PATH + "/" + id)
                 .token(token)
                 .expect(Booking.class);
     }
@@ -278,10 +304,40 @@ public interface IBookingApi {
             String token
     ) {
         return EfsRequest
-                .post(serviceUrl + BOOKINGS_PATH)
+                .post(serviceUrl + PATH)
                 .token(token)
                 .body(newBooking)
                 .expect(Booking.class);
+    }
+
+    /**
+     * Assembles a request, matching the {@code POST /bookings} endpoint, for
+     * the service with the given url using the given token.See
+     * {@link IBookingApi#createNewBooking(de.hsesslingen.keim.efs.middleware.model.NewBooking, String)}
+     * for JavaDoc on that endpoint.<p>
+     * The returned request can be sent using {@code request.go()} which will
+     * return a {@link ResponseEntity}.
+     *
+     * @param serviceUrl The base url of the mobility service that should be
+     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
+     * @param newBooking The {@link NewBooking} that should be created.
+     * @param optionReference An optional reference to an {@link Option} that
+     * unambiguously references this option for booking. This reference is
+     * sometimes given in instances of {@link Option}.
+     * @param token A token that identifies and authenticates a user, sometimes
+     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * details on tokens. This value is almost certainly required by all
+     * mobility service providers for querying the {@link IBookingApi}.
+     * @return
+     */
+    public static EfsRequest<Booking> buildCreateNewBookingRequest(
+            String serviceUrl,
+            NewBooking newBooking,
+            String optionReference,
+            String token
+    ) {
+        return buildCreateNewBookingRequest(serviceUrl, newBooking, token)
+                .query("optionReference", optionReference);
     }
 
     /**
@@ -308,7 +364,7 @@ public interface IBookingApi {
             String token
     ) {
         return EfsRequest
-                .put(serviceUrl + BOOKINGS_PATH + "/" + booking.getId())
+                .put(serviceUrl + PATH + "/" + booking.getId())
                 .token(token)
                 .body(booking)
                 .expect(Booking.class);
@@ -342,7 +398,7 @@ public interface IBookingApi {
             String token
     ) {
         return EfsRequest
-                .post(serviceUrl + BOOKINGS_PATH + "/" + bookingId + "/action/" + action.toString())
+                .post(serviceUrl + PATH + "/" + bookingId + "/action/" + action.toString())
                 .token(token)
                 .expect(Void.class);
     }

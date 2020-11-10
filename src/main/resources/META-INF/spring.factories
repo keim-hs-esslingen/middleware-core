@@ -1,6 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils,\
 de.hsesslingen.keim.efs.middleware.provider.PlacesApi,\
+de.hsesslingen.keim.efs.middleware.provider.AssetsApi,\
 de.hsesslingen.keim.efs.middleware.provider.OptionsApi,\
 de.hsesslingen.keim.efs.middleware.provider.BookingApi,\
 de.hsesslingen.keim.efs.middleware.provider.CredentialsApi,\
@@ -11,5 +12,5 @@ de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy,\
 de.hsesslingen.keim.efs.middleware.consumer.MiddlewareService,\
 de.hsesslingen.keim.efs.middleware.consumer.ProviderCache,\
 de.hsesslingen.keim.efs.middleware.config.RestUtilsAutoConfiguration,\
-de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration,\
+de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration,\
 de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser

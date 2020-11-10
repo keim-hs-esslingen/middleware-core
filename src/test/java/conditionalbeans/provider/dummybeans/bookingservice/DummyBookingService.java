@@ -47,7 +47,7 @@ public class DummyBookingService extends DummyBean implements IBookingService<Ab
     }
 
     @Override
-    public Booking createNewBooking(NewBooking newBooking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) throws AbstractEfsException {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

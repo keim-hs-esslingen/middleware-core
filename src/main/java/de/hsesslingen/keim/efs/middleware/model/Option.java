@@ -29,6 +29,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,7 +45,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class Options implements Serializable {
+public class Option implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,10 +53,28 @@ public class Options implements Serializable {
     @NotNull
     @JsonProperty(required = true)
     private Leg leg;
-    
-    @Valid
-    @NotNull
-    @JsonProperty(required = true)
+
+    /**
+     * A value that can be passed when creating a booking to reference this
+     * {@link Option} unambiguously.
+     */
+    private String optionReference;
+
+    /**
+     * How long this option can be considered valid, i.e. useable for booking.
+     */
+    private ZonedDateTime validUntil;
+
+    /**
+     * Information about the type of the asset used in this Option.
+     *
+     * @deprecated Use {@link leg.asset} for this instead.
+     */
+    @Deprecated(since = " 3.0.2", forRemoval = true)
     private TypeOfAsset meta;
+
+    public Option(Leg leg) {
+        this.leg = leg;
+    }
 
 }

@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
+import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -98,18 +98,23 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     @Override
     public Booking createNewBooking(
             @Validated(OnCreate.class) @Valid @ConsistentBookingDateParams NewBooking newBooking,
+            String optionReference,
             String token
     ) {
         logger.info("Received request to create a new booking.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
+        logger.debug("Params of this request:\noptionReference={}\ntoken={}",
+                optionReference, obfuscateConditional(token)
+        );
+
         if (logger.isTraceEnabled()) {
             logger.trace("Body of this request:\n{}", stringify(newBooking));
         }
         //</editor-fold>
 
         var result = bookingService.createNewBooking(
-                newBooking, parseToken(token)
+                newBooking, optionReference, parseToken(token)
         );
 
         if (logger.isTraceEnabled()) {

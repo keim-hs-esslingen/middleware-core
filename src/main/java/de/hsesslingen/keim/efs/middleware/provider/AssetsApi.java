@@ -23,62 +23,62 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.model.Coordinates;
-import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
-import de.hsesslingen.keim.efs.middleware.model.Place;
-import io.swagger.annotations.Api;
-import java.util.List;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
+import de.hsesslingen.keim.efs.middleware.model.Asset;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
- *
- * @author keim
+ * @author boesch, K.Sivarasah
  */
 @Validated
 @RestController
-@ConditionalOnBean(IPlacesService.class)
-@Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
-public class PlacesApi extends ProviderApiBase implements IPlacesApi {
+@ConditionalOnBean(IAssetsService.class)
+@Api(tags = {SwaggerAutoConfiguration.ASSETS_API_TAG})
+//@AutoConfigureAfter(ProviderProperties.class)
+public class AssetsApi extends ProviderApiBase implements IAssetsApi {
 
-    private static final Logger logger = getLogger(PlacesApi.class);
+    private static final Logger logger = getLogger(AssetsApi.class);
 
     @Autowired
-    private IPlacesService service;
+    private IAssetsService assetService;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Override
-    public List<Place> search(
-            String query,
-            String areaCenter,
-            Integer radiusMeter,
-            Integer limitTo,
+    public Asset getAssetById(
+            String assetId,
             String token
     ) {
-        logger.info("Received request for searching places.");
+        logger.info("Received request to get an asset by id.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nquery={}\nareaCenter={}\radiusMeter={}\nlimitTo={}",
-                query, areaCenter, radiusMeter, limitTo
-        );
+        logger.debug("Params of this request:\nassetId={}", assetId);
         //</editor-fold>
 
-        // Convert input params...
-        var coordinates = positionIsValid(areaCenter) ? Coordinates.parse(areaCenter) : null;
+        var asset = assetService.getAssetById(assetId, parseToken(token));
 
-        // Delegate search to user implemented PlacesService...
-        var places = service.search(
-                query, coordinates, radiusMeter, limitTo,
-                parseToken(token)
-        );
+        //<editor-fold defaultstate="collapsed" desc="Debug logging result object.">
+        if (logger.isTraceEnabled()) {
+            try {
+                logger.debug("Responding with this asset: {}", mapper.writeValueAsString(asset));
+            } catch (JsonProcessingException ex) {
+                logger.warn("Erro when logging result object.");
+            }
+        }
+        //</editor-fold>
 
-        logger.debug("Responding with a list of {} places.", places.size());
-
-        return places;
+        return asset;
     }
 
 }

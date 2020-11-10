@@ -29,7 +29,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.mobility.service.MobilityType;
@@ -91,10 +91,10 @@ public interface IOptionsService<C extends AbstractCredentials> {
      * @param limitTo An optional upper limit of results for the response.
      * @param credentials The credentials needed to authenticate and authorize
      * oneself to perform this action.
-     * @return List of {@link Options}
+     * @return List of {@link Option}
      */
     @NonNull
-    public List<Options> getOptions(
+    public List<Option> getOptions(
             @NonNull Place from,
             @Nullable Place to,
             @Nullable ZonedDateTime startTime,

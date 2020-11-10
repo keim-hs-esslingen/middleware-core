@@ -74,13 +74,22 @@ public class Place implements ICoordinates, Serializable {
     private Double lon;
 
     /**
+     * A unique identifier for this place. This ID is provider specific. This
+     * means that this ID can only be expected to be recognized by that
+     * provider, from which this place originated.
+     */
+    private String id;
+
+    /**
      * Human readable name of the place
      */
     private String name;
 
-    private String stopId;
-
-    private String stopCode;
+    /**
+     * If this place belongs to a hierarichal location system, this field can
+     * contain the id of the parent place.
+     */
+    private String parentId;
 
     /**
      * If this place belongs to a hierarichal location system, this field can
@@ -89,49 +98,18 @@ public class Place implements ICoordinates, Serializable {
     private String parentName;
 
     /**
-     * If this place belongs to a hierarichal location system, this field can
-     * contain the id of the parent place.
+     * A value that can be used in different kinds of ways, depending on the
+     * provider. Often used in similar kind of way as {@link id} as this
+     * property existed before {@link id} was added.
      */
-    private String parentId;
+    private String stopId;
 
-    public Place(String latCommaLonString) {
-        assertPositionIsValid(latCommaLonString);
-
-        String[] split = latCommaLonString.split(",");
-
-        this.setLat(Double.valueOf(split[0]));
-        this.setLon(Double.valueOf(split[1]));
-    }
-
-    public Place(String latCommaLonString, String name, String stopId, String stopCode) {
-        assertPositionIsValid(latCommaLonString);
-
-        String[] split = latCommaLonString.split(",");
-
-        this.setLat(Double.valueOf(split[0]));
-        this.setLon(Double.valueOf(split[1]));
-
-        this.name = name;
-        this.stopId = stopId;
-        this.stopCode = stopCode;
-    }
-
-    public Place(String name, String stopId, String stopCode) {
-        this.name = name;
-        this.stopId = stopId;
-        this.stopCode = stopCode;
-    }
-
-    public Place(String latCommaLonString, String name) {
-        assertPositionIsValid(latCommaLonString);
-
-        String[] split = latCommaLonString.split(",");
-
-        this.setLat(Double.valueOf(split[0]));
-        this.setLon(Double.valueOf(split[1]));
-
-        this.name = name;
-    }
+    /**
+     * A value that can be used in different kinds of ways, depending on the
+     * provider. Often used in similar kind of way as {@link assetId} as this
+     * property existed before {@link assetId} was added.
+     */
+    private String stopCode;
 
     /**
      * Updates this instance with the latitude and longitude values of the given
@@ -146,6 +124,17 @@ public class Place implements ICoordinates, Serializable {
 
         this.lat = coordinates.getLat();
         this.lon = coordinates.getLon();
+    }
+
+    /**
+     * Updates this instance with the given latitude and longitude values.
+     *
+     * @param lat
+     * @param lon
+     */
+    public void setCoordinates(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
 
     public boolean hasCoordinates() {
@@ -163,6 +152,20 @@ public class Place implements ICoordinates, Serializable {
             this.stopCode = o.stopCode;
             this.stopId = o.stopId;
         }
+    }
+
+    public static Place fromCoordinates(double lat, double lon) {
+        var place = new Place();
+        place.setCoordinates(lat, lon);
+        return place;
+    }
+
+    public static Place fromCoordinates(String latCommaLonString) {
+        assertPositionIsValid(latCommaLonString);
+
+        var split = latCommaLonString.split(",");
+
+        return fromCoordinates(Double.valueOf(split[0]), Double.valueOf(split[1]));
     }
 
 }

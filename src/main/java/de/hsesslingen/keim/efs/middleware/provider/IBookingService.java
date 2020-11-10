@@ -71,11 +71,14 @@ public interface IBookingService<C extends AbstractCredentials> {
      * Creates a new booking and returns it.
      *
      * @param newBooking The {@link NewBooking} that should be created.
+     * @param optionReference An optional reference to an {@link Option} that
+     * unambiguously references this option for booking. This reference is
+     * sometimes given in instances of {@link Option}.
      * @param credentials The credentials needed to authenticate and authorize
      * oneself to perform this action.
      * @return The newly created Booking
      */
-    public Booking createNewBooking(NewBooking newBooking, @NonNull @Valid C credentials);
+    public Booking createNewBooking(NewBooking newBooking, @Nullable String optionReference, @NonNull @Valid C credentials);
 
     /**
      * Updates an existing {@link Booking} with new details.

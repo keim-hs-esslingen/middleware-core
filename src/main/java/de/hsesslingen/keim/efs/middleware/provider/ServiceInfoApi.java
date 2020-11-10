@@ -23,8 +23,10 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/service-info", produces = MediaType.APPLICATION_JSON_VALUE)
 @ConditionalOnBean(ProviderProperties.class)
+@Api(tags = {SwaggerAutoConfiguration.SERVICE_INFO_API_TAG})
 public class ServiceInfoApi {
 
     @Autowired

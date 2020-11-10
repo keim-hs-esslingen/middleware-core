@@ -31,7 +31,7 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
@@ -55,7 +55,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#createNewBooking(de.hsesslingen.keim.efs.middleware.booking.NewBooking)
      */
     @Override
-    public Booking createNewBooking(NewBooking newBooking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) throws AbstractEfsException {
         return null;
     }
 
@@ -81,7 +81,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
     }
 
     @Override
-    public List<Options> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set modesAllowed, Set mobilityTypesAllowed, Integer limitTo, AbstractCredentials credentials) {
+    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set modesAllowed, Set mobilityTypesAllowed, Integer limitTo, AbstractCredentials credentials) {
         return List.of();
     }
 

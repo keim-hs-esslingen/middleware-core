@@ -31,7 +31,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.model.TypeOfAsset;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
@@ -53,15 +53,15 @@ public class MiddlewareTestBase {
     public static final ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    public Options getDummyOption(String serviceId, String from) {
-        return new Options()
+    public Option getDummyOption(String serviceId, String from) {
+        return new Option()
                 .setLeg(new Leg().setServiceId(serviceId)
                         .setStartTime(Instant.now()).setEndTime(Instant.now())
-                        .setFrom(new Place(from)).setMode(Mode.CAR))
+                        .setFrom(Place.fromCoordinates(from)).setMode(Mode.CAR))
                 .setMeta(new TypeOfAsset().setName("dummy").setTypeID("type_id_001"));
     }
 
-    public List<Options> getDummyOptions(String serviceId, String from) {
+    public List<Option> getDummyOptions(String serviceId, String from) {
         return Arrays.asList(getDummyOption(serviceId, from));
     }
 

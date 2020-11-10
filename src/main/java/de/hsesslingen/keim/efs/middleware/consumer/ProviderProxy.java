@@ -28,7 +28,7 @@ import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildCreateNewBookingRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingByIdRequest;
@@ -106,7 +106,7 @@ public class ProviderProxy {
                 .getBody();
     }
 
-    public EfsRequest<List<Options>> createGetOptionsRequest(
+    public EfsRequest<List<Option>> createGetOptionsRequest(
             ICoordinates from,
             String fromPlaceId,
             ICoordinates to,
@@ -127,7 +127,7 @@ public class ProviderProxy {
         );
     }
 
-    public List<Options> getOptions(
+    public List<Option> getOptions(
             ICoordinates from,
             String fromPlaceId,
             ICoordinates to,
@@ -146,7 +146,7 @@ public class ProviderProxy {
                 .getBody();
     }
 
-    public EfsRequest<List<Options>> createGetOptionsRequest(
+    public EfsRequest<List<Option>> createGetOptionsRequest(
             ICoordinates from,
             ICoordinates to,
             ZonedDateTime startTime,
@@ -164,7 +164,7 @@ public class ProviderProxy {
         );
     }
 
-    public List<Options> getOptions(
+    public List<Option> getOptions(
             ICoordinates from,
             ICoordinates to,
             ZonedDateTime startTime,

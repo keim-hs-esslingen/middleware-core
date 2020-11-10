@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.config.swagger.SwaggerAutoConfiguration;
+import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
 import java.util.List;
 
@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.hsesslingen.keim.efs.middleware.model.Options;
+import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
@@ -72,7 +72,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
     private boolean returnZeroUponMobilityTypesMismatch;
 
     @Override
-    public List<Options> getOptions(
+    public List<Option> getOptions(
             String from,
             String fromPlaceId,
             String to,
@@ -110,7 +110,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         }
 
         // Converting input params...
-        var placeFrom = new Place(from);
+        var placeFrom = Place.fromCoordinates(from);
 
         if (fromPlaceId != null && !fromPlaceId.isBlank()) {
             placeFrom.setStopId(fromPlaceId);
@@ -119,7 +119,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         Place placeTo = null;
 
         if (positionIsValid(to)) {
-            placeTo = new Place(to);
+            placeTo = Place.fromCoordinates(to);
 
             if (isNotBlank(toPlaceId)) {
                 placeTo.setStopId(toPlaceId);

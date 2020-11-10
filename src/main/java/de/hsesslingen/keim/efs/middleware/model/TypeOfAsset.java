@@ -32,39 +32,45 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * Contains meta data about an asset.
+ * Contains information about a particular type of assets. This type is provider
+ * specific and not standardizied, which means that types with equal ids of
+ * different providers do NOT necessarily represent the same type.
  *
  * @author boesch, K.Sivarasah
  */
 @Data
 @Accessors(chain = true)
+@Deprecated(since = "3.0.2", forRemoval = true)
 public class TypeOfAsset {
 
     /**
-     * unique identifier of a type
+     * unique identifier of a type.
      */
     @NotEmpty
     @JsonProperty(required = true)
     private String typeID;
 
     /**
-     * name of asset type
+     * The name of the asset type.
      */
     @JsonProperty(required = true)
     @NotEmpty
     private String name;
 
+    /**
+     * The mode of this asset type.
+     */
     private Mode mode;
 
     /**
      * true indicates asset is allowed to travel abroad
      */
-    private boolean travelAbroad;
+    private Boolean travelAbroad;
 
     /**
      * true indicates airconditioning required
      */
-    private boolean airconditioning;
+    private Boolean airconditioning;
 
     /**
      * classification of the asset
@@ -79,10 +85,10 @@ public class TypeOfAsset {
     /**
      * true indicates cabrio required
      */
-    private boolean cabrio;
+    private Boolean cabrio;
 
     /**
-     * colour of the asset
+     * Colour of the asset.
      */
     private String colour;
 
@@ -99,7 +105,7 @@ public class TypeOfAsset {
     /**
      * number of gears of the asset
      */
-    private int gears;
+    private Integer gears;
 
     /**
      * type of gearbox
@@ -107,54 +113,54 @@ public class TypeOfAsset {
     private Gearbox gearbox;
 
     /**
-     * URL
+     * URL to image of this asset type.
      */
     private String image;
 
     /**
-     * true indicates infant seat required
+     * true indicates infant seat available.
      */
-    private boolean infantseat;
+    private Boolean infantseat;
 
     /**
-     * number of persons able to use the asset
+     * Number of persons able to use one particular asset of this type.
      */
-    private int persons;
+    private Integer persons;
 
     /**
-     * true indicates pets are allowed on asset
+     * true indicates pets are allowed on assets of this type.
      */
-    private boolean pets;
+    private Boolean pets;
 
     /**
-     * way in which the asset is powered
+     * How this asset type is powered.
      */
     private Propulsion propulsion;
 
     /**
-     * true indicates smoking is allowed on asset
+     * true indicates smoking is allowed on assets of this type.
      */
-    private boolean smoking;
+    private Boolean smoking;
 
     /**
-     * percentage of charge available. (0-100)
+     * percentage of charge available. (0-100).
      */
-    private int stateofcharge;
+    private Integer stateofcharge;
 
     /**
      * true indicates towing hook required
      */
-    private boolean towinghook;
+    private Boolean towinghook;
 
     /**
      * true indicates underground parking is allowed with asset
      */
-    private boolean undergroundparking;
+    private Boolean undergroundparking;
 
     /**
-     * true indicates winter tires required
+     * true indicates winter tires are mounted.
      */
-    private boolean wintertires;
+    private Boolean wintertires;
 
     /**
      * free text to describe asset
