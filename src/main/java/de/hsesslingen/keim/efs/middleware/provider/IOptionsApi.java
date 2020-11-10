@@ -178,10 +178,10 @@ public interface IOptionsApi {
      *
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param from User's geo-location in comma separated form, e.g.
-     * 60.123,27.456.
-     * @param to A desired destination as geo-location in comma-separated form,
-     * e.g. 60.123,27.456.
+     * @param from The desired starting location (coordinates) in
+     * comma-separated form, e.g. 60.123,27.456.
+     * @param to A desired destination location (coordinates) in comma-separated
+     * form, e.g. 60.123,27.456.
      * @param startTime Optional desired start time of mobility. Can <b>not</b>
      * be in past. Values up to 10 seconds in past from "now" are tolerated in
      * validation, to respect network and processing delays for HTTP requests.
@@ -243,13 +243,13 @@ public interface IOptionsApi {
      *
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param from User's geo-location in comma separated form, e.g.
-     * 60.123,27.456.
+     * @param from The desired starting location (coordinates) in
+     * comma-separated form, e.g. 60.123,27.456.
      * @param fromPlaceId An optional place ID that represents the entity at
      * position {@link from}. This place ID is provider specific and can be
      * obtained using the places API. (See {@link IPlacesApi})
-     * @param to A desired destination as geo-location in comma-separated form,
-     * e.g. 60.123,27.456.
+     * @param to A desired destination location (coordinates) in comma-separated
+     * form, e.g. 60.123,27.456.
      * @param toPlaceId An optional place ID that represents the entity at
      * position {@link to}. This place ID is provider specific and can be
      * obtained using the places API. (See {@link IPlacesApi})

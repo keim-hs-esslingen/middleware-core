@@ -103,7 +103,7 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
-     * @return the {@link Booking} object
+     * @return The {@link Booking} object
      */
     @GetMapping(PATH + "/{id}")
     @ResponseStatus(HttpStatus.OK)

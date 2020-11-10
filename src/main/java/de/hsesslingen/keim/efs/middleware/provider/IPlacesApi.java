@@ -79,7 +79,8 @@ public interface IPlacesApi {
      * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
-     * details on tokens.
+     * details on tokens. Most providers do not require a token for querying
+     * options using the {@link IPlacesApi}.
      * @return
      */
     @GetMapping("/search")

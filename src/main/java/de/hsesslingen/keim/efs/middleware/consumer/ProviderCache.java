@@ -51,7 +51,7 @@ public class ProviderCache {
     private static Logger logger = getLogger(MiddlewareService.class);
 
     @Value("${middleware.service-directory-url}")
-    public String baseUrl;
+    private String baseUrl;
 
     private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
 
@@ -116,6 +116,9 @@ public class ProviderCache {
         }
     }
 
+    /**
+     * Refreshes the cached providers by querying the service directory again.
+     */
     @Scheduled(
             initialDelayString = "${middleware.refresh-provider-cache-initial-delay:0}",
             fixedRateString = "${middleware.refresh-provider-cache-rate:86400000}"
@@ -139,6 +142,11 @@ public class ProviderCache {
         logger.debug("Done refreshing available services.");
     }
 
+    /**
+     * Get a list of all cached providers.
+     *
+     * @return
+     */
     public List<ProviderProxy> getProviders() {
         try {
             return getProvidersFuture().get();

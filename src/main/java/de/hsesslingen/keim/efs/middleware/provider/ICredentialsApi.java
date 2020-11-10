@@ -114,7 +114,6 @@ public interface ICredentialsApi {
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
-     * @throws AbstractEfsException
      */
     @DeleteMapping(TOKEN_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -131,7 +130,6 @@ public interface ICredentialsApi {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      * @return true if valid, false if not.
-     * @throws AbstractEfsException
      */
     @GetMapping(TOKEN_PATH)
     @ResponseStatus(HttpStatus.OK)

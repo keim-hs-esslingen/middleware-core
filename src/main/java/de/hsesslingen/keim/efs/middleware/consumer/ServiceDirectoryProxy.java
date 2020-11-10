@@ -115,6 +115,17 @@ public class ServiceDirectoryProxy {
                 .getBody();
     }
 
+    /**
+     * Builds a request to get a filtered list of mobility services from the
+     * service directory at the given URL.
+     *
+     * @param serviceDirectoryUrl
+     * @param anyOfTheseMobilityTypesSupported
+     * @param anyOfTheseModesSupported
+     * @param allOfTheseApisSupported
+     * @param excludeInactive
+     * @return
+     */
     public static EfsRequest<List<MobilityService>> buildSearchRequest(
             String serviceDirectoryUrl,
             Set<MobilityType> anyOfTheseMobilityTypesSupported,
@@ -140,6 +151,13 @@ public class ServiceDirectoryProxy {
         return request;
     }
 
+    /**
+     * Builds a request to get all registered mobility services from the service
+     * directory at the given URL.
+     *
+     * @param serviceDirectoryUrl
+     * @return
+     */
     public static EfsRequest<List<MobilityService>> buildGetAllRequest(
             String serviceDirectoryUrl
     ) {

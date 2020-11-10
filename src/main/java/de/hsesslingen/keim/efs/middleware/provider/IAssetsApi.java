@@ -73,7 +73,7 @@ public interface IAssetsApi {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
-     * options using the {@link IOptionsApi}.
+     * options using the {@link IAssetApi}.
      * @return
      */
     @GetMapping(PATH + "/{assetId}")
@@ -103,7 +103,7 @@ public interface IAssetsApi {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
-     * options using the {@link IOptionsApi}.
+     * options using the {@link IAssetApi}.
      * @return
      */
     public static EfsRequest<Asset> buildGetAssetByIdRequest(

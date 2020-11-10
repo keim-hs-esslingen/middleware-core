@@ -27,6 +27,8 @@ import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import de.hsesslingen.keim.efs.middleware.provider.IBookingApi;
+import de.hsesslingen.keim.efs.middleware.provider.IOptionsApi;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKING_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,10 +61,23 @@ public class MiddlewareService {
     @Autowired
     private ProviderCache providerCache;
 
+    /**
+     * Gets all available providers as a list of {@link ProviderProxy}. This
+     * list is read from the {@link ProviderCache}.
+     *
+     * @return
+     */
     public List<ProviderProxy> getProviders() {
         return providerCache.getProviders();
     }
 
+    /**
+     * Gets a stream of available providers matching the given
+     * {@link serviceIds}. The stream is read from {@link ProviderCache}.
+     *
+     * @param serviceIds
+     * @return
+     */
     public Stream<ProviderProxy> getProviders(Set<String> serviceIds) {
         if (serviceIds == null || serviceIds.isEmpty()) {
             return getProviders().stream();
@@ -70,6 +86,12 @@ public class MiddlewareService {
         return getProviders().stream().filter(p -> serviceIds.contains(p.getServiceId()));
     }
 
+    /**
+     * Gets a partiular {@link ProviderProxy} from {@link ProviderCache}.
+     *
+     * @param serviceId
+     * @return
+     */
     public ProviderProxy getProvider(String serviceId) {
         return getProviders().stream()
                 .filter(p -> p.getServiceId().equals(serviceId))
@@ -77,6 +99,14 @@ public class MiddlewareService {
                 .orElse(null);
     }
 
+    /**
+     * Gets a filtered list of {@link ProviderProxy} from {@link ProviderCache}.
+     *
+     * @param anyOfTheseModesSupported
+     * @param anyOfTheseMobilityTypesSupported
+     * @param allOfTheseApisSupported
+     * @return
+     */
     public Stream<ProviderProxy> getProviders(
             Set<Mode> anyOfTheseModesSupported,
             Set<MobilityType> anyOfTheseMobilityTypesSupported,
@@ -99,6 +129,33 @@ public class MiddlewareService {
         return stream;
     }
 
+    /**
+     * Searches all providers that support the {@link IPlaceApi} (Places-API)
+     * for places, using the given search criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use
+     * {@link ProviderProxy#searchPlaces(String,ICoordinates, Integer, Integer, String)}
+     * on each returned provider proxy.
+     *
+     * @param query
+     * @param areaCenter
+     * @param radiusMeter
+     * @param limitToPerProvider
+     * @param serviceTokenGetter A function that allows getting a ready-to-use
+     * token for a given service id. The argument of the function is the service
+     * id for which this function should return a token. The function can also
+     * simply return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Place> searchPlaces(
             String query,
             ICoordinates areaCenter,
@@ -122,6 +179,32 @@ public class MiddlewareService {
                 .flatMap(places -> places.stream());
     }
 
+    /**
+     * Searches all providers that support the {@link IPlaceApi} (Places-API)
+     * for places, using the given search criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use
+     * {@link ProviderProxy#searchPlaces(String,ICoordinates, Integer, Integer, String)}
+     * on each returned provider proxy.
+     *
+     * @param query
+     * @param areaCenter
+     * @param radiusMeter
+     * @param limitToPerProvider
+     * @param serviceIdTokenMap A map of tokens per service id. This map is
+     * supposed to provide a token for each service id queried. The map can also
+     * return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Place> searchPlaces(
             String query,
             ICoordinates areaCenter,
@@ -145,6 +228,37 @@ public class MiddlewareService {
                 .flatMap(places -> places.stream());
     }
 
+    /**
+     * Queries all providers that support the {@link IOptionsApi} (Options-API)
+     * for options, using the given criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use {@link ProviderProxy#getOptions()} on each returned provider
+     * proxy.
+     *
+     * @param from
+     * @param to
+     * @param startTime
+     * @param endTime
+     * @param radiusMeter
+     * @param sharingAllowed
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitToPerProvider
+     * @param serviceTokenGetter A function that allows getting a ready-to-use
+     * token for a given service id. The argument of the function is the service
+     * id for which this function should return a token. The function can also
+     * simply return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Option> getOptions(
             ICoordinates from,
             ICoordinates to,
@@ -172,6 +286,36 @@ public class MiddlewareService {
                 .flatMap(options -> options.stream());
     }
 
+    /**
+     * Queries all providers that support the {@link IOptionsApi} (Options-API)
+     * for options, using the given criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use {@link ProviderProxy#getOptions()} on each returned provider
+     * proxy.
+     *
+     * @param from
+     * @param to
+     * @param startTime
+     * @param endTime
+     * @param radiusMeter
+     * @param sharingAllowed
+     * @param modesAllowed
+     * @param mobilityTypesAllowed
+     * @param limitToPerProvider
+     * @param serviceIdTokenMap A map of tokens per service id. This map is
+     * supposed to provide a token for each service id queried. The map can also
+     * return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Option> getOptions(
             ICoordinates from,
             ICoordinates to,
@@ -202,6 +346,29 @@ public class MiddlewareService {
                 .flatMap(options -> options.stream());
     }
 
+    /**
+     * Queries all providers that support the {@link IBookingApi} (Booking-API)
+     * for bookings, using the given criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use {@link ProviderProxy#getBookings()} on each returned provider
+     * proxy.
+     *
+     * @param serviceIds
+     * @param serviceTokenGetter A function that allows getting a ready-to-use
+     * token for a given service id. The argument of the function is the service
+     * id for which this function should return a token. The function can also
+     * simply return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Booking> getBookings(
             Set<String> serviceIds,
             Function<String, String> serviceTokenGetter
@@ -222,6 +389,27 @@ public class MiddlewareService {
                 .flatMap(options -> options.stream());
     }
 
+    /**
+     * Queries all providers that support the {@link IBookingApi} (Booking-API)
+     * for bookings, using the given criteria.
+     * <p>
+     * The returned stream can be collected to a list. You can use
+     * short-circuiting functions like {@link Stream#limit(long)} or
+     * {@link Stream#takeWhile(Predicate)} to limit the overall amount of
+     * results retrieved and make the retrieval faster.
+     * <p>
+     * However, because the results are merged to a single stream within this
+     * method, it is impossible to group the collected results by their
+     * provider. Therefore, if you want to have full control over request timing
+     * and provider grouping, use one of the {@link getProvider()} methods and
+     * then use {@link ProviderProxy#getBookings()} on each returned provider
+     * proxy.
+     *
+     * @param serviceIdTokenMap A map of tokens per service id. This map is
+     * supposed to provide a token for each service id queried. The map can also
+     * return {@code null} if no token is required.
+     * @return
+     */
     public Stream<Booking> getBookings(Map<String, String> serviceIdTokenMap) {
         Map<String, String> tokenMap = serviceIdTokenMap == null ? Map.of() : serviceIdTokenMap;
         return getBookings(tokenMap.keySet(), tokenMap::get);
