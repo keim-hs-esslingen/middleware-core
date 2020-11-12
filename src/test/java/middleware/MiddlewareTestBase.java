@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.model.TypeOfAsset;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 
@@ -55,10 +54,9 @@ public class MiddlewareTestBase {
 
     public Option getDummyOption(String serviceId, String from) {
         return new Option()
-                .setLeg(new Leg().setServiceId(serviceId)
+                .setLeg(new Leg()
                         .setStartTime(Instant.now()).setEndTime(Instant.now())
-                        .setFrom(Place.fromCoordinates(from)).setMode(Mode.CAR))
-                .setMeta(new TypeOfAsset().setName("dummy").setTypeID("type_id_001"));
+                        .setFrom(Place.fromCoordinates(from)).setMode(Mode.CAR));
     }
 
     public List<Option> getDummyOptions(String serviceId, String from) {

@@ -62,4 +62,13 @@ public class NewBooking implements Serializable {
 
     private Object other;
 
+    public void updateSelfFrom(Object other) {
+        if (other instanceof NewBooking) {
+            var o = (NewBooking) other;
+            this.leg = o.leg;
+            this.customer = o.customer;
+            this.other = o.other;
+        }
+    }
+
 }

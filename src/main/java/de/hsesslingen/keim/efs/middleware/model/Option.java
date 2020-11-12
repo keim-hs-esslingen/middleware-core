@@ -47,7 +47,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Option implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Valid
     @NotNull
@@ -65,16 +65,14 @@ public class Option implements Serializable {
      */
     private ZonedDateTime validUntil;
 
-    /**
-     * Information about the type of the asset used in this Option.
-     *
-     * @deprecated Use {@link leg.asset} for this instead.
-     */
-    @Deprecated(since = " 3.0.2", forRemoval = true)
-    private TypeOfAsset meta;
-
     public Option(Leg leg) {
         this.leg = leg;
     }
 
+    public Option updateSelfFrom(Option other) {
+        this.leg = other.leg;
+        this.optionReference = other.optionReference;
+        this.validUntil = other.validUntil;
+        return this;
+    }
 }

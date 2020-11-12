@@ -113,7 +113,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         var placeFrom = Place.fromCoordinates(from);
 
         if (fromPlaceId != null && !fromPlaceId.isBlank()) {
-            placeFrom.setStopId(fromPlaceId);
+            placeFrom.setId(fromPlaceId);
         }
 
         Place placeTo = null;
@@ -122,7 +122,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             placeTo = Place.fromCoordinates(to);
 
             if (isNotBlank(toPlaceId)) {
-                placeTo.setStopId(toPlaceId);
+                placeTo.setId(toPlaceId);
             }
         }
 

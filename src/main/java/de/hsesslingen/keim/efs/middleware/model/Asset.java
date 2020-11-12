@@ -28,7 +28,6 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.util.List;
-import static java.util.stream.Collectors.joining;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -36,9 +35,12 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * Contains meta data about an asset.
+ * Contains meta data about an asset. This class is intended to be as flexible
+ * as possible so it contains many values that are applicable to some assets but
+ * not all. If a provider deems a property to be not applicable to a particular
+ * asset, that value can simply be unset or set to null.
  *
- * @author boesch, K.Sivarasah
+ * @author boesch
  */
 @Data
 @Accessors(chain = true)
@@ -62,6 +64,25 @@ public class Asset {
     private Mode mode;
 
     /**
+     * The ID of the place that this asset is located at.
+     */
+    private String placeId;
+
+    /**
+     * The place object that this asset is located at.
+     */
+    private Place place;
+
+    /**
+     * Percentage of charge available (0-100). This value only exists if it is
+     * applicable to this asset. This is e.g. not the case for solely
+     * muscle-powered bikes, but IS the case for electrical powered bikes.
+     */
+    @Min(0)
+    @Max(100)
+    private Integer stateOfCharge;
+
+    /**
      * A value that identifies the type of this asset. The type is defined by
      * the provider and can only be expected to be recognized in the scope of
      * this provider.
@@ -75,6 +96,18 @@ public class Asset {
     private String typeName;
 
     /**
+     * A short, human readable summary about this asset. Max length is 140
+     * characters.
+     */
+    private String summary;
+
+    /**
+     * Free and human readable text that contains additional information about
+     * this asset.
+     */
+    private String description;
+
+    /**
      * Color of the asset.
      */
     private String color;
@@ -85,13 +118,10 @@ public class Asset {
     private String imageUrl;
 
     /**
-     * Percentage of charge available (0-100). This value only exists if it is
-     * applicable to this asset. This is e.g. not the case for solely
-     * muscle-powered bikes, but IS the case for electrical powered bikes.
+     * Arrangements of interest for people with disabilities given for this
+     * asset.
      */
-    @Min(0)
-    @Max(100)
-    private Integer stateOfCharge;
+    private List<AccessibilityArrangement> accessibilityArangements;
 
     /**
      * True indicates whether winter tires are mounted on this asset. This
@@ -113,9 +143,39 @@ public class Asset {
     private Boolean hasAirConditioning;
 
     /**
+     * Whether this asset has an infantseat ready to be used.
+     */
+    private Boolean hasInfantseat;
+
+    /**
+     * Whether this asset has a trailer coupling for pulling trailers.
+     */
+    private Boolean hasTrailerCoupling;
+
+    /**
      * Whether this asset is a cabrio or not.
      */
-    private Boolean isCabrio;
+    private Boolean isCabriolet;
+
+    /**
+     * How many persons are allowed to use this asset simultaneously.
+     */
+    private Integer allowedNumberOfPersons;
+
+    /**
+     * Whether pets are allowed in this asset.
+     */
+    private Boolean petsAllowed;
+
+    /**
+     * Whether smoking is allowed in this asset.
+     */
+    private Boolean smokingAllowed;
+
+    /**
+     * Whether users are allowed to park this asset in garages.
+     */
+    private Boolean parkingInGarageAllowed;
 
     /**
      * A human readable name of the brand of this asset. This represent the
@@ -141,36 +201,6 @@ public class Asset {
     private Integer numberOfGears;
 
     /**
-     * How this asset is powered.
-     */
-    private Propulsion propulsion;
-
-    /**
-     * Whether this asset has an infantseat ready to be used.
-     */
-    private Boolean hasInfantseat;
-
-    /**
-     * How many persons are allowed to use this asset simultaneously.
-     */
-    private Integer allowedNumberOfPersons;
-
-    /**
-     * Whether pets are allowed in this asset.
-     */
-    private Boolean arePetsAllowed;
-
-    /**
-     * Whether smoking is allowed in this asset.
-     */
-    private Boolean isSmokingAllowed;
-
-    /**
-     * Whether this asset has a towing hook.
-     */
-    private Boolean hasTowingHook;
-
-    /**
      * The maximum amount of cargo in liters that can be loaded to this asset.
      */
     private Integer maxCargoLiter;
@@ -182,72 +212,13 @@ public class Asset {
     private Integer maxCargoKg;
 
     /**
-     * Arrangements of interest for people with disabilities given for this
-     * asset.
+     * How this asset is powered.
      */
-    private List<AccessibilityArrangement> accessibilityArangements;
-
-    /**
-     * Whether users are allowed to park this asset in garages.
-     */
-    private Boolean isParkingInGarageAllowed;
-
-    /**
-     * A short, human readable summary about this asset. Max length is 140
-     * characters.
-     */
-    private String summary;
-
-    /**
-     * Free and human readable text that contains additional information about
-     * this asset.
-     */
-    private String description;
+    private Propulsion propulsion;
 
     /**
      * Unspecified object that extends information about this asset.
      */
     private Object other;
 
-    @Deprecated(since = "3.0.2", forRemoval = true)
-    public TypeOfAsset toTypeOfAsset() {
-        return new TypeOfAsset()
-                .setMode(mode)
-                .setTypeID(typeId)
-                .setName(typeName)
-                .setColour(color)
-                .setImage(imageUrl)
-                .setStateofcharge(stateOfCharge)
-                .setWintertires(hasWinterTires)
-                .setAirconditioning(hasAirConditioning)
-                .setCabrio(isCabrio)
-                .setBrand(brandName)
-                .setAssetClass(modelName)
-                .setGearbox(gearbox)
-                .setGears(numberOfGears)
-                .setPropulsion(propulsion)
-                .setInfantseat(hasInfantseat)
-                .setPersons(allowedNumberOfPersons)
-                .setPets(arePetsAllowed)
-                .setSmoking(isSmokingAllowed)
-                .setTowinghook(hasTowingHook)
-                .setUndergroundparking(isParkingInGarageAllowed)
-                .setCargo(
-                        List.of(
-                                maxCargoKg != null ? maxCargoKg + "kg" : null,
-                                maxCargoLiter != null ? maxCargoLiter + "l" : null
-                        ).stream().filter(n -> n != null).collect(joining(", "))
-                )
-                .setOther(
-                        List.of(
-                                summary != null ? summary : null,
-                                description != null ? description : null
-                        ).stream().filter(n -> n != null).collect(joining("\n\n"))
-                )
-                .setEasyAccessibility(
-                        this.accessibilityArangements == null
-                                ? null
-                                : accessibilityArangements.stream().findFirst().orElse(null)
-                );
-    }
 }

@@ -97,33 +97,24 @@ public class Place implements ICoordinates, Serializable {
      */
     private String parentName;
 
-    /**
-     * A value that can be used in different kinds of ways, depending on the
-     * provider. Often used in similar kind of way as {@link id} as this
-     * property existed before {@link id} was added.
-     */
-    private String stopId;
-
-    /**
-     * A value that can be used in different kinds of ways, depending on the
-     * provider. Often used in similar kind of way as {@link assetId} as this
-     * property existed before {@link assetId} was added.
-     */
-    private String stopCode;
+    public Place(String id) {
+        this.id = id;
+    }
 
     /**
      * Updates this instance with the latitude and longitude values of the given
-     * ICoordinates. If null is passed, nothing happens.
+     * ICoordinates.If null is passed, nothing happens.
      *
      * @param coordinates
+     * @return 
      */
-    public void setCoordinates(ICoordinates coordinates) {
-        if (coordinates == null) {
-            return;
+    public Place setCoordinates(ICoordinates coordinates) {
+        if (coordinates != null) {
+            this.lat = coordinates.getLat();
+            this.lon = coordinates.getLon();
         }
 
-        this.lat = coordinates.getLat();
-        this.lon = coordinates.getLon();
+        return this;
     }
 
     /**
@@ -131,32 +122,36 @@ public class Place implements ICoordinates, Serializable {
      *
      * @param lat
      * @param lon
+     * @return 
      */
-    public void setCoordinates(double lat, double lon) {
+    public Place setCoordinates(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
+        return this;
     }
 
     public boolean hasCoordinates() {
         return isValid(this);
     }
 
-    public void updateSelfFrom(Object other) {
-        if (other instanceof ICoordinates) {
-            this.setCoordinates((ICoordinates) other);
-        }
+    public void updateSelfFrom(Place other) {
+        this.setCoordinates(other);
 
-        if (other instanceof Place) {
-            Place o = (Place) other;
-            this.name = o.name;
-            this.stopCode = o.stopCode;
-            this.stopId = o.stopId;
-        }
+        this.id = other.id;
+        this.name = other.name;
+        this.parentId = other.parentId;
+        this.parentName = other.parentName;
     }
 
     public static Place fromCoordinates(double lat, double lon) {
         var place = new Place();
         place.setCoordinates(lat, lon);
+        return place;
+    }
+
+    public static Place fromCoordinates(ICoordinates coordinates) {
+        var place = new Place();
+        place.setCoordinates(coordinates);
         return place;
     }
 

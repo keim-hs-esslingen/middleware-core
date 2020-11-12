@@ -26,7 +26,6 @@ package de.hsesslingen.keim.efs.middleware.model;
 import java.io.Serializable;
 import java.time.Instant;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,7 +44,10 @@ import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
 import java.util.List;
 
 /**
- * Contains the route data about a mobility option.
+ * Contains the route data about a mobility option. Information about the asset
+ * that is associated to this mobility option is contained in the property asset
+ * or can be retrieved using the providers Asset API with the assetID in this
+ * object.
  *
  * @author boesch, K.Sivarasah
  */
@@ -84,11 +86,6 @@ public class Leg implements Serializable {
 
     private Place to;
 
-    @NotEmpty()
-    @JsonProperty(required = true)
-    @Deprecated(since = "3.0.2", forRemoval = true)
-    private String serviceId;
-
     /**
      * An optional assetId that identifies the optional {@link asset} that
      * belongs to this leg. See {@link asset} for more details. If
@@ -103,6 +100,16 @@ public class Leg implements Serializable {
      */
     private Asset asset;
 
+    public String getAssetId() {
+        if (assetId != null) {
+            return assetId;
+        } else if (asset != null) {
+            return asset.getId();
+        }
+
+        return null;
+    }
+
     /**
      * An optional list of sub-legs that describe this leg in higher detail.
      */
@@ -116,12 +123,30 @@ public class Leg implements Serializable {
      * representation of the path and leaving the higher resolution to the sub
      * legs.
      */
-    private List<ICoordinates> path;
+    private List<ICoordinates> geoPath;
 
+    /**
+     * The mode of this leg.
+     */
     private Mode mode;
 
     /**
      * Distance/length of this leg in meter.
      */
-    private Integer distance;
+    private Integer distanceMeter;
+
+    public Leg updateSelfFrom(Leg other) {
+        this.startTime = other.startTime;
+        this.endTime = other.endTime;
+        this.from = other.from;
+        this.to = other.to;
+        this.assetId = other.assetId;
+        this.asset = other.asset;
+        this.subLegs = other.subLegs;
+        this.geoPath = other.geoPath;
+        this.mode = other.mode;
+        this.distanceMeter = other.distanceMeter;
+        return this;
+    }
+
 }

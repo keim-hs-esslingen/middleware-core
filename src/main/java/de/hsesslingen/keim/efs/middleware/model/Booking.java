@@ -61,4 +61,15 @@ public class Booking extends NewBooking implements Serializable {
     @ApiModelProperty(value = "Current state of the booking", required = true)
     private BookingState state;
 
+    @Override
+    public void updateSelfFrom(Object other) {
+        super.updateSelfFrom(other);
+
+        if (other instanceof Booking) {
+            var o = (Booking) other;
+            this.id = o.id;
+            this.state = o.state;
+        }
+    }
+
 }

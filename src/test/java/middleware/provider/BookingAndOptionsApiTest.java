@@ -47,10 +47,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
-import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Place;
+import static de.hsesslingen.keim.efs.middleware.model.Place.fromCoordinates;
+import static de.hsesslingen.keim.efs.mobility.service.Mode.BICYCLE;
+import static java.time.Instant.now;
 import java.time.LocalDateTime;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
@@ -179,9 +181,15 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     }
 
     private NewBooking getDummyNewBooking() {
-        Place dummyPlace = Place.fromCoordinates("1.23,2.34");
-        Leg dummyLeg = new Leg().setMode(Mode.BICYCLE);
-        dummyLeg.setFrom(dummyPlace).setTo(dummyPlace).setStartTime(Instant.now().plusSeconds(1000)).setEndTime(Instant.now().plusSeconds(10000)).setServiceId("dummy-service");
+        Place dummyPlace = fromCoordinates("1.23,2.34");
+
+        Leg dummyLeg = new Leg()
+                .setMode(BICYCLE)
+                .setFrom(dummyPlace)
+                .setTo(dummyPlace)
+                .setStartTime(now().plusSeconds(1000))
+                .setEndTime(now().plusSeconds(10000));
+
         return new NewBooking().setLeg(dummyLeg);
     }
 
