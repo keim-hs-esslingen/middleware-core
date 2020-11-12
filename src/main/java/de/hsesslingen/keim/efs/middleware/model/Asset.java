@@ -23,10 +23,12 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -42,6 +44,11 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class Asset {
+
+    /**
+     * The ID of the mobility service that this asset belongs to.
+     */
+    private String serviceId;
 
     /**
      * Unique but provider-specific id of asset.

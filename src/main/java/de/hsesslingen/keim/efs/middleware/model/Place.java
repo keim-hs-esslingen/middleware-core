@@ -50,6 +50,15 @@ public class Place implements ICoordinates, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * The ID of the mobility service, that this place belongs to.
+     * <p>
+     * This value is not constrained to be non-null or non-empty because this
+     * class can also be used to describe places that do not belong to any
+     * mobility service.
+     */
+    private String serviceId;
+
+    /**
      * minimum: -90
      * <p>
      * maximum: 90
@@ -106,7 +115,7 @@ public class Place implements ICoordinates, Serializable {
      * ICoordinates.If null is passed, nothing happens.
      *
      * @param coordinates
-     * @return 
+     * @return
      */
     public Place setCoordinates(ICoordinates coordinates) {
         if (coordinates != null) {
@@ -122,7 +131,7 @@ public class Place implements ICoordinates, Serializable {
      *
      * @param lat
      * @param lon
-     * @return 
+     * @return
      */
     public Place setCoordinates(double lat, double lon) {
         this.lat = lat;
