@@ -51,8 +51,19 @@ import lombok.experimental.Accessors;
 @ApiModel(description = "The booking object describing its state and details")
 public class Booking extends NewBooking implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
+    /**
+     * The ID of the mobility service, this booking is associated with.
+     */
+    @NotEmpty
+    @JsonProperty(required = true)
+    private String serviceId;
+
+    /**
+     * A unique ID that can be used to identify this booking object at the
+     * mobility service with id {@link serviceId}
+     */
     @NotEmpty
     @JsonProperty(required = true)
     private String id;
@@ -68,6 +79,7 @@ public class Booking extends NewBooking implements Serializable {
         if (other instanceof Booking) {
             var o = (Booking) other;
             this.id = o.id;
+            this.serviceId = o.serviceId;
             this.state = o.state;
         }
     }

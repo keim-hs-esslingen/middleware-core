@@ -24,16 +24,10 @@
 package de.hsesslingen.keim.efs.middleware.model;
 
 import java.io.Serializable;
-import java.time.Instant;
 
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliDeserializer;
-import de.hsesslingen.keim.efs.middleware.utils.InstantEpochMilliSerializer;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import lombok.AllArgsConstructor;
@@ -41,6 +35,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -59,26 +54,22 @@ public class Leg implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Leg(Place from, Instant startTime, Mode mode) {
+    public Leg(Place from, ZonedDateTime startTime, Mode mode) {
         this.from = from;
         this.startTime = startTime;
         this.mode = mode;
     }
 
-    public Leg(Place from, Instant startTime) {
+    public Leg(Place from, ZonedDateTime startTime) {
         this.from = from;
         this.startTime = startTime;
     }
 
-    @JsonSerialize(using = InstantEpochMilliSerializer.class)
-    @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
     @IsInFutureOrNull(groups = OnCreate.class)
-    private Instant startTime;
+    private ZonedDateTime startTime;
 
-    @JsonSerialize(using = InstantEpochMilliSerializer.class)
-    @JsonDeserialize(using = InstantEpochMilliDeserializer.class)
     @IsInFutureOrNull(groups = OnCreate.class)
-    private Instant endTime;
+    private ZonedDateTime endTime;
 
     @NotNull
     @JsonProperty(required = true)

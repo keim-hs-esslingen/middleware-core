@@ -32,8 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import static java.time.ZonedDateTime.now;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,8 +51,8 @@ import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import static de.hsesslingen.keim.efs.middleware.model.Place.fromCoordinates;
 import static de.hsesslingen.keim.efs.mobility.service.Mode.BICYCLE;
-import static java.time.Instant.now;
 import java.time.LocalDateTime;
+import static java.time.temporal.ChronoUnit.HOURS;
 import middleware.MiddlewareTestApplication;
 import middleware.MiddlewareTestBase;
 import middleware.provider.credentials.TestCredential;
@@ -163,7 +162,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     @Test
     public void postBooking_Invalid_Time_400() throws Exception {
         NewBooking newBooking = getDummyNewBooking();
-        newBooking.getLeg().setStartTime(Instant.now().minus(1, ChronoUnit.HOURS));
+        newBooking.getLeg().setStartTime(now().minus(1, HOURS));
         mockMvc.perform(post(BOOKINGS_PATH).content(mapper.writeValueAsBytes(newBooking)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code", is(400)))

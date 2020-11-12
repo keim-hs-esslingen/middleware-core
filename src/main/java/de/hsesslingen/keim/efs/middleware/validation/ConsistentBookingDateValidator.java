@@ -27,7 +27,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
-import java.time.Instant;
 
 /**
  * Checks if the booking endtime is either null or after starttime.
@@ -39,8 +38,8 @@ public class ConsistentBookingDateValidator implements ConstraintValidator<Consi
     @Override
     public boolean isValid(NewBooking booking, ConstraintValidatorContext context) {
         try {
-            Instant endTime = booking.getLeg().getEndTime();
-            return endTime == null || endTime.toEpochMilli() == 0 || endTime.isAfter(booking.getLeg().getStartTime());
+            var endTime = booking.getLeg().getEndTime();
+            return endTime == null || endTime.isAfter(booking.getLeg().getStartTime());
         } catch (Exception e) {
             return false;
         }

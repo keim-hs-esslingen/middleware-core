@@ -23,9 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
-import javax.validation.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.util.List;
 import javax.validation.constraints.Max;
@@ -54,8 +51,6 @@ public class Asset {
     /**
      * Human readable name of this asset.
      */
-    @JsonProperty(required = true)
-    @NotEmpty
     private String name;
 
     /**
@@ -160,7 +155,7 @@ public class Asset {
     /**
      * How many persons are allowed to use this asset simultaneously.
      */
-    private Integer allowedNumberOfPersons;
+    private Integer numberOfPersonsAllowed;
 
     /**
      * Whether pets are allowed in this asset.

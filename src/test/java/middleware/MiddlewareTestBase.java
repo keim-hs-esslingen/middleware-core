@@ -24,8 +24,6 @@
 package middleware;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -35,6 +33,7 @@ import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import static java.time.ZonedDateTime.now;
 
 /**
  * @author k.sivarasah 28 Nov 2019
@@ -55,12 +54,15 @@ public class MiddlewareTestBase {
     public Option getDummyOption(String serviceId, String from) {
         return new Option()
                 .setLeg(new Leg()
-                        .setStartTime(Instant.now()).setEndTime(Instant.now())
-                        .setFrom(Place.fromCoordinates(from)).setMode(Mode.CAR));
+                        .setStartTime(now())
+                        .setEndTime(now())
+                        .setFrom(Place.fromCoordinates(from))
+                        .setMode(Mode.CAR)
+                );
     }
 
     public List<Option> getDummyOptions(String serviceId, String from) {
-        return Arrays.asList(getDummyOption(serviceId, from));
+        return List.of(getDummyOption(serviceId, from));
     }
 
     public MobilityService getMobilityService(String serviceId) {

@@ -49,6 +49,16 @@ public class Option implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
+    /**
+     * The ID of the mobility service that this option originated from.
+     */
+    @NotNull
+    @JsonProperty(required = true)
+    private String serviceId;
+
+    /**
+     * This object contains the transport information of this option.
+     */
     @Valid
     @NotNull
     @JsonProperty(required = true)
@@ -65,11 +75,13 @@ public class Option implements Serializable {
      */
     private ZonedDateTime validUntil;
 
-    public Option(Leg leg) {
+    public Option(String serviceId, Leg leg) {
+        this.serviceId = serviceId;
         this.leg = leg;
     }
 
     public Option updateSelfFrom(Option other) {
+        this.serviceId = other.serviceId;
         this.leg = other.leg;
         this.optionReference = other.optionReference;
         this.validUntil = other.validUntil;
