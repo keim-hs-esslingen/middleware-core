@@ -111,9 +111,6 @@ public class ProviderCache {
         if (service.getModes() == null) {
             service.setModes(Set.of());
         }
-        if (service.getMobilityTypes() == null) {
-            service.setMobilityTypes(Set.of());
-        }
     }
 
     /**

@@ -33,7 +33,6 @@ import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKING_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.PLACES_API;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
 import static java.util.Collections.disjoint;
@@ -103,13 +102,11 @@ public class MiddlewareService {
      * Gets a filtered list of {@link ProviderProxy} from {@link ProviderCache}.
      *
      * @param anyOfTheseModesSupported
-     * @param anyOfTheseMobilityTypesSupported
      * @param allOfTheseApisSupported
      * @return
      */
     public Stream<ProviderProxy> getProviders(
             Set<Mode> anyOfTheseModesSupported,
-            Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<API> allOfTheseApisSupported
     ) {
         var stream = getProviders().stream();
@@ -120,10 +117,6 @@ public class MiddlewareService {
 
         if (anyOfTheseModesSupported != null && !anyOfTheseModesSupported.isEmpty()) {
             stream = stream.filter(s -> !disjoint(anyOfTheseModesSupported, s.getService().getModes()));
-        }
-
-        if (anyOfTheseMobilityTypesSupported != null && !anyOfTheseMobilityTypesSupported.isEmpty()) {
-            stream = stream.filter(s -> !disjoint(anyOfTheseMobilityTypesSupported, s.getService().getMobilityTypes()));
         }
 
         return stream;
@@ -251,7 +244,6 @@ public class MiddlewareService {
      * @param radiusMeter
      * @param sharingAllowed
      * @param modesAllowed
-     * @param mobilityTypesAllowed
      * @param limitToPerProvider
      * @param includeGeoPaths
      * @param serviceTokenGetter A function that allows getting a ready-to-use
@@ -268,15 +260,14 @@ public class MiddlewareService {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitToPerProvider,
             Boolean includeGeoPaths,
             Function<String, String> serviceTokenGetter
     ) {
         var tokenGetter = serviceTokenGetter == null ? defaultTokenGetter : serviceTokenGetter;
 
-        var requests = getProviders(modesAllowed, mobilityTypesAllowed, Set.of(OPTIONS_API))
-                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter.apply(p.getServiceId())))
+        var requests = getProviders(modesAllowed, Set.of(OPTIONS_API))
+                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter.apply(p.getServiceId())))
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 
@@ -311,7 +302,6 @@ public class MiddlewareService {
      * @param radiusMeter
      * @param sharingAllowed
      * @param modesAllowed
-     * @param mobilityTypesAllowed
      * @param limitToPerProvider
      * @param includeGeoPaths
      * @param serviceIdTokenMap A map of tokens per service id. This map is
@@ -327,7 +317,6 @@ public class MiddlewareService {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitToPerProvider,
             Boolean includeGeoPaths,
             Map<String, String> serviceIdTokenMap
@@ -336,9 +325,9 @@ public class MiddlewareService {
 
         var ids = tokenMap.keySet();
 
-        var requests = getProviders(modesAllowed, mobilityTypesAllowed, Set.of(OPTIONS_API))
+        var requests = getProviders(modesAllowed, Set.of(OPTIONS_API))
                 .filter(p -> ids.contains(p.getServiceId()))
-                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, includeGeoPaths, tokenMap.get(p.getServiceId())))
+                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenMap.get(p.getServiceId())))
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 

@@ -33,7 +33,6 @@ import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import io.swagger.annotations.ApiParam;
@@ -115,8 +114,6 @@ public interface IOptionsApi {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -155,9 +152,6 @@ public interface IOptionsApi {
             //
             @ApiParam("Allowed modes for the legs in the returned options.")
             @RequestParam(required = false, defaultValue = "") Set<Mode> modesAllowed,
-            //
-            @ApiParam("Allowed mobility types for the legs in the returned options.")
-            @RequestParam(required = false, defaultValue = "") Set<Mode> mobilityTypesAllowed,
             //
             @ApiParam("Limit number of results to this value.")
             @RequestParam(required = false) Integer limitTo,
@@ -204,8 +198,6 @@ public interface IOptionsApi {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -224,14 +216,13 @@ public interface IOptionsApi {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(
                 serviceUrl, from, null, to, null, startTime, endTime,
-                radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
+                radiusMeter, sharingAllowed, modesAllowed,
                 limitTo, includeGeoPaths, token
         );
     }
@@ -277,8 +268,6 @@ public interface IOptionsApi {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -299,7 +288,6 @@ public interface IOptionsApi {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
@@ -336,10 +324,6 @@ public interface IOptionsApi {
         if (modesAllowed != null && !modesAllowed.isEmpty()) {
             var queryValue = modesAllowed.stream().map(Object::toString).collect(joining(","));
             request.query("modesAllowed", queryValue);
-        }
-        if (mobilityTypesAllowed != null && !mobilityTypesAllowed.isEmpty()) {
-            var queryValue = mobilityTypesAllowed.stream().map(Object::toString).collect(joining(","));
-            request.query("mobilityTypesAllowed", queryValue);
         }
         if (limitTo != null) {
             request.query("limitTo", limitTo);

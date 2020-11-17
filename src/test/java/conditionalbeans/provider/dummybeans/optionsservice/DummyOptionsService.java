@@ -28,7 +28,6 @@ import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -43,7 +42,7 @@ import org.springframework.stereotype.Component;
 public class DummyOptionsService extends DummyBean implements IOptionsService<AbstractCredentials> {
 
     @Override
-    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set<Mode> modesAllowed, Set<MobilityType> mobilityTypesAllowed, Integer limitTo, Boolean includeGeoPaths, AbstractCredentials credentials) {
+    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set<Mode> modesAllowed, Integer limitTo, Boolean includeGeoPaths, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

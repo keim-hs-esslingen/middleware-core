@@ -59,7 +59,6 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
     private static final Logger logger = getLogger(OptionsApi.class);
     private static final String RETURN_ZERO_UPON_MODES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-modes-mismatch";
-    private static final String RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-mobility-types-mismatch";
 
     @Autowired
     private IOptionsService optionsService;
@@ -69,8 +68,6 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
     @Value("${" + RETURN_ZERO_UPON_MODES_MISMATCH_KEY + ":true}")
     private boolean returnZeroUponModesMismatch;
-    @Value("${" + RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY + ":true}")
-    private boolean returnZeroUponMobilityTypesMismatch;
 
     @Override
     public List<Option> getOptions(
@@ -83,7 +80,6 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<Mode> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
@@ -99,18 +95,10 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
                             .map(m -> m.name())
                             .collect(joining(","));
 
-            // Concatenate mobilityTypesAllowed to a comma-seperated list of values...
-            var types = mobilityTypesAllowed == null
-                    ? "null"
-                    : mobilityTypesAllowed.stream()
-                            .map(m -> m.name())
-                            .collect(joining(","));
-
-            logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\radiusMeter={}\nsharingAllowed={}\nmodesAllowed={}\nmobilityTypesAllowed={}\nlimitTo={}\nincludeGeoPaths={}",
+            logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\radiusMeter={}\nsharingAllowed={}\nmodesAllowed={}\nlimitTo={}\nincludeGeoPaths={}",
                     from, fromPlaceId, to, toPlaceId,
                     startTime, endTime, radiusMeter,
-                    sharingAllowed, modes, types,
-                    limitTo, includeGeoPaths
+                    sharingAllowed, modes, limitTo, includeGeoPaths
             );
         }
         //</editor-fold>
@@ -119,13 +107,6 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
                 && modesAllowed != null && !modesAllowed.isEmpty()
                 && disjoint(properties.getMobilityService().getModes(), modesAllowed)) {
             logger.info("Returning 0 options because the requested set of allowed modes has none in common with our provided ones. If you want to change this behavior, set property \"{}\" to \"false\".", RETURN_ZERO_UPON_MODES_MISMATCH_KEY);
-            return List.of();
-        }
-
-        if (returnZeroUponMobilityTypesMismatch
-                && mobilityTypesAllowed != null && !mobilityTypesAllowed.isEmpty()
-                && disjoint(properties.getMobilityService().getMobilityTypes(), mobilityTypesAllowed)) {
-            logger.info("Returning 0 options because the requested set of allowed mobility types has none in common with our provided ones. If you want to change this behavior, set property \"{}\" to \"false\".", RETURN_ZERO_UPON_MOBILITY_TYPES_MISMATCH_KEY);
             return List.of();
         }
 
@@ -149,8 +130,8 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radiusMeter,
-                sharingAllowed, modesAllowed, mobilityTypesAllowed,
-                limitTo, includeGeoPaths, parseToken(token)
+                sharingAllowed, modesAllowed, limitTo, includeGeoPaths,
+                parseToken(token)
         );
 
         logger.debug("Responding with a list of {} options.", options.size());

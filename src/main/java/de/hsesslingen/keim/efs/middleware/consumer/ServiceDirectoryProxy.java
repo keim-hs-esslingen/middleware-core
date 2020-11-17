@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.slf4j.Logger;
@@ -74,14 +73,11 @@ public class ServiceDirectoryProxy {
      * Searches for available services in the Service-Directory that match the
      * given criteria.
      *
-     * @param anyOfTheseMobilityTypesSupported Providers support one of the
-     * given mobility types.
      * @param anyOfTheseModesSupported Providers support one of the given modes.
      * @param allOfTheseApisSupported Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
-            Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<Mode> anyOfTheseModesSupported,
             API... allOfTheseApisSupported
     ) {
@@ -91,26 +87,23 @@ public class ServiceDirectoryProxy {
             apiSet = Set.of(allOfTheseApisSupported);
         }
 
-        return search(anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, apiSet);
+        return search(anyOfTheseModesSupported, apiSet);
     }
 
     /**
      * Searches for available services in the Service-Directory that match the
      * given criteria.
      *
-     * @param anyOfTheseMobilityTypesSupported Providers support one of the
-     * given mobility types.
      * @param anyOfTheseModesSupported Providers support one of the given modes.
      * @param allOfTheseApisSupported Provders support ALL of the given apis.
      * @return List of {@link MobilityService}
      */
     public List<MobilityService> search(
-            Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<Mode> anyOfTheseModesSupported,
             Set<API> allOfTheseApisSupported
     ) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return buildSearchRequest(baseUrl, anyOfTheseMobilityTypesSupported, anyOfTheseModesSupported, allOfTheseApisSupported, true)
+        return buildSearchRequest(baseUrl, anyOfTheseModesSupported, allOfTheseApisSupported, true)
                 .go()
                 .getBody();
     }
@@ -120,7 +113,6 @@ public class ServiceDirectoryProxy {
      * service directory at the given URL.
      *
      * @param serviceDirectoryUrl
-     * @param anyOfTheseMobilityTypesSupported
      * @param anyOfTheseModesSupported
      * @param allOfTheseApisSupported
      * @param excludeInactive
@@ -128,7 +120,6 @@ public class ServiceDirectoryProxy {
      */
     public static EfsRequest<List<MobilityService>> buildSearchRequest(
             String serviceDirectoryUrl,
-            Set<MobilityType> anyOfTheseMobilityTypesSupported,
             Set<Mode> anyOfTheseModesSupported,
             Set<API> allOfTheseApisSupported,
             boolean excludeInactive
@@ -138,9 +129,6 @@ public class ServiceDirectoryProxy {
                 })
                 .query("excludeInactive", excludeInactive);
 
-        if (anyOfTheseMobilityTypesSupported != null && !anyOfTheseMobilityTypesSupported.isEmpty()) {
-            request.query("mobilityTypes", anyOfTheseMobilityTypesSupported.toArray());
-        }
         if (anyOfTheseModesSupported != null && !anyOfTheseModesSupported.isEmpty()) {
             request.query("modes", anyOfTheseModesSupported.toArray());
         }
@@ -161,6 +149,6 @@ public class ServiceDirectoryProxy {
     public static EfsRequest<List<MobilityService>> buildGetAllRequest(
             String serviceDirectoryUrl
     ) {
-        return buildSearchRequest(serviceDirectoryUrl, null, null, null, true);
+        return buildSearchRequest(serviceDirectoryUrl, null, null, true);
     }
 }

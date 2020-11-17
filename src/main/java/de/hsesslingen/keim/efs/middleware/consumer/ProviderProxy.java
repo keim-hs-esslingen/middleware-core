@@ -51,7 +51,6 @@ import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildGetOp
 import de.hsesslingen.keim.efs.middleware.provider.IPlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -110,17 +109,6 @@ public class ProviderProxy {
      */
     public boolean supportsMode(Mode mode) {
         return service.getModes().contains(mode);
-    }
-
-    /**
-     * Checks whether the mobility service associated with this
-     * {@link ProviderProxy} supports the given {@link MobilityType}.
-     *
-     * @param mobilityType
-     * @return
-     */
-    public boolean supportsMobilityType(MobilityType mobilityType) {
-        return service.getMobilityTypes().contains(mobilityType);
     }
 
     /**
@@ -260,8 +248,6 @@ public class ProviderProxy {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -281,14 +267,13 @@ public class ProviderProxy {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, fromPlaceId, to, toPlaceId, startTime, endTime,
-                radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
+                radiusMeter, sharingAllowed, modesAllowed,
                 limitTo, includeGeoPaths, token
         );
     }
@@ -326,8 +311,6 @@ public class ProviderProxy {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -347,12 +330,11 @@ public class ProviderProxy {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
     ) {
-        return createGetOptionsRequest(from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token)
+        return createGetOptionsRequest(from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitTo, includeGeoPaths, token)
                 .go()
                 .getBody();
     }
@@ -384,8 +366,6 @@ public class ProviderProxy {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -401,16 +381,15 @@ public class ProviderProxy {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            boolean sharingAllowed,
+            Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
-            boolean includeGeoPaths,
+            Boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, to, startTime, endTime, radiusMeter, sharingAllowed,
-                modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token
+                modesAllowed, limitTo, includeGeoPaths, token
         );
     }
 
@@ -441,8 +420,6 @@ public class ProviderProxy {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -460,12 +437,11 @@ public class ProviderProxy {
             Integer radiusMeter,
             Boolean sharingAllowed,
             Set<Mode> modesAllowed,
-            Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
             String token
     ) {
-        return createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token)
+        return createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitTo, includeGeoPaths, token)
                 .go()
                 .getBody();
     }

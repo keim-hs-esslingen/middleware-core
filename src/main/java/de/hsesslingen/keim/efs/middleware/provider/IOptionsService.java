@@ -32,7 +32,6 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentia
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -86,8 +85,6 @@ public interface IOptionsService<C extends AbstractCredentials> {
      * option with others, potentially unknown people.
      * @param modesAllowed Allowed modes for legs and potential sub-legs of all
      * options returned.
-     * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
-     * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
@@ -104,7 +101,6 @@ public interface IOptionsService<C extends AbstractCredentials> {
             @Nullable Integer radiusMeter,
             @Nullable Boolean sharingAllowed,
             @Nullable Set<Mode> modesAllowed,
-            @Nullable Set<MobilityType> mobilityTypesAllowed,
             @Nullable Integer limitTo,
             @Nullable Boolean includeGeoPaths,
             @Nullable @Valid C credentials
