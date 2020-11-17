@@ -253,6 +253,7 @@ public class MiddlewareService {
      * @param modesAllowed
      * @param mobilityTypesAllowed
      * @param limitToPerProvider
+     * @param includeGeoPaths
      * @param serviceTokenGetter A function that allows getting a ready-to-use
      * token for a given service id. The argument of the function is the service
      * id for which this function should return a token. The function can also
@@ -269,12 +270,13 @@ public class MiddlewareService {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitToPerProvider,
+            Boolean includeGeoPaths,
             Function<String, String> serviceTokenGetter
     ) {
         var tokenGetter = serviceTokenGetter == null ? defaultTokenGetter : serviceTokenGetter;
 
         var requests = getProviders(modesAllowed, mobilityTypesAllowed, Set.of(OPTIONS_API))
-                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, tokenGetter.apply(p.getServiceId())))
+                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter.apply(p.getServiceId())))
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 
@@ -311,6 +313,7 @@ public class MiddlewareService {
      * @param modesAllowed
      * @param mobilityTypesAllowed
      * @param limitToPerProvider
+     * @param includeGeoPaths
      * @param serviceIdTokenMap A map of tokens per service id. This map is
      * supposed to provide a token for each service id queried. The map can also
      * return {@code null} if no token is required.
@@ -326,6 +329,7 @@ public class MiddlewareService {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitToPerProvider,
+            Boolean includeGeoPaths,
             Map<String, String> serviceIdTokenMap
     ) {
         Map<String, String> tokenMap = serviceIdTokenMap == null ? Map.of() : serviceIdTokenMap;
@@ -334,7 +338,7 @@ public class MiddlewareService {
 
         var requests = getProviders(modesAllowed, mobilityTypesAllowed, Set.of(OPTIONS_API))
                 .filter(p -> ids.contains(p.getServiceId()))
-                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, tokenMap.get(p.getServiceId())))
+                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitToPerProvider, includeGeoPaths, tokenMap.get(p.getServiceId())))
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 

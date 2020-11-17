@@ -118,6 +118,8 @@ public interface IOptionsApi {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -149,7 +151,7 @@ public interface IOptionsApi {
             @RequestParam(required = false) Integer radiusMeter,
             //
             @ApiParam("Whether the assets used can be shared with other people. (Potentially unknown to the user)")
-            @RequestParam(required = false) Boolean sharingAllowed,
+            @RequestParam(required = false, defaultValue = "true") Boolean sharingAllowed,
             //
             @ApiParam("Allowed modes for the legs in the returned options.")
             @RequestParam(required = false, defaultValue = "") Set<Mode> modesAllowed,
@@ -159,6 +161,9 @@ public interface IOptionsApi {
             //
             @ApiParam("Limit number of results to this value.")
             @RequestParam(required = false) Integer limitTo,
+            //            
+            @ApiParam("Whether detailed information about the path of legs or about free floating areas should be included.")
+            @RequestParam(required = false, defaultValue = "false") Boolean includeGeoPaths,
             //
             @ApiParam(value = TOKEN_DESCRIPTION)
             @RequestHeader(name = TOKEN_HEADER, required = false) String token
@@ -166,10 +171,9 @@ public interface IOptionsApi {
 
     /**
      * Assembles a request, matching the {@code GET /options} endpoint, for the
-     * service with the given url using the given token. See
+     * service with the given url using the given token.See
      * {@link IOptionsApi#getOptions(String, String, String, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
-     * for JavaDoc on that endpoint.
-     * <p>
+     * for JavaDoc on that endpoint.<p>
      * The params are checked for null values and added only if they are present
      * and sensible.
      * <p>
@@ -203,6 +207,8 @@ public interface IOptionsApi {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -220,21 +226,21 @@ public interface IOptionsApi {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(
                 serviceUrl, from, null, to, null, startTime, endTime,
                 radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
-                limitTo, token
+                limitTo, includeGeoPaths, token
         );
     }
 
     /**
      * Assembles a request, matching the {@code GET /options} endpoint, for the
-     * service with the given url using the given token. See
+     * service with the given url using the given token.See
      * {@link IOptionsApi#getOptions(String, String, String, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
-     * for JavaDoc on that endpoint.
-     * <p>
+     * for JavaDoc on that endpoint.<p>
      * The params are checked for null values and added only if they are present
      * and sensible.
      * <p>
@@ -274,6 +280,8 @@ public interface IOptionsApi {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -293,6 +301,7 @@ public interface IOptionsApi {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
         // Start build the request object...

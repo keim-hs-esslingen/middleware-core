@@ -228,7 +228,7 @@ public class ProviderProxy {
 
     /**
      * Assembles a request for getting options at this provider using the given
-     * arguments. For more information see:
+     * arguments.For more information see:
      * {@link IOptionsApi#buildGetOptionsRequest(String, ICoordinates, String, ICoordinates, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
      *
      *
@@ -263,6 +263,8 @@ public class ProviderProxy {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -281,18 +283,19 @@ public class ProviderProxy {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, fromPlaceId, to, toPlaceId, startTime, endTime,
                 radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed,
-                limitTo, token
+                limitTo, includeGeoPaths, token
         );
     }
 
     /**
-     * Sends a get-options request to this provider using the given arguments.
-     * For more information see:
+     * Sends a get-options request to this provider using the given
+     * arguments.For more information see:
      * {@link IOptionsApi#buildGetOptionsRequest(String, ICoordinates, String, ICoordinates, String, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
      *
      * @param from The desired starting location (coordinates) in
@@ -326,6 +329,8 @@ public class ProviderProxy {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -344,16 +349,17 @@ public class ProviderProxy {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
-        return createGetOptionsRequest(from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, token)
+        return createGetOptionsRequest(from, fromPlaceId, to, toPlaceId, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token)
                 .go()
                 .getBody();
     }
 
     /**
      * Assembles a request for getting options at this provider using the given
-     * arguments. For more information see:
+     * arguments.For more information see:
      * {@link IOptionsApi#buildGetOptionsRequest(String, de.hsesslingen.keim.efs.middleware.model.ICoordinates, de.hsesslingen.keim.efs.middleware.model.ICoordinates, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
      *
      * @param from The desired starting location (coordinates) in
@@ -381,6 +387,8 @@ public class ProviderProxy {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -393,21 +401,22 @@ public class ProviderProxy {
             ZonedDateTime startTime,
             ZonedDateTime endTime,
             Integer radiusMeter,
-            Boolean sharingAllowed,
+            boolean sharingAllowed,
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            boolean includeGeoPaths,
             String token
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, to, startTime, endTime, radiusMeter, sharingAllowed,
-                modesAllowed, mobilityTypesAllowed, limitTo, token
+                modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token
         );
     }
 
     /**
-     * Sends a get-options request to this provider using the given arguments.
-     * For more information see:
+     * Sends a get-options request to this provider using the given
+     * arguments.For more information see:
      * {@link IOptionsApi#buildGetOptionsRequest(String, ICoordinates, ICoordinates, ZonedDateTime, ZonedDateTime, Integer, Boolean, Set, Set, Integer, String)}
      *
      * @param from The desired starting location (coordinates) in
@@ -435,6 +444,8 @@ public class ProviderProxy {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
@@ -451,9 +462,10 @@ public class ProviderProxy {
             Set<Mode> modesAllowed,
             Set<MobilityType> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
-        return createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, token)
+        return createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo, includeGeoPaths, token)
                 .go()
                 .getBody();
     }

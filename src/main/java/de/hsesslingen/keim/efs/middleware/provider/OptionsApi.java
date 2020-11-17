@@ -40,6 +40,7 @@ import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
 import static java.util.Collections.disjoint;
 import java.util.Set;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -84,15 +85,34 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             Set<Mode> modesAllowed,
             Set<Mode> mobilityTypesAllowed,
             Integer limitTo,
+            Boolean includeGeoPaths,
             String token
     ) {
         logger.info("Received request to get options.");
 
         //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\nradius={}\nshare={}",
-                from, fromPlaceId, to, toPlaceId,
-                startTime, endTime, radiusMeter, sharingAllowed
-        );
+        if (logger.isDebugEnabled()) {
+            // Concatenate allowedModes to a comma-seperated list of values...
+            var modes = modesAllowed == null
+                    ? "null"
+                    : modesAllowed.stream()
+                            .map(m -> m.name())
+                            .collect(joining(","));
+
+            // Concatenate mobilityTypesAllowed to a comma-seperated list of values...
+            var types = mobilityTypesAllowed == null
+                    ? "null"
+                    : mobilityTypesAllowed.stream()
+                            .map(m -> m.name())
+                            .collect(joining(","));
+
+            logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\radiusMeter={}\nsharingAllowed={}\nmodesAllowed={}\nmobilityTypesAllowed={}\nlimitTo={}\nincludeGeoPaths={}",
+                    from, fromPlaceId, to, toPlaceId,
+                    startTime, endTime, radiusMeter,
+                    sharingAllowed, modes, types,
+                    limitTo, includeGeoPaths
+            );
+        }
         //</editor-fold>
 
         if (returnZeroUponModesMismatch
@@ -129,8 +149,8 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         // Getting options from user implemented OptionsService.
         var options = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radiusMeter,
-                sharingAllowed, modesAllowed, mobilityTypesAllowed, limitTo,
-                parseToken(token)
+                sharingAllowed, modesAllowed, mobilityTypesAllowed,
+                limitTo, includeGeoPaths, parseToken(token)
         );
 
         logger.debug("Responding with a list of {} options.", options.size());

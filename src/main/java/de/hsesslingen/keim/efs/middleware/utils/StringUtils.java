@@ -21,30 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. 
  */
-package conditionalbeans.provider.dummybeans.optionsservice;
+package de.hsesslingen.keim.efs.middleware.utils;
 
-import conditionalbeans.provider.dummybeans.DummyBean;
-import de.hsesslingen.keim.efs.middleware.model.Option;
-import de.hsesslingen.keim.efs.middleware.model.Place;
-import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.mobility.service.MobilityType;
-import de.hsesslingen.keim.efs.mobility.service.Mode;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Set;
-import org.springframework.stereotype.Component;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  *
  * @author keim
  */
-@Component
-public class DummyOptionsService extends DummyBean implements IOptionsService<AbstractCredentials> {
+public final class StringUtils {
 
-    @Override
-    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set<Mode> modesAllowed, Set<MobilityType> mobilityTypesAllowed, Integer limitTo, Boolean includeGeoPaths, AbstractCredentials credentials) {
-        throw new UnsupportedOperationException("This should never be called.");
+    private StringUtils() {
+    }
+
+    public static String joinNonEmpty(String delimiter, String a, String b) {
+        var aNotEmpty = isNotEmpty(a);
+        var bNotEmpty = isNotEmpty(b);
+
+        if (aNotEmpty && bNotEmpty) {
+            return a + delimiter + b;
+        } else if (aNotEmpty) {
+            return a;
+        } else if (bNotEmpty) {
+            return b;
+        }
+
+        return "";
+    }
+
+    public static String joinNonEmpty(String delimiter, String... values) {
+        if (values == null || values.length == 0) {
+            return "";
+        }
+
+        String tmp = "";
+
+        for (int i = 0; i < values.length; ++i) {
+            tmp = joinNonEmpty(delimiter, tmp, values[i]);
+        }
+
+        return tmp;
     }
 
 }

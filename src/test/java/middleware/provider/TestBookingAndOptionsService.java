@@ -81,7 +81,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
     }
 
     @Override
-    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set modesAllowed, Set mobilityTypesAllowed, Integer limitTo, AbstractCredentials credentials) {
+    public List<Option> getOptions(Place from, Place to, ZonedDateTime startTime, ZonedDateTime endTime, Integer radiusMeter, Boolean sharingAllowed, Set modesAllowed, Set mobilityTypesAllowed, Integer limitTo, Boolean includeGeoPaths, AbstractCredentials credentials) {
         return List.of();
     }
 

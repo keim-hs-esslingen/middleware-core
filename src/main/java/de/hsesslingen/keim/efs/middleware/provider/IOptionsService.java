@@ -89,6 +89,8 @@ public interface IOptionsService<C extends AbstractCredentials> {
      * @param mobilityTypesAllowed Allowed mobilityTypes for legs and potential
      * sub-legs of all options returned.
      * @param limitTo An optional upper limit of results for the response.
+     * @param includeGeoPaths Whether detailed information about the path of
+     * legs or about free floating areas should be included, if available.
      * @param credentials The credentials needed to authenticate and authorize
      * oneself to perform this action.
      * @return List of {@link Option}
@@ -104,6 +106,7 @@ public interface IOptionsService<C extends AbstractCredentials> {
             @Nullable Set<Mode> modesAllowed,
             @Nullable Set<MobilityType> mobilityTypesAllowed,
             @Nullable Integer limitTo,
+            @Nullable Boolean includeGeoPaths,
             @Nullable @Valid C credentials
     );
 

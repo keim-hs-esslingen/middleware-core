@@ -23,12 +23,10 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -118,6 +116,22 @@ public class Asset {
      * URL to image of this asset.
      */
     private String imageUrl;
+
+    /**
+     * Whether this asset is controlled by the user while moving.
+     */
+    private Boolean isUserControlled;
+
+    /**
+     * Whether this asset drives autonomously.
+     */
+    private Boolean isAutonomous;
+
+    /**
+     * Whether this asset is shared with other people (potentially unknown to
+     * the user).
+     */
+    private Boolean isShared;
 
     /**
      * Arrangements of interest for people with disabilities given for this
