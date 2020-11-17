@@ -328,6 +328,9 @@ public interface IOptionsApi {
         if (limitTo != null) {
             request.query("limitTo", limitTo);
         }
+        if (includeGeoPaths != null) {
+            request.query("includeGeoPaths", includeGeoPaths);
+        }
         if (isNotBlank(token)) {
             request.token(token);
         }
