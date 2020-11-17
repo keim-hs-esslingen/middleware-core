@@ -114,7 +114,7 @@ public class Leg implements Serializable {
      * representation of the path and leaving the higher resolution to the sub
      * legs.
      */
-    private List<ICoordinates> geoPath;
+    private List<Coordinates> geoPath;
 
     /**
      * The mode of this leg.

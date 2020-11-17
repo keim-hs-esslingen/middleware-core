@@ -72,4 +72,7 @@ public class Coordinates implements Serializable, ICoordinates {
         return new Coordinates(Double.valueOf(split[0]), Double.valueOf(split[1]));
     }
 
+    public static Coordinates copy(ICoordinates other) {
+        return new Coordinates(other.getLat(), other.getLon());
+    }
 }
