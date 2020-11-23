@@ -81,25 +81,26 @@ public class Leg implements Serializable {
      * An optional assetId that identifies the optional {@link asset} that
      * belongs to this leg. See {@link asset} for more details. If
      * {@link assetId} is not given, this ID might still be available in the
-     * {@link asset} object, if that one is present.
+     * {@link asset} object, if that one is present. This property should not be
+     * set togther with {@link assets} to avoid confusion.
      */
     private String assetId;
 
     /**
      * An optional asset that belongs to this leg. This means that this asset
-     * will/can/must be used to move along this leg.
+     * will/can/must be used to move along this leg. This property should not be
+     * set togther with {@link assets} to avoid confusion.
      */
     private Asset asset;
 
-    public String getAssetId() {
-        if (assetId != null) {
-            return assetId;
-        } else if (asset != null) {
-            return asset.getId();
-        }
-
-        return null;
-    }
+    /**
+     * An optional list of assets, if there are multiple assets that can be
+     * chosen from. Either {@link asset} or {@link assets} should be set.
+     * <p>
+     * To chose a particular asset or even a list of assets for booking, add the
+     * chosen assets to the list of assets in {@link NewBooking.leg}.
+     */
+    private List<Asset> assets;
 
     /**
      * An optional list of sub-legs that describe this leg in higher detail.
@@ -125,6 +126,16 @@ public class Leg implements Serializable {
      * Distance/length of this leg in meter.
      */
     private Integer distanceMeter;
+
+    public String getAssetId() {
+        if (assetId != null) {
+            return assetId;
+        } else if (asset != null) {
+            return asset.getId();
+        }
+
+        return null;
+    }
 
     public Leg updateSelfFrom(Leg other) {
         this.startTime = other.startTime;
