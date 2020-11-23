@@ -84,9 +84,10 @@ public class Option implements Serializable {
      */
     private ZonedDateTime validUntil;
 
-    public Option(String serviceId, Leg leg) {
+    public Option(String serviceId, Leg leg, boolean immediateStart) {
         this.serviceId = serviceId;
         this.leg = leg;
+        this.immediateStart = immediateStart;
     }
 
     public Option updateSelfFrom(Option other) {
