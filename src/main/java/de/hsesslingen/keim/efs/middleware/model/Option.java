@@ -65,6 +65,15 @@ public class Option implements Serializable {
     private Leg leg;
 
     /**
+     * Whether this option is started immediately upon creation of a booking.
+     * The {@link BookingState.BOOKED} state is skipped in the created booking
+     * and costs are counted from right after booking creation.
+     */
+    @NotNull
+    @JsonProperty(required = true)
+    private Boolean immediateStart;
+
+    /**
      * A value that can be passed when creating a booking to reference this
      * {@link Option} unambiguously.
      */
