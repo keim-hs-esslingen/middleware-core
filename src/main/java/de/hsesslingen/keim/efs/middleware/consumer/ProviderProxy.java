@@ -655,7 +655,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public EfsRequest<Void> createPerformActionRequest(
+    public EfsRequest<Booking> createPerformActionRequest(
             String bookingId,
             BookingAction action,
             String token
@@ -675,20 +675,21 @@ public class ProviderProxy {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @return The state of the booking after applying the requested action.
      */
-    public void performAction(
+    public Booking performAction(
             String bookingId,
             BookingAction action,
             String token
     ) {
-        createPerformActionRequest(bookingId, action, token).go();
+        return createPerformActionRequest(bookingId, action, token).go().getBody();
     }
 
     /**
      * Assembles a request for performing a {@link BookingAction} on an existing
-     * booking at this provider using the given arguments. For more information
-     * see:
-     * {@link IBookingApi#performAction(java.lang.String, de.hsesslingen.keim.efs.middleware.model.BookingAction, java.lang.String, java.lang.String)}
+     * booking at this provider using the given arguments.For more information
+ see:
+    {@link IBookingApi#performAction(java.lang.String, de.hsesslingen.keim.efs.middleware.model.BookingAction, java.lang.String, java.lang.String)}
      *
      * @param bookingId The ID of the booking on which to perform the action.
      * @param action The action that should be performed on the booking with the
@@ -699,9 +700,9 @@ public class ProviderProxy {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
-     * @return
+     * @return 
      */
-    public EfsRequest<Void> createPerformActionRequest(
+    public EfsRequest<Booking> createPerformActionRequest(
             String bookingId,
             BookingAction action,
             String secret,
@@ -712,7 +713,7 @@ public class ProviderProxy {
 
     /**
      * Sends a perform-booking-action request to this provider using the given
-     * arguments. For more information see:
+     * arguments.For more information see:
      * {@link IBookingApi#performAction(java.lang.String, de.hsesslingen.keim.efs.middleware.model.BookingAction, java.lang.String, java.lang.String)}
      *
      * @param bookingId The ID of the booking on which to perform the action.
@@ -724,14 +725,15 @@ public class ProviderProxy {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @return The state of the booking after applying the requested action.
      */
-    public void performAction(
+    public Booking performAction(
             String bookingId,
             BookingAction action,
             String secret,
             String token
     ) {
-        createPerformActionRequest(bookingId, action, secret, token).go();
+        return createPerformActionRequest(bookingId, action, secret, token).go().getBody();
     }
 
     /**

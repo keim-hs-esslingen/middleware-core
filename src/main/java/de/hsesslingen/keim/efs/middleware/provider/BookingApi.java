@@ -152,7 +152,7 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
     }
 
     @Override
-    public void performAction(
+    public Booking performAction(
             String bookingId,
             BookingAction action,
             String secret,
@@ -167,10 +167,16 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
         );
         //</editor-fold>
 
-        bookingService.performAction(
+        var result = bookingService.performAction(
                 bookingId, action, secret,
                 parseToken(token)
         );
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Responding with: {}", stringify(result));
+        }
+
+        return result;
     }
 
 }

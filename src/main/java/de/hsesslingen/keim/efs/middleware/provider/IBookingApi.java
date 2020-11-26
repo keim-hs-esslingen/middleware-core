@@ -184,7 +184,7 @@ public interface IBookingApi {
     @PostMapping(PATH + "/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
-    public void performAction(
+    public Booking performAction(
             @ApiParam("The ID of the booking on which to perform the action.")
             @PathVariable String bookingId,
             //
@@ -391,7 +391,7 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Void> buildPerformActionRequest(
+    public static EfsRequest<Booking> buildPerformActionRequest(
             String serviceUrl,
             String bookingId,
             BookingAction action,
@@ -400,7 +400,7 @@ public interface IBookingApi {
         return EfsRequest
                 .post(serviceUrl + PATH + "/" + bookingId + "/action/" + action.toString())
                 .token(token)
-                .expect(Void.class);
+                .expect(Booking.class);
     }
 
     /**
@@ -426,7 +426,7 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Void> buildPerformActionRequest(
+    public static EfsRequest<Booking> buildPerformActionRequest(
             String serviceUrl,
             String bookingId,
             BookingAction action,

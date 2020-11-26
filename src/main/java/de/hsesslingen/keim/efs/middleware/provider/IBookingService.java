@@ -102,7 +102,7 @@ public interface IBookingService<C extends AbstractCredentials> {
      * @param credentials The credentials needed to authenticate and authorize
      * oneself to perform this action.
      */
-    public void performAction(
+    public Booking performAction(
             @NonNull String bookingId,
             @NonNull BookingAction action,
             @Nullable String secret,
