@@ -24,7 +24,6 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
@@ -33,11 +32,13 @@ import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.USER_ID_HEADER;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -62,6 +63,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  * @author keim
  */
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ICredentialsApi {
 
     public static final String TOKEN_PATH = "/credentials/token";
