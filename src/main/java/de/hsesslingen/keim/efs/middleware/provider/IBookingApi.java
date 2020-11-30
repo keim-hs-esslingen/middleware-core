@@ -183,7 +183,7 @@ public interface IBookingApi {
      * @return 
      */
     @PostMapping(PATH + "/{bookingId}/action/{action}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Perform an action on a booking", notes = "Performs the given action on a booking.")
     public Booking performAction(
             @ApiParam("The ID of the booking on which to perform the action.")
