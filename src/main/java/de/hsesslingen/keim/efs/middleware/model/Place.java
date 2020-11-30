@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.assertPositionIsValid;
@@ -38,6 +39,7 @@ import lombok.experimental.Accessors;
 
 /**
  * An object representing a place, described not only by coordinates.
+ *
  * @author boesch, K.Sivarasah
  */
 @Data
@@ -117,6 +119,7 @@ public class Place implements ICoordinates, Serializable {
      * @param coordinates
      * @return
      */
+    @JsonIgnore
     public Place setCoordinates(ICoordinates coordinates) {
         if (coordinates != null) {
             this.lat = coordinates.getLat();
@@ -133,16 +136,19 @@ public class Place implements ICoordinates, Serializable {
      * @param lon
      * @return
      */
+    @JsonIgnore
     public Place setCoordinates(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
         return this;
     }
 
+    @JsonIgnore
     public boolean hasCoordinates() {
         return isValid(this);
     }
 
+    @JsonIgnore
     public void updateSelfFrom(Place other) {
         this.setCoordinates(other);
 

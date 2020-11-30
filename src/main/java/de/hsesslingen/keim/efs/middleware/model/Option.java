@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 
 import javax.validation.Valid;
@@ -92,6 +93,7 @@ public class Option implements Serializable {
         this.immediateStart = immediateStart;
     }
 
+    @JsonIgnore
     public Option updateSelfFrom(Option other) {
         this.serviceId = other.serviceId;
         this.leg = other.leg;

@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
@@ -73,6 +74,7 @@ public class Booking extends NewBooking implements Serializable {
     private BookingState state;
 
     @Override
+    @JsonIgnore
     public void updateSelfFrom(Object other) {
         super.updateSelfFrom(other);
 

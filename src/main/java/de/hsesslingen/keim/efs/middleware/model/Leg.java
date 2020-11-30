@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
@@ -40,8 +41,8 @@ import java.util.List;
 
 /**
  * An object containing route data. Information about the asset that is
- * associated to this leg is contained in the property asset or can
- * be retrieved using the providers Asset API with the assetID in this object.
+ * associated to this leg is contained in the property asset or can be retrieved
+ * using the providers Asset API with the assetID in this object.
  *
  * @author boesch, K.Sivarasah
  */
@@ -125,6 +126,7 @@ public class Leg implements Serializable {
      */
     private Integer distanceMeter;
 
+    @JsonIgnore
     public Leg updateSelfFrom(Leg other) {
         this.startTime = other.startTime;
         this.endTime = other.endTime;

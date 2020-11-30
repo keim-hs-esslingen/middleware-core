@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 
 import javax.validation.Valid;
@@ -62,6 +63,7 @@ public class NewBooking implements Serializable {
 
     private Object other;
 
+    @JsonIgnore
     public void updateSelfFrom(Object other) {
         if (other instanceof NewBooking) {
             var o = (NewBooking) other;
