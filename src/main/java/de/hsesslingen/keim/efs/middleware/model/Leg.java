@@ -39,10 +39,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
- * Contains the route data about a mobility option. Information about the asset
- * that is associated to this mobility option is contained in the property asset
- * or can be retrieved using the providers Asset API with the assetID in this
- * object.
+ * An object containing route data. Information about the asset that is
+ * associated to this leg is contained in the property asset or can
+ * be retrieved using the providers Asset API with the assetID in this object.
  *
  * @author boesch, K.Sivarasah
  */

@@ -39,7 +39,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * The booking information describing the state and details of the transaction.
+ * A booking object describing the state and details of a booking.
  *
  * @author boesch
  */

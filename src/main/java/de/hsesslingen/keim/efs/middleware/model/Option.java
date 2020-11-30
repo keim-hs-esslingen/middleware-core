@@ -37,7 +37,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Contains information about a mobility option.
+ * Contains information about a mobility option, i.e. a possibility to travel
+ * from A to B, whereas B can also be unset, meaning a trvel that starts from A
+ * with an unknown destination at this point in time.
  *
  * @author boesch, K.Sivarasah
  */

@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- *
+ * An object representing a place, described not only by coordinates.
  * @author boesch, K.Sivarasah
  */
 @Data

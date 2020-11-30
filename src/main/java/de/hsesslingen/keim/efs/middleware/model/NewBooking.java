@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A new booking, created by MaaS POST request in 'new' state.
+ * Model used to create a new Booking.
  *
  * @author boesch, K.Sivarasah
  */
