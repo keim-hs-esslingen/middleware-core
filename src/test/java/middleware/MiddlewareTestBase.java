@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
@@ -48,7 +49,7 @@ public class MiddlewareTestBase {
 
     public static final String SERVICE_ID = "demo";
 
-    public static final ObjectMapper mapper = new ObjectMapper()
+    public static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public Option getDummyOption(String serviceId, String from) {
