@@ -23,8 +23,10 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -92,5 +94,28 @@ public interface ICredentialsService<C extends AbstractCredentials> {
      * @throws AbstractEfsException
      */
     public boolean isTokenValid(String token);
+
+    /**
+     * Can be used to register new users at this provider.Not all providers
+     * support this feature.Use the Service-Info-API to obtain information about
+     * which endpoints are supported and which are not.
+     *
+     * @param customer Data about the user that should be created. The minimum
+     * information that must be present differs from provider to provider. Use
+     * the Service-Info-API to know thich values must be present in this object.
+     * @param secret The secret that should be used for authenticating this user
+     * later on.
+     * @param superUserToken A valid token of an optional super user account,
+     * that the newly registered user should be associated with, i.e. added to.
+     * This value is optional because not all providers require users to belong
+     * to super users. This token is not to be confused with the credentials of
+     * the user that is about to be created. Therefore the {@link secret} of
+     * this new user is also not the same as used to create
+     * {@link superUserToken}.
+     * @return An object that contains the user-id which was set by the provider
+     * for the new user and which can be used together with the secret given by
+     * the consumer for authentication.
+     */
+    public UserDetails registerUser(Customer customer, String secret, String superUserToken);
 
 }
