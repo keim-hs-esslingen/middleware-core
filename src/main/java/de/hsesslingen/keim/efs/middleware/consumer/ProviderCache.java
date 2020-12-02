@@ -25,11 +25,14 @@ package de.hsesslingen.keim.efs.middleware.consumer;
 
 import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
+import java.util.Collection;
+import static java.util.Collections.unmodifiableCollection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.Collectors.toMap;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,18 +51,18 @@ import org.springframework.stereotype.Service;
 @EnableScheduling
 public class ProviderCache {
 
-    private static Logger logger = getLogger(MiddlewareService.class);
+    private static final Logger logger = getLogger(MiddlewareService.class);
 
     @Value("${middleware.service-directory-url}")
     private String baseUrl;
 
-    private CompletableFuture<List<ProviderProxy>> providersFuture = new CompletableFuture<>();
+    private CompletableFuture<Map<String, ProviderProxy>> providersFuture = new CompletableFuture<>();
 
-    private synchronized CompletableFuture<List<ProviderProxy>> getProvidersFuture() {
+    private synchronized CompletableFuture<Map<String, ProviderProxy>> getProvidersFuture() {
         return providersFuture;
     }
 
-    private synchronized void setProvidersFuture(CompletableFuture<List<ProviderProxy>> providersFuture) {
+    private synchronized void setProvidersFuture(CompletableFuture<Map<String, ProviderProxy>> providersFuture) {
         this.providersFuture = providersFuture;
     }
 
@@ -124,12 +127,11 @@ public class ProviderCache {
         logger.info("Refreshing available services from service-directory.");
 
         var all = fetchAvailableProviders();
-
         var services = all.stream()
                 // Sanitize invalid services to prevent null pointers and other stuff.
                 .peek(this::sanitizeMobilityService)
                 .map(ProviderProxy::new)
-                .collect(toUnmodifiableList());
+                .collect(toMap(p -> p.getServiceId(), p -> p));
 
         if (providersFuture.isDone()) {
             setProvidersFuture(new CompletableFuture<>());
@@ -140,16 +142,38 @@ public class ProviderCache {
     }
 
     /**
-     * Get a list of all cached providers.
+     * Retrieves the current provider map from the future. This function is
+     * private because the users of {@link ProviderCache} are not supposed to
+     * mutate the map collection.
      *
      * @return
      */
-    public List<ProviderProxy> getProviders() {
+    private Map<String, ProviderProxy> getProvidersMap() {
         try {
             return getProvidersFuture().get();
         } catch (InterruptedException | ExecutionException ex) {
             logger.warn("Thread got interrupted while waiting for services to be retrieved.");
-            return getProviders();
+            return getProvidersMap();
         }
     }
+
+    /**
+     * Gets a particular {@link ProviderProxy} by its service id.
+     *
+     * @param serviceId
+     * @return
+     */
+    public ProviderProxy getProvider(String serviceId) {
+        return getProvidersMap().get(serviceId);
+    }
+
+    /**
+     * Get a list of all cached providers.
+     *
+     * @return
+     */
+    public Collection<ProviderProxy> getProviders() {
+        return unmodifiableCollection(getProvidersMap().values());
+    }
+
 }

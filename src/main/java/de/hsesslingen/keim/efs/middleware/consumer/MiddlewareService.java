@@ -35,8 +35,8 @@ import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIO
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.PLACES_API;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import static java.util.Collections.disjoint;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -61,12 +61,22 @@ public class MiddlewareService {
     private ProviderCache providerCache;
 
     /**
+     * Gets a partiular {@link ProviderProxy} from {@link ProviderCache}.
+     *
+     * @param serviceId
+     * @return
+     */
+    public ProviderProxy getProvider(String serviceId) {
+        return providerCache.getProvider(serviceId);
+    }
+
+    /**
      * Gets all available providers as a list of {@link ProviderProxy}. This
      * list is read from the {@link ProviderCache}.
      *
      * @return
      */
-    public List<ProviderProxy> getProviders() {
+    public Collection<ProviderProxy> getProviders() {
         return providerCache.getProviders();
     }
 
@@ -84,20 +94,6 @@ public class MiddlewareService {
 
         return getProviders().stream().filter(p -> serviceIds.contains(p.getServiceId()));
     }
-
-    /**
-     * Gets a partiular {@link ProviderProxy} from {@link ProviderCache}.
-     *
-     * @param serviceId
-     * @return
-     */
-    public ProviderProxy getProvider(String serviceId) {
-        return getProviders().stream()
-                .filter(p -> p.getServiceId().equals(serviceId))
-                .findAny()
-                .orElse(null);
-    }
-
     /**
      * Gets a filtered list of {@link ProviderProxy} from {@link ProviderCache}.
      *
