@@ -27,6 +27,7 @@ import de.hsesslingen.keim.efs.middleware.model.Asset;
 import de.hsesslingen.keim.efs.middleware.model.Booking;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.BookingState;
+import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
@@ -49,7 +50,9 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.buildI
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsApi;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildGetOptionsRequest;
 import de.hsesslingen.keim.efs.middleware.provider.IPlacesApi;
+import de.hsesslingen.keim.efs.middleware.provider.IUsersApi;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import java.time.ZonedDateTime;
@@ -688,8 +691,8 @@ public class ProviderProxy {
     /**
      * Assembles a request for performing a {@link BookingAction} on an existing
      * booking at this provider using the given arguments.For more information
- see:
-    {@link IBookingApi#performAction(java.lang.String, de.hsesslingen.keim.efs.middleware.model.BookingAction, java.lang.String, java.lang.String)}
+     * see:
+     * {@link IBookingApi#performAction(java.lang.String, de.hsesslingen.keim.efs.middleware.model.BookingAction, java.lang.String, java.lang.String)}
      *
      * @param bookingId The ID of the booking on which to perform the action.
      * @param action The action that should be performed on the booking with the
@@ -700,7 +703,7 @@ public class ProviderProxy {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
-     * @return 
+     * @return
      */
     public EfsRequest<Booking> createPerformActionRequest(
             String bookingId,
@@ -832,4 +835,46 @@ public class ProviderProxy {
     public Boolean isTokenValid(String token) {
         return createIsTokenValidRequest(token).go().getBody();
     }
+
+    /**
+     * Assembles a request for registering a new user at this provider using the
+     * given arguments.For more information see
+     * {@link IUsersApi#buildRegisterUserRequest(String, Customer, String, String)}.
+     *
+     *
+     * @param customer Data about the user to be created. Which data is required
+     * can be found in {@link getUsersApiProperties()}.
+     * @param userSecret The secret that the user that is about to be created
+     * should be given for authentication later on.
+     * @param superUserToken A token of the super user account that the new user
+     * should be created under (belong to). Whether this value is supported,
+     * optionl or even required can be read from
+     * {@link getUsersApiProperties()}.
+     * @return
+     */
+    public EfsRequest<UserDetails> createRegisterUserRequest(Customer customer, String userSecret, String superUserToken) {
+        return IUsersApi.buildRegisterUserRequest(
+                service.getServiceUrl(), customer, userSecret, superUserToken
+        );
+    }
+
+    /**
+     * Sends a register-token request to this provider using the given
+     * arguments. For more information see:
+     * {@link IUsersApi#buildRegisterUserRequest(String, Customer, String, String)}
+     *
+     * @param customer Data about the user to be created. Which data is required
+     * can be found in {@link getUsersApiProperties()}.
+     * @param userSecret The secret that the user that is about to be created
+     * should be given for authentication later on.
+     * @param superUserToken A token of the super user account that the new user
+     * should be created under (belong to). Whether this value is supported,
+     * optionl or even required can be read from
+     * {@link getUsersApiProperties()}.
+     * @return
+     */
+    public UserDetails registerUser(Customer customer, String userSecret, String superUserToken) {
+        return createRegisterUserRequest(customer, userSecret, superUserToken).go().getBody();
+    }
+
 }
