@@ -26,6 +26,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.common.ApiBase;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ProviderApiBase<C extends AbstractCredentials> extends ApiBase {
 
-    private final Logger logger = getLogger(getClass());
+    protected final Logger logger = getLogger(getClass());
 
     @Autowired(required = false)
     private ICredentialsDeserializer<C> deserializer;
@@ -139,6 +140,61 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
         }
 
         logger.debug(output);
+    }
+
+    protected Object[] array(Object... variablesAndValues) {
+        return variablesAndValues;
+    }
+
+    /**
+     * Generic method to log input params. Suppliers for the second arg can be
+     * conveniently created using {@link array(java.lang.Object...)}.
+     * <p>
+     * Use as follows:
+     * {@code logIncoming("doing something", ()-> array("argA", argA, "argB", argB, ...))}.
+     * <p>
+     * Make sure to obfuscate sensitive values using {@link obfuscate(Object)}
+     * or {@link obfuscateConditional(Object)}.
+     *
+     * @param requestActivity A string describing the activity of the method,
+     * whose params are logged here. This string should be in a form that
+     * continues this sentence: "Recevied request for ..."
+     * @param variablesAndValuesSupplier A function returning an array of
+     * objects that contains the variable names and values of the logged method
+     * pairwise.
+     */
+    protected void logIncoming(String requestActivity, Supplier<Object[]> variablesAndValuesSupplier) {
+        logger.info("Received request for " + requestActivity + ".");
+
+        if (logger.isDebugEnabled() && variablesAndValuesSupplier != null) {
+
+            var variablesAndValues = variablesAndValuesSupplier.get();
+
+            if (variablesAndValues != null) {
+                var sb = new StringBuilder("Params of this request:\n");
+
+                boolean isVariable = true;
+
+                for (var v : variablesAndValues) {
+                    sb.append(v != null ? v : "null");
+
+                    if (isVariable) {
+                        sb.append("=");
+                    } else {
+                        sb.append("\n");
+                    }
+
+                    isVariable = !isVariable;
+                }
+
+                if (!isVariable) {
+                    // This means we had an uneven number of objects in variablesAndValues
+                    logger.warn("Provided uneven number of variables and values. Please contact the developers of this library and tell them that this warning occured in {} while loggin params of method {}.", getClass().getName(), requestActivity);
+                }
+
+                logger.debug(sb.toString());
+            }
+        }
     }
 
 }

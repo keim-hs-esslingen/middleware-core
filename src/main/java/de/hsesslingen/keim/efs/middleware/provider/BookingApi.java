@@ -39,9 +39,7 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import io.swagger.annotations.Api;
-import org.slf4j.Logger;
 import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author boesch, K.Sivarasah
@@ -51,8 +49,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 @ConditionalOnBean({IBookingService.class})
 @Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
 public class BookingApi extends ProviderApiBase implements IBookingApi {
-
-    private static final Logger logger = getLogger(BookingApi.class);
 
     @Autowired
     private IBookingService bookingService;

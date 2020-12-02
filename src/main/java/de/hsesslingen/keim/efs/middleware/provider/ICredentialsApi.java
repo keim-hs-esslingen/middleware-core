@@ -23,9 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
@@ -39,7 +37,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -144,38 +141,6 @@ public interface ICredentialsApi {
     );
 
     /**
-     * Can be used to register new users at this provider.Not all providers
-     * support this feature.Use the Service-Info-API to obtain information about
-     * which endpoints are supported and which are not.
-     *
-     * @param customer Data about the user that should be created. The minimum
-     * information that must be present differs from provider to provider. Use
-     * the Service-Info-API to know thich values must be present in this object.
-     * @param secret The secret that should be used for authenticating this user
-     * later on.
-     * @param superUserToken A valid token of an optional super user account,
-     * that the newly registered user should be associated with, i.e. added to.
-     * This value is optional because not all providers require users to belong
-     * to super users. This token is not to be confused with the credentials of
-     * the user that is about to be created. Therefore the {@link secret} of
-     * this new user is also not the same as used to create
-     * {@link superUserToken}.
-     * @return An object that contains the user-id which was set by the provider
-     * for the new user and which can be used together with the secret given by
-     * the consumer for authentication.
-     */
-    @PostMapping(USERS_PATH)
-    public UserDetails registerUser(
-            @RequestBody() Customer customer,
-            //
-            @ApiParam(SECRET_DESCRIPTION)
-            @RequestHeader(name = SECRET_HEADER) String secret,
-            //
-            @ApiParam(TOKEN_DESCRIPTION)
-            @RequestHeader(name = TOKEN_HEADER, required = false) String superUserToken
-    );
-
-    /**
      * Assembles a request, matching the {@code POST /credentials/token}
      * endpoint, for the service with the given url using the given token. See
      * {@link ICredentialsApi#createToken(String, String)} for JavaDoc on that
@@ -251,43 +216,4 @@ public interface ICredentialsApi {
                 .token(token);
     }
 
-    /**
-     * Assembles a request, matching the {@code POST /credentials/users}
-     * endpoint, for the service with the given url.See
-     * {@link ICredentialsApi#registerUser(Customer, String)} for JavaDoc on
-     * that endpoint.<p>
-     * The returned request can be sent using {@code request.go()} which will
-     * return a {@link ResponseEntity}.
-     *
-     *
-     * @param serviceUrl The base url of the mobility service that should be
-     * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
-     * @param customer Data about the user that should be created. The minimum
-     * information that must be present differs from provider to provider. Use
-     * the Service-Info-API to know thich values must be present in this object.
-     * @param secret The secret that should be used for authenticating this user
-     * later on.
-     * @param superUserToken A valid token of an optional super user account,
-     * that the newly registered user should be associated with, i.e. added to.
-     * This value is optional because not all providers require users to belong
-     * to super users. This token is not to be confused with the credentials of
-     * the user that is about to be created. Therefore the {@link secret} of
-     * this new user is also not the same as used to create
-     * {@link superUserToken}.
-     * @return An object that contains the user-id which was set by the provider
-     * for the new user and which can be used together with the secret given by
-     * the consumer for authentication.
-     */
-    public static EfsRequest<UserDetails> buildRegisterUserRequest(
-            String serviceUrl,
-            Customer customer,
-            String secret,
-            String superUserToken
-    ) {
-        return EfsRequest.post(serviceUrl + USERS_PATH)
-                .expect(UserDetails.class)
-                .body(customer)
-                .token(superUserToken)
-                .secret(secret);
-    }
 }

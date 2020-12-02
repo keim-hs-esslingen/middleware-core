@@ -29,6 +29,7 @@ import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi;
+import de.hsesslingen.keim.efs.middleware.provider.UsersApi;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Predicate;
@@ -59,12 +60,16 @@ import springfox.documentation.spring.web.plugins.Docket;
 @ConditionalOnClass(Docket.class)
 public class SwaggerAutoConfiguration {
 
-    public static final String PLACES_API_TAG = "Places API";
-    public static final String ASSETS_API_TAG = "Assets API";
-    public static final String OPTIONS_API_TAG = "Options API";
-    public static final String BOOKING_API_TAG = "Booking API";
-    public static final String CREDENTIALS_API_TAG = "Credentials API";
-    public static final String SERVICE_INFO_API_TAG = "Service Info API";
+    public static final String API_VERSION = "V1.3";
+
+    public static final String PLACES_API_TAG = "Places-API";
+    public static final String ASSETS_API_TAG = "Assets-API";
+    public static final String OPTIONS_API_TAG = "Options-API";
+    public static final String BOOKING_API_TAG = "Booking-API";
+    public static final String CREDENTIALS_API_TAG = "Credentials-API";
+    public static final String USERS_API_TAG = "Users-API";
+    public static final String SERVICE_INFO_API_TAG = "Service-Info-API";
+
     public static final String FLEX_DATETIME_DESC = "Date time value in a flexible format. "
             + "(Epoch millis, ISO zoned date time, ISO local date time, ISO date only, "
             + "ISO time only, ISO time only with offest e.g. +01:00, ... "
@@ -89,6 +94,9 @@ public class SwaggerAutoConfiguration {
 
     @Autowired(required = false)
     private CredentialsApi credentialsApi;
+
+    @Autowired(required = false)
+    private UsersApi usersApi;
 
     @Autowired(required = false)
     private ServiceInfoApi serviceInfoApi;
@@ -134,6 +142,9 @@ public class SwaggerAutoConfiguration {
         if (credentialsApi != null) {
             tags.add(new Tag(CREDENTIALS_API_TAG, "Credentials related API for managing with credentials of remote APIs.", 5));
         }
+        if (usersApi != null) {
+            tags.add(new Tag(USERS_API_TAG, "API for dealing with user-data registered at mobility service providers.", 6));
+        }
 
         if (serviceInfoApi != null) {
             tags.add(new Tag(SERVICE_INFO_API_TAG, "API for getting information about this mobility service.", 99));
@@ -149,9 +160,8 @@ public class SwaggerAutoConfiguration {
     }
 
     private ApiInfo apiInfo() {
-        String serviceInfo = String.format("Middleware Service (%s)", serviceName);
-        return new ApiInfo(serviceInfo,
-                "API description of " + serviceInfo, "V1.2", null,
+        return new ApiInfo(serviceName, "API description of " + serviceName,
+                API_VERSION, null,
                 new Contact("Hochschule Esslingen", "https://www.hs-esslingen.de", null),
                 null, null, Collections.emptyList());
     }

@@ -42,8 +42,6 @@ import static java.util.Collections.disjoint;
 import java.util.Set;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 
@@ -57,7 +55,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 @AutoConfigureAfter(ProviderProperties.class)
 public class OptionsApi extends ProviderApiBase implements IOptionsApi {
 
-    private static final Logger logger = getLogger(OptionsApi.class);
     private static final String RETURN_ZERO_UPON_MODES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-modes-mismatch";
 
     @Autowired

@@ -25,13 +25,9 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import static de.hsesslingen.keim.efs.mobility.exception.HttpException.internalServerError;
 import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
@@ -46,8 +42,6 @@ import org.springframework.web.bind.annotation.RestController;
 @ConditionalOnBean(ICredentialsService.class)
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
 public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
-
-    private static final Logger logger = getLogger(CredentialsApi.class);
 
     @Autowired
     private ICredentialsService credentialsService;
@@ -112,28 +106,6 @@ public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
         //</editor-fold>
 
         var result = credentialsService.isTokenValid(token);
-
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging output.">
-        logger.debug("Responding with the following result: {}", result);
-        //</editor-fold>
-
-        return result;
-    }
-
-    @Override
-    public UserDetails registerUser(Customer customer, String secret, String superUserToken) {
-        logger.info("Received register-user request.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
-        logger.debug(
-                "Params of this request:\ncustomer={}\nsecret={}\nsuperUserToken={}",
-                obfuscateConditional(stringify(customer)),
-                obfuscateConditional(secret),
-                obfuscateConditional(superUserToken)
-        );
-        //</editor-fold>
-
-        var result = credentialsService.registerUser(customer, secret, superUserToken);
 
         //<editor-fold defaultstate="collapsed" desc="Debug-logging output.">
         logger.debug("Responding with the following result: {}", result);

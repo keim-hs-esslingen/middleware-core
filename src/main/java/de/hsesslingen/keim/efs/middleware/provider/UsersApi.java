@@ -23,58 +23,51 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.model.Asset;
-
+import de.hsesslingen.keim.efs.middleware.model.Customer;
+import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-
 /**
- * @author boesch, K.Sivarasah
+ *
+ * @author ben
  */
 @Validated
 @RestController
-@ConditionalOnBean(IAssetsService.class)
-@Api(tags = {SwaggerAutoConfiguration.ASSETS_API_TAG})
-//@AutoConfigureAfter(ProviderProperties.class)
-public class AssetsApi extends ProviderApiBase implements IAssetsApi {
-    
-    @Autowired
-    private IAssetsService assetService;
+@ConditionalOnBean(IUsersService.class)
+@Api(tags = {SwaggerAutoConfiguration.USERS_API_TAG})
+public class UsersApi extends ProviderApiBase implements IUsersApi {
+
+    private static final Logger logger = getLogger(UsersApi.class);
 
     @Autowired
-    private ObjectMapper mapper;
+    private IUsersService usersService;
 
     @Override
-    public Asset getAssetById(
-            String assetId,
-            String token
-    ) {
-        logger.info("Received request to get an asset by id.");
+    public UserDetails registerUser(Customer customer, String secret, String superUserToken) {
+        logger.info("Received register-user request.");
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nassetId={}", assetId);
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
+        logger.debug(
+                "Params of this request:\ncustomer={}\nsecret={}\nsuperUserToken={}",
+                obfuscateConditional(stringify(customer)),
+                obfuscateConditional(secret),
+                obfuscateConditional(superUserToken)
+        );
         //</editor-fold>
 
-        var asset = assetService.getAssetById(assetId, parseToken(token));
+        var result = usersService.registerUser(customer, secret, parseToken(superUserToken));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging result object.">
-        if (logger.isTraceEnabled()) {
-            try {
-                logger.debug("Responding with this asset: {}", mapper.writeValueAsString(asset));
-            } catch (JsonProcessingException ex) {
-                logger.warn("Erro when logging result object.");
-            }
-        }
+        //<editor-fold defaultstate="collapsed" desc="Debug-logging output.">
+        logger.debug("Responding with the following result: {}", result);
         //</editor-fold>
 
-        return asset;
+        return result;
     }
-
 }

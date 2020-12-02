@@ -29,8 +29,6 @@ import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsVa
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import io.swagger.annotations.Api;
 import java.util.List;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
@@ -45,8 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 @ConditionalOnBean(IPlacesService.class)
 @Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
 public class PlacesApi extends ProviderApiBase implements IPlacesApi {
-
-    private static final Logger logger = getLogger(PlacesApi.class);
 
     @Autowired
     private IPlacesService service;

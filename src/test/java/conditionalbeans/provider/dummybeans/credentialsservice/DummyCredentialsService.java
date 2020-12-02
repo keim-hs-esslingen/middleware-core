@@ -24,11 +24,9 @@
 package conditionalbeans.provider.dummybeans.credentialsservice;
 
 import conditionalbeans.provider.dummybeans.DummyBean;
-import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,11 +48,6 @@ public class DummyCredentialsService extends DummyBean implements ICredentialsSe
 
     @Override
     public boolean isTokenValid(String token) {
-        throw new UnsupportedOperationException("This should never be called.");
-    }
-
-    @Override
-    public UserDetails registerUser(Customer customer, String secret, String superUserToken) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 
