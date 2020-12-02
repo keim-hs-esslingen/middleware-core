@@ -38,6 +38,7 @@ import de.hsesslingen.keim.efs.middleware.provider.config.ProviderProperties;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import io.swagger.annotations.Api;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import static java.util.Collections.disjoint;
 import java.util.Set;
 import static java.util.stream.Collectors.joining;
@@ -81,10 +82,7 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             Boolean includeGeoPaths,
             String token
     ) {
-        logger.info("Received request to get options.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        if (logger.isDebugEnabled()) {
+        logParams("getOptions", () -> {
             // Concatenate allowedModes to a comma-seperated list of values...
             var modes = modesAllowed == null
                     ? "null"
@@ -92,19 +90,28 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
                             .map(m -> m.name())
                             .collect(joining(","));
 
-            logger.debug("Params of this request:\nfrom={}\nfromPlaceId={}\nto={}\ntoPlaceId={}\nstartTime={}\nendTime={}\radiusMeter={}\nsharingAllowed={}\nmodesAllowed={}\nlimitTo={}\nincludeGeoPaths={}",
-                    from, fromPlaceId, to, toPlaceId,
-                    startTime, endTime, radiusMeter,
-                    sharingAllowed, modes, limitTo, includeGeoPaths
+            return array(
+                    "from", from,
+                    "fromPlaceId", fromPlaceId,
+                    "to", to,
+                    "toPlaceId", toPlaceId,
+                    "startTime", startTime,
+                    "endTime", endTime,
+                    "radiusMeter", radiusMeter,
+                    "sharingAllowed", sharingAllowed,
+                    "modes", modes,
+                    "limitTo", limitTo,
+                    "includeGeoPaths", includeGeoPaths
             );
-        }
-        //</editor-fold>
+        });
 
         if (returnZeroUponModesMismatch
                 && modesAllowed != null && !modesAllowed.isEmpty()
                 && disjoint(properties.getMobilityService().getModes(), modesAllowed)) {
             logger.info("Returning 0 options because the requested set of allowed modes has none in common with our provided ones. If you want to change this behavior, set property \"{}\" to \"false\".", RETURN_ZERO_UPON_MODES_MISMATCH_KEY);
-            return List.of();
+            var result = new ArrayList<Option>();
+            logResult(result);
+            return result;
         }
 
         // Converting input params...
@@ -125,15 +132,15 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
         }
 
         // Getting options from user implemented OptionsService.
-        var options = optionsService.getOptions(
+        var result = optionsService.getOptions(
                 placeFrom, placeTo, startTime, endTime, radiusMeter,
                 sharingAllowed, modesAllowed, limitTo, includeGeoPaths,
                 parseToken(token)
         );
 
-        logger.debug("Responding with a list of {} options.", options.size());
+        logResult(result);
 
-        return options;
+        return result;
     }
 
 }

@@ -48,20 +48,19 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
     private IPlacesService service;
 
     @Override
-    public List<Place> search(
+    public List<Place> searchPlaces(
             String query,
             String areaCenter,
             Integer radiusMeter,
             Integer limitTo,
             String token
     ) {
-        logger.info("Received request for searching places.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nquery={}\nareaCenter={}\radiusMeter={}\nlimitTo={}",
-                query, areaCenter, radiusMeter, limitTo
-        );
-        //</editor-fold>
+        logParams("searchPlaces", () -> array(
+                "query", query,
+                "areaCenter", areaCenter,
+                "radiusMeter", radiusMeter,
+                "limitTo", limitTo
+        ));
 
         // Convert input params...
         var coordinates = positionIsValid(areaCenter) ? Coordinates.parse(areaCenter) : null;
@@ -72,7 +71,7 @@ public class PlacesApi extends ProviderApiBase implements IPlacesApi {
                 parseToken(token)
         );
 
-        logger.debug("Responding with a list of {} places.", places.size());
+        logResult(places);
 
         return places;
     }

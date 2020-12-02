@@ -85,7 +85,7 @@ public interface IPlacesApi {
      */
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public List<Place> search(
+    public List<Place> searchPlaces(
             @ApiParam("The text that is to be used as query for searching places.")
             @RequestParam String query,
             //

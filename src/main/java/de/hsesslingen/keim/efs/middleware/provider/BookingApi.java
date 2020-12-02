@@ -51,42 +51,30 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 public class BookingApi extends ProviderApiBase implements IBookingApi {
 
     @Autowired
-    private IBookingService bookingService;
+    private IBookingService service;
 
     @Override
     public List<Booking> getBookings(BookingState state, String token) {
-        logger.info("Received request to get bookings.");
+        logParams("getBookings", () -> array(
+                "state", state
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nstate={}", state);
-        //</editor-fold>
+        var bookings = service.getBookings(state, parseToken(token));
 
-        var bookings = bookingService.getBookings(
-                state, parseToken(token)
-        );
-
-        logger.debug("Responding with a list of {} bookings.", bookings.size());
+        logResult(bookings);
 
         return bookings;
     }
 
     @Override
     public Booking getBookingById(String id, String token) {
-        logger.info("Received request to get a booking by id.");
+        logParams("getBookingById", () -> array(
+                "id", id
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nid={}\ntoken={}",
-                id, obfuscateConditional(token)
-        );
-        //</editor-fold>
+        var result = service.getBookingById(id, parseToken(token));
 
-        var result = bookingService.getBookingById(
-                id, parseToken(token)
-        );
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Responding with: {}", stringify(result));
-        }
+        logResult(result);
 
         return result;
     }
@@ -97,25 +85,15 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
             String optionReference,
             String token
     ) {
-        logger.info("Received request to create a new booking.");
+        logParamsWithBody("createNewBooking", newBooking, () -> array(
+                "optionReference", optionReference
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\noptionReference={}\ntoken={}",
-                optionReference, obfuscateConditional(token)
-        );
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Body of this request:\n{}", stringify(newBooking));
-        }
-        //</editor-fold>
-
-        var result = bookingService.createNewBooking(
+        var result = service.createNewBooking(
                 newBooking, optionReference, parseToken(token)
         );
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("Responding with: {}", stringify(result));
-        }
+        logResult(result);
 
         return result;
     }
@@ -126,23 +104,15 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
             @Valid @ConsistentBookingDateParams Booking booking,
             String token
     ) {
-        logger.info("Received request to modify a booking.");
+        logParamsWithBody("modifyBooking", booking, () -> array(
+                "id", id
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug("Params of this request:\nid={}", id);
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("Body of this request:\n{}", stringify(booking));
-        }
-        //</editor-fold>
-
-        var result = bookingService.modifyBooking(
+        var result = service.modifyBooking(
                 id, booking, parseToken(token)
         );
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("Responding with: {}", stringify(result));
-        }
+        logResult(result);
 
         return result;
     }
@@ -154,23 +124,17 @@ public class BookingApi extends ProviderApiBase implements IBookingApi {
             String secret,
             String token
     ) {
-        logger.info("Received request to perform an action on a booking.");
+        logParams("performAction", () -> array(
+                "bookingId", bookingId,
+                "action", action,
+                "secret", obfuscateConditional(secret)
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug logging input params...">
-        logger.debug(
-                "Params of this request:\nbookingId={}\naction={}\nsecret={}",
-                bookingId, action, obfuscateConditional(secret)
-        );
-        //</editor-fold>
-
-        var result = bookingService.performAction(
-                bookingId, action, secret,
-                parseToken(token)
+        var result = service.performAction(
+                bookingId, action, secret, parseToken(token)
         );
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("Responding with: {}", stringify(result));
-        }
+        logResult(result);
 
         return result;
     }

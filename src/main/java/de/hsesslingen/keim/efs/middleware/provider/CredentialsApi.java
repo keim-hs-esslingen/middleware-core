@@ -44,27 +44,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
 
     @Autowired
-    private ICredentialsService credentialsService;
+    private ICredentialsService service;
 
     @Override
     public TokenCredentials createToken(String userId, String secret) {
-        logger.info("Received create-token request.");
+        logParams("createToken", () -> array(
+                "userId", obfuscateConditional(userId),
+                "secret", obfuscateConditional(secret)
+        ));
 
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
-        logger.debug(
-                "Params of this request:\nuserId={}\nsecret={}",
-                obfuscateConditional(userId),
-                obfuscateConditional(secret)
-        );
-        //</editor-fold>
-
-        var token = credentialsService.createToken(userId, secret);
+        var token = service.createToken(userId, secret);
 
         //<editor-fold defaultstate="collapsed" desc="Checking output and doing debug-logging.">
         if (token == null) {
             logger.error(
                     "Your implementation of ICredentialsService (class \"{}\") returned null upon calling the \"createToken\" method. This is a violation of the ICredentialsService interface contract. If you cannot create a token, throw a meaningful exception instead, but be aware to not reveal too much information about the underlying credentials.",
-                    credentialsService.getClass()
+                    service.getClass()
             );
 
             throw internalServerError("An error occured when trying to create a token with the given userId and secret.");
@@ -82,34 +77,22 @@ public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
 
     @Override
     public void deleteToken(String token) {
-        logger.info("Received delete-token request.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
-        logger.debug(
-                "Params of this request:\ntoken={}",
-                obfuscateConditional(token)
+        logParams("deleteToken", () -> array(
+                "token", obfuscateConditional(token))
         );
-        //</editor-fold>
 
-        credentialsService.deleteToken(token);
+        service.deleteToken(token);
     }
 
     @Override
     public boolean isTokenValid(String token) {
-        logger.info("Received is-token-valid request.");
-
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging input params.">
-        logger.debug(
-                "Params of this request:\ntoken={}",
-                obfuscateConditional(token)
+        logParams("isTokenValid", () -> array(
+                "token", obfuscateConditional(token))
         );
-        //</editor-fold>
 
-        var result = credentialsService.isTokenValid(token);
+        var result = service.isTokenValid(token);
 
-        //<editor-fold defaultstate="collapsed" desc="Debug-logging output.">
-        logger.debug("Responding with the following result: {}", result);
-        //</editor-fold>
+        logResult(result);
 
         return result;
     }

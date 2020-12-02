@@ -26,6 +26,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.common.ApiBase;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
+import java.util.Collection;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -142,29 +143,29 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
         logger.debug(output);
     }
 
-    protected Object[] array(Object... variablesAndValues) {
-        return variablesAndValues;
-    }
-
     /**
      * Generic method to log input params. Suppliers for the second arg can be
-     * conveniently created using {@link array(java.lang.Object...)}.
+     * conveniently created using {@link array(Object[])}.
      * <p>
      * Use as follows:
-     * {@code logIncoming("doing something", ()-> array("argA", argA, "argB", argB, ...))}.
+     * {@code logIncoming("doing something", () -> array("argA", argA, "argB", argB, ...))}.
      * <p>
      * Make sure to obfuscate sensitive values using {@link obfuscate(Object)}
      * or {@link obfuscateConditional(Object)}.
+     * <p>
+     * The method name is always logged in the following schema: "Received
+     * ${methodName}-request."
+     * <p>
+     * The variables are only logged, and the supplier therefore only called, if
+     * log level is set to DEBUG.
      *
-     * @param requestActivity A string describing the activity of the method,
-     * whose params are logged here. This string should be in a form that
-     * continues this sentence: "Recevied request for ..."
+     * @param methodName The name of the method whose params should be logged.
      * @param variablesAndValuesSupplier A function returning an array of
      * objects that contains the variable names and values of the logged method
      * pairwise.
      */
-    protected void logIncoming(String requestActivity, Supplier<Object[]> variablesAndValuesSupplier) {
-        logger.info("Received request for " + requestActivity + ".");
+    protected void logParams(String methodName, Supplier<Object[]> variablesAndValuesSupplier) {
+        logger.info("Received " + methodName + "-request.");
 
         if (logger.isDebugEnabled() && variablesAndValuesSupplier != null) {
 
@@ -189,12 +190,68 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
 
                 if (!isVariable) {
                     // This means we had an uneven number of objects in variablesAndValues
-                    logger.warn("Provided uneven number of variables and values. Please contact the developers of this library and tell them that this warning occured in {} while loggin params of method {}.", getClass().getName(), requestActivity);
+                    logger.warn("Provided uneven number of variables and values. Please contact the developers of this library and tell them that this warning occured in {} while logging params of method {}.", getClass().getName(), methodName);
                 }
 
                 logger.debug(sb.toString());
             }
         }
+    }
+
+    /**
+     * Generic method to log input params.Suppliers for the thrid arg can be
+     * conveniently created using {@link #array(Object[])}
+     * .<p>
+     * Use as follows:
+     * {@code logIncoming("doing something", bodyObj, () -> array("argA", argA, "argB", argB, ...))}.
+     * <p>
+     * Make sure to obfuscate sensitive values using {@link obfuscate(Object)}
+     * or {@link obfuscateConditional(Object)}.
+     * <p>
+     * Request bodies are only logged if log level is TRACE.
+     *
+     * @param methodName The name of the method whose params should be logged.
+     * @param body The parsed body object of the request.
+     * @param variablesAndValuesSupplier A function returning an array of
+     * objects that contains the variable names and values of the logged method
+     * pairwise.
+     */
+    protected void logParamsWithBody(String methodName, Object body, Supplier<Object[]> variablesAndValuesSupplier) {
+        logParams(methodName, variablesAndValuesSupplier);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Body of this request:\n{}", stringify(body));
+        }
+    }
+
+    /**
+     * Logs the given result object as JSON string if TRACE logging is enabled.
+     * <p>
+     * Oowever, if the given result object is an instance of {@link Collection},
+     * the size of the collection will be logged in level DEBUG.
+     *
+     * @param result
+     */
+    protected void logResult(Object result) {
+        if (logger.isDebugEnabled() && result instanceof Collection) {
+            logger.debug("Responding with a list of size {}.", ((Collection) result).size());
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Responding with following value:\n{}", stringify(result));
+        }
+    }
+
+    /**
+     * Simply returns the given varrgs array. Intended to be used together with
+     * {@link #logParams(String, Supplier)}
+     *
+     *
+     * @param variablesAndValues
+     * @return
+     */
+    protected static Object[] array(Object... variablesAndValues) {
+        return variablesAndValues;
     }
 
 }
