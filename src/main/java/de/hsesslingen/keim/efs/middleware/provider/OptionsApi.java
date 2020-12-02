@@ -41,7 +41,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import static java.util.Collections.disjoint;
 import java.util.Set;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -82,28 +81,19 @@ public class OptionsApi extends ProviderApiBase implements IOptionsApi {
             Boolean includeGeoPaths,
             String token
     ) {
-        logParams("getOptions", () -> {
-            // Concatenate allowedModes to a comma-seperated list of values...
-            var modes = modesAllowed == null
-                    ? "null"
-                    : modesAllowed.stream()
-                            .map(m -> m.name())
-                            .collect(joining(","));
-
-            return array(
-                    "from", from,
-                    "fromPlaceId", fromPlaceId,
-                    "to", to,
-                    "toPlaceId", toPlaceId,
-                    "startTime", startTime,
-                    "endTime", endTime,
-                    "radiusMeter", radiusMeter,
-                    "sharingAllowed", sharingAllowed,
-                    "modes", modes,
-                    "limitTo", limitTo,
-                    "includeGeoPaths", includeGeoPaths
-            );
-        });
+        logParams("getOptions", () -> array(
+                "from", from,
+                "fromPlaceId", fromPlaceId,
+                "to", to,
+                "toPlaceId", toPlaceId,
+                "startTime", startTime,
+                "endTime", endTime,
+                "radiusMeter", radiusMeter,
+                "sharingAllowed", sharingAllowed,
+                "modesAllowed", stringifyCollection(modesAllowed, m -> m.name()),
+                "limitTo", limitTo,
+                "includeGeoPaths", includeGeoPaths
+        ));
 
         if (returnZeroUponModesMismatch
                 && modesAllowed != null && !modesAllowed.isEmpty()

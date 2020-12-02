@@ -23,14 +23,19 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
-import de.hsesslingen.keim.efs.middleware.common.ApiBase;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import static java.util.stream.Collectors.joining;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Used as a base class for provider APIs providing some commonly used methods.
@@ -38,9 +43,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author keim
  * @param <C> The type of credentials, this API expects.
  */
-public abstract class ProviderApiBase<C extends AbstractCredentials> extends ApiBase {
+public abstract class ProviderApiBase<C extends AbstractCredentials> {
 
     protected final Logger logger = getLogger(getClass());
+
+    @Value("${middleware.logging.debug.obfuscate-credentials:true}")
+    private boolean obfuscateCredentialsForDebugLogging;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Autowired(required = false)
     private ICredentialsDeserializer<C> deserializer;
@@ -73,6 +84,26 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
         }
 
         return result;
+    }
+
+    /**
+     * If the config property "middleware.logging.debug.obfuscate-credentials"
+     * is set to true (which is default), this method obfuscates the given
+     * input. Otherwise {@code any.toString()} will be returned.
+     *
+     * @param any
+     * @return
+     */
+    protected String obfuscateConditional(Object any) {
+        if (this.obfuscateCredentialsForDebugLogging) {
+            return obfuscate(any);
+        }
+
+        if (any == null) {
+            return "null";
+        }
+
+        return any.toString();
     }
 
     /**
@@ -141,6 +172,21 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
         }
 
         logger.debug(output);
+    }
+
+    /**
+     * Stringifies the given object. If serialization fails, a message string is
+     * returned. This method is inteded to be used for logging.
+     *
+     * @param o
+     * @return
+     */
+    protected String stringify(Object o) {
+        try {
+            return mapper.writeValueAsString(o);
+        } catch (JsonProcessingException ex) {
+            return "Could not serialize object for logging. Exception occured.";
+        }
     }
 
     /**
@@ -254,4 +300,58 @@ public abstract class ProviderApiBase<C extends AbstractCredentials> extends Api
         return variablesAndValues;
     }
 
+    /**
+     * Can be used to obfuscate the given string value. In contrast to the
+     * method {@link conditionalObfuscate}, this method always obfuscates the
+     * input.
+     * <p>
+     * <ul>
+     * <li>{@code null} is rendered to {@code "null"}</li>
+     * <li>Empty string is rendered to {@code "\"\""}</li>
+     * <li>Everything else is rendered to {@code "***"}</li>
+     * </ul>
+     *
+     * @param any
+     * @return
+     */
+    protected static String obfuscate(Object any) {
+        if (any == null) {
+            return "null";
+        }
+
+        if (any.toString().isEmpty()) {
+            return "\"\"";
+        }
+
+        return "***";
+    }
+
+    /**
+     * Serializes a collection of objects by calling {@code toString()} on each
+     * one and joining their results with commas.
+     *
+     * @param <T>
+     * @param collection
+     * @param toStringMapper A function that allows mapping an element of the
+     * provided collection to a string.
+     * @return
+     */
+    protected static <T> String stringifyCollection(Collection<T> collection, Function<T, String> toStringMapper) {
+        return collection != null
+                ? collection.stream()
+                        .map(toStringMapper)
+                        .collect(joining(","))
+                : "null";
+    }
+
+    /**
+     * Same as calling {@link stringifyCollection(Collection, Function)} with
+     * {@link Objects#toString(Object)} as second argument.
+     *
+     * @param collection
+     * @return
+     */
+    protected static String stringifyCollection(Collection<?> collection) {
+        return stringifyCollection(collection, Objects::toString);
+    }
 }
