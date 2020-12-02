@@ -53,7 +53,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 @ConditionalOnBean({IOptionsService.class, ProviderProperties.class})
 @Api(tags = {SwaggerAutoConfiguration.OPTIONS_API_TAG})
 @AutoConfigureAfter(ProviderProperties.class)
-public class OptionsApi extends ProviderApiBase implements IOptionsApi {
+public class OptionsApi extends ApiBase implements IOptionsApi {
 
     private static final String RETURN_ZERO_UPON_MODES_MISMATCH_KEY = "middleware.provider.options-api.return-zero-upon-modes-mismatch";
 

@@ -48,7 +48,7 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 @RestController
 @ConditionalOnBean({IBookingService.class})
 @Api(tags = {SwaggerAutoConfiguration.BOOKING_API_TAG})
-public class BookingApi extends ProviderApiBase implements IBookingApi {
+public class BookingApi extends ApiBase implements IBookingApi {
 
     @Autowired
     private IBookingService service;

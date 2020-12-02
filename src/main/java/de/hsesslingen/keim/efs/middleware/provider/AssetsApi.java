@@ -40,7 +40,7 @@ import io.swagger.annotations.Api;
 @RestController
 @ConditionalOnBean(IAssetsService.class)
 @Api(tags = {SwaggerAutoConfiguration.ASSETS_API_TAG})
-public class AssetsApi extends ProviderApiBase implements IAssetsApi {
+public class AssetsApi extends ApiBase implements IAssetsApi {
 
     @Autowired
     private IAssetsService service;

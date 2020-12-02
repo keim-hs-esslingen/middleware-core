@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(IPlacesService.class)
 @Api(tags = {SwaggerAutoConfiguration.PLACES_API_TAG})
-public class PlacesApi extends ProviderApiBase implements IPlacesApi {
+public class PlacesApi extends ApiBase implements IPlacesApi {
 
     @Autowired
     private IPlacesService service;

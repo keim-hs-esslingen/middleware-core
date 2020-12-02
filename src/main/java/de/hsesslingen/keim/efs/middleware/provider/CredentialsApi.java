@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(ICredentialsService.class)
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
-public class CredentialsApi extends ProviderApiBase implements ICredentialsApi {
+public class CredentialsApi extends ApiBase implements ICredentialsApi {
 
     @Autowired
     private ICredentialsService service;

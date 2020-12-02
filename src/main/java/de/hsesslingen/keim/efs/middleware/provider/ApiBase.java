@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author keim
  * @param <C> The type of credentials, this API expects.
  */
-public abstract class ProviderApiBase<C extends AbstractCredentials> {
+public abstract class ApiBase<C extends AbstractCredentials> {
 
     protected final Logger logger = getLogger(getClass());
 

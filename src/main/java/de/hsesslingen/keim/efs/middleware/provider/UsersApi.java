@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ConditionalOnBean(IUsersService.class)
 @Api(tags = {SwaggerAutoConfiguration.USERS_API_TAG})
-public class UsersApi extends ProviderApiBase implements IUsersApi {
+public class UsersApi extends ApiBase implements IUsersApi {
 
     private static final Logger logger = getLogger(UsersApi.class);
 
