@@ -24,6 +24,7 @@
 package de.hsesslingen.keim.efs.middleware.model;
 
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -41,7 +42,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class Asset {
+public class Asset implements Serializable {
 
     /**
      * The ID of the mobility service that this asset belongs to.
