@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -70,8 +71,11 @@ public class Booking extends NewBooking implements Serializable {
     private String id;
 
     @NotNull
-    @ApiModelProperty(value = "Current state of the booking", required = true)
+    @ApiModelProperty(value = "Current state of the booking.", required = true)
     private BookingState state;
+
+    @ApiModelProperty(value = "The possible actions that can be performed on this booking using the performAction-Endpoint.")
+    private List<BookingAction> possibleActions;
 
     @Override
     @JsonIgnore
