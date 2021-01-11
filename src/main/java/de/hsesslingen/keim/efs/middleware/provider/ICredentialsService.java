@@ -25,7 +25,6 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -77,7 +76,6 @@ public interface ICredentialsService<C extends AbstractCredentials> {
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
-     * @throws AbstractEfsException
      */
     public void deleteToken(String token);
 
@@ -89,7 +87,6 @@ public interface ICredentialsService<C extends AbstractCredentials> {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      * @return true if valid, false if not.
-     * @throws AbstractEfsException
      */
     public boolean isTokenValid(String token);
 

@@ -30,7 +30,6 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.provider.IBookingService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -42,22 +41,22 @@ import org.springframework.stereotype.Component;
 public class DummyBookingService extends DummyBean implements IBookingService<AbstractCredentials> {
 
     @Override
-    public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) throws AbstractEfsException {
+    public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 
     @Override
-    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 
     @Override
-    public Booking getBookingById(String id, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking getBookingById(String id, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 
     @Override
-    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

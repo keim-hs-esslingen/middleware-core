@@ -23,8 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.exception;
 
-import de.hsesslingen.keim.efs.mobility.exception.EfsError;
-import de.hsesslingen.keim.efs.mobility.exception.HttpException;
+import de.hsesslingen.keim.efs.mobility.exception.MiddlewareError;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Scanner;
@@ -57,22 +56,22 @@ public abstract class RestErrorParser implements ResponseErrorHandler {
 
         String responseBody;
 
-        try (Scanner scanner = new Scanner(response.getBody(), Charset.forName("UTF-8").name())) {
+        try ( Scanner scanner = new Scanner(response.getBody(), Charset.forName("UTF-8").name())) {
             responseBody = scanner.useDelimiter("\\A").next();
         }
 
-        EfsError error = parseError(responseBody, httpStatus, response);
+        MiddlewareError error = parseError(responseBody, httpStatus, response);
 
         if (error == null) {
             // Fallback.
-            error = new EfsError(responseBody, httpStatus.value(), null);
+            error = new MiddlewareError(httpStatus.value(), responseBody);
         }
 
         logger.error("Error Response: {}", responseBody);
 
-        throw new HttpException(httpStatus, error);
+        throw error.toException();
     }
 
-    public abstract EfsError parseError(String responseBody, HttpStatus statusCode, ClientHttpResponse response);
+    public abstract MiddlewareError parseError(String responseBody, HttpStatus statusCode, ClientHttpResponse response);
 
 }

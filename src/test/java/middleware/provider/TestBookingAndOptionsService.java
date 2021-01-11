@@ -34,7 +34,6 @@ import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingsByState(de.hsesslingen.keim.efs.middleware.booking.BookingState)
      */
     @Override
-    public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) throws AbstractEfsException {
+    public List<Booking> getBookings(BookingState state, AbstractCredentials credentials) {
         return List.of();
     }
 
@@ -55,7 +54,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#createNewBooking(de.hsesslingen.keim.efs.middleware.booking.NewBooking)
      */
     @Override
-    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking createNewBooking(NewBooking newBooking, String optionReference, AbstractCredentials credentials) {
         return null;
     }
 
@@ -63,7 +62,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#getBookingById(java.lang.String)
      */
     @Override
-    public Booking getBookingById(String id, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking getBookingById(String id, AbstractCredentials credentials) {
         return null;
     }
 
@@ -71,7 +70,7 @@ public class TestBookingAndOptionsService implements IBookingService, IOptionsSe
 	 * @see de.hsesslingen.keim.efs.middleware.apis.IBookingService#modifyBooking(java.lang.String, de.hsesslingen.keim.efs.middleware.booking.Booking)
      */
     @Override
-    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) throws AbstractEfsException {
+    public Booking modifyBooking(String id, Booking booking, AbstractCredentials credentials) {
         return null;
     }
 

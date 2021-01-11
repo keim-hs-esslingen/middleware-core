@@ -23,21 +23,14 @@
  */
 package de.hsesslingen.keim.efs.middleware.exception;
 
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
-import org.springframework.http.HttpStatus;
-
 /**
  *
  * @author ben
  */
-public class MissingConfigParamException extends AbstractEfsException {
+public class MissingConfigParamException extends RuntimeException {
 
-    public MissingConfigParamException(String paramName) {
-        super("The required configuration parameter \"" + paramName + "\" is missing.");
-    }
-
-    public MissingConfigParamException(String paramName, HttpStatus httpStatus) {
-        super("The required configuration parameter \"" + paramName + "\" is missing.", httpStatus);
+    public MissingConfigParamException(String paramKey) {
+        super("The required configuration parameter \"" + paramKey + "\" is missing.");
     }
 
 }

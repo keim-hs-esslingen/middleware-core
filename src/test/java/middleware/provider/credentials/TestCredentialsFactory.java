@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.CredentialsUtils;
-import de.hsesslingen.keim.efs.mobility.exception.AbstractEfsException;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
 
 /**
@@ -37,7 +36,7 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeser
 public class TestCredentialsFactory implements ICredentialsDeserializer<AbstractCredentials> {
 
     @Override
-    public AbstractCredentials parseCredentials(String credentials) throws AbstractEfsException {
+    public AbstractCredentials parseCredentials(String credentials) {
         return CredentialsUtils.toCredentials(credentials, TestCredential.class);
     }
 

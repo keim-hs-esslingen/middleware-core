@@ -23,8 +23,9 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
-import de.hsesslingen.keim.efs.middleware.exception.InvalidParameterException;
-import org.springframework.util.StringUtils;
+import static java.lang.Math.*;
+import static org.springframework.util.StringUtils.countOccurrencesOf;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * This interface describes the stereotype of 2 dimensional geo coordinates.
@@ -86,13 +87,13 @@ public interface ICoordinates {
         double latDiff = latB - latA;
         double lonDiff = lonB - lonA;
 
-        double sinOfLat = Math.sin(latDiff / 2d);
-        double sinOfLon = Math.sin(lonDiff / 2d);
+        double sinOfLat = sin(latDiff / 2d);
+        double sinOfLon = sin(lonDiff / 2d);
 
-        double cosLatA = Math.cos(latA);
-        double cosLatB = Math.cos(latB);
+        double cosLatA = cos(latA);
+        double cosLatB = cos(latB);
 
-        double result = DOUBLE_EARTH_RADIUS_KM * Math.asin(Math.sqrt((sinOfLat * sinOfLat) + (sinOfLon * sinOfLon * cosLatA * cosLatB)));
+        double result = DOUBLE_EARTH_RADIUS_KM * asin(sqrt((sinOfLat * sinOfLat) + (sinOfLon * sinOfLon * cosLatA * cosLatB)));
         return result;
     }
 
@@ -117,7 +118,7 @@ public interface ICoordinates {
     }
 
     public static boolean positionIsValid(String latLonString) {
-        return !StringUtils.isEmpty(latLonString) && StringUtils.countOccurrencesOf(latLonString, ",") == 1;
+        return !isEmpty(latLonString) && countOccurrencesOf(latLonString, ",") == 1;
     }
 
     public static boolean isValidAndNotNull(ICoordinates coordinates) {
@@ -136,7 +137,7 @@ public interface ICoordinates {
 
     public static void assertPositionIsValid(String latLonString) {
         if (!positionIsValid(latLonString)) {
-            throw new InvalidParameterException("Invalid format for position \"" + latLonString + "\".");
+            throw new IllegalArgumentException("Invalid format for position \"" + latLonString + "\".");
         }
     }
 

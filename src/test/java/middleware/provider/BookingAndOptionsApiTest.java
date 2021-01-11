@@ -93,7 +93,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
         mockMvc.perform(get(OPTIONS_PATH).param("from", "1.234,2345"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.message", is("Validation failed")))
-                .andExpect(jsonPath("$.code", is(400)))
+                .andExpect(jsonPath("$.code", is("400")))
                 .andDo(print());
     }
 
@@ -115,7 +115,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     public void getBookingByStateTest_400() throws Exception {
         mockMvc.perform(get(BOOKINGS_PATH).param("state", "UNKNOWN"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", is(400)))
+                .andExpect(jsonPath("$.code", is("400")))
                 .andDo(print());
     }
 
@@ -144,7 +144,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     public void postBooking_Missing_RequestBody_400() throws Exception {
         mockMvc.perform(post(BOOKINGS_PATH))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", is(400)))
+                .andExpect(jsonPath("$.code", is("400")))
                 .andDo(print());
     }
 
@@ -155,7 +155,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
         mockMvc.perform(post(BOOKINGS_PATH).content(mapper.writeValueAsBytes(newBooking)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Validation failed")))
-                .andExpect(jsonPath("$.code", is(400)))
+                .andExpect(jsonPath("$.code", is("400")))
                 .andDo(print());
     }
 
@@ -165,7 +165,7 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
         newBooking.getLeg().setStartTime(now().minus(1, HOURS));
         mockMvc.perform(post(BOOKINGS_PATH).content(mapper.writeValueAsBytes(newBooking)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", is(400)))
+                .andExpect(jsonPath("$.code", is("400")))
                 .andExpect(content().string(containsString("startTime")))
                 .andDo(print());
     }
