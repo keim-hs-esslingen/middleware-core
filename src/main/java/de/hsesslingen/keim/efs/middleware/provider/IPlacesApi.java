@@ -139,7 +139,7 @@ public interface IPlacesApi {
     ) {
         // Start build the request object...
         var request = EfsRequest
-                .get(serviceUrl + PATH)
+                .get(serviceUrl + PATH + "/search")
                 .query("query", query)
                 .expect(new ParameterizedTypeReference<List<Place>>() {
                 });
