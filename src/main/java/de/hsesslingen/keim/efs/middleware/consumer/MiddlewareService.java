@@ -34,17 +34,22 @@ import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKI
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.PLACES_API;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import static java.util.Collections.disjoint;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 /**
@@ -55,7 +60,9 @@ import org.springframework.stereotype.Service;
 @Lazy
 public class MiddlewareService {
 
-    private static final Function<String, String> defaultTokenGetter = (serviceId) -> null;
+    private static final Logger logger = getLogger(MiddlewareService.class);
+
+    private static final Function<String, String> DEFAULT_TOKEN_GETTER = (serviceId) -> null;
 
     @Autowired
     private ProviderCache providerCache;
@@ -94,6 +101,7 @@ public class MiddlewareService {
 
         return getProviders().stream().filter(p -> serviceIds.contains(p.getServiceId()));
     }
+
     /**
      * Gets a filtered list of {@link ProviderProxy} from {@link ProviderCache}.
      *
@@ -119,6 +127,41 @@ public class MiddlewareService {
     }
 
     /**
+     * Sends the given request by calling {@code request.go()} and catching any
+     * exception thrown by this call. If an exception occurrs, {@code null} will
+     * be returned.
+     *
+     * @param <T>
+     * @param request
+     * @return
+     */
+    private <T> ResponseEntity<T> sendRequestSafely(EfsRequest<T> request) {
+        try {
+            return request.go();
+        } catch (Exception ex) {
+            logger.trace("Exception occured while calling {}. Content in next line...\n{}", request.uriBuilder().build().toUriString(), ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Sends the given list of requests in parallel using a parllel stream and
+     * collecting the results in a common stream.
+     *
+     * @param <T>
+     * @param requests
+     * @return
+     */
+    private <T> Stream<T> sendRequestsInParallel(List<EfsRequest<List<T>>> requests) {
+        return requests.parallelStream()
+                .map(request -> sendRequestSafely(request))
+                .filter(response -> response != null)
+                .map(response -> response.getBody())
+                .filter(list -> list != null)
+                .flatMap(list -> list.stream());
+    }
+
+    /**
      * Searches all providers that support the {@link IPlaceApi} (Places-API)
      * for places, using the given search criteria.
      * <p>
@@ -152,7 +195,7 @@ public class MiddlewareService {
             Integer limitToPerProvider,
             Function<String, String> serviceTokenGetter
     ) {
-        var tokenGetter = serviceTokenGetter == null ? defaultTokenGetter : serviceTokenGetter;
+        var tokenGetter = serviceTokenGetter == null ? DEFAULT_TOKEN_GETTER : serviceTokenGetter;
 
         var requests = getProviders().stream()
                 .filter(p -> p.supportsApi(PLACES_API))
@@ -160,12 +203,7 @@ public class MiddlewareService {
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 
-        return requests.parallelStream()
-                .map(request -> request.go())
-                .filter(response -> response != null)
-                .map(response -> response.getBody())
-                .filter(places -> places != null)
-                .flatMap(places -> places.stream());
+        return sendRequestsInParallel(requests);
     }
 
     /**
@@ -201,20 +239,11 @@ public class MiddlewareService {
             Integer limitToPerProvider,
             Map<String, String> serviceIdTokenMap
     ) {
-        Map<String, String> tokenMap = serviceIdTokenMap == null ? Map.of() : serviceIdTokenMap;
+        Function<String, String> tokenGetter = (serviceIdTokenMap == null)
+                ? DEFAULT_TOKEN_GETTER
+                : (serviceIdTokenMap::get);
 
-        var requests = getProviders(tokenMap.keySet())
-                .filter(p -> p.supportsApi(PLACES_API))
-                .map(p -> p.createSearchPlacesRequest(query, areaCenter, radiusMeter, limitToPerProvider, tokenMap.get(p.getServiceId())))
-                .peek(r -> r.callOutgoingRequestAdapters())
-                .collect(toList());
-
-        return requests.parallelStream()
-                .map(request -> request.go())
-                .filter(response -> response != null)
-                .map(response -> response.getBody())
-                .filter(places -> places != null)
-                .flatMap(places -> places.stream());
+        return searchPlaces(query, areaCenter, radiusMeter, limitToPerProvider, tokenGetter);
     }
 
     /**
@@ -260,19 +289,14 @@ public class MiddlewareService {
             Boolean includeGeoPaths,
             Function<String, String> serviceTokenGetter
     ) {
-        var tokenGetter = serviceTokenGetter == null ? defaultTokenGetter : serviceTokenGetter;
+        var tokenGetter = serviceTokenGetter == null ? DEFAULT_TOKEN_GETTER : serviceTokenGetter;
 
         var requests = getProviders(modesAllowed, Set.of(OPTIONS_API))
                 .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter.apply(p.getServiceId())))
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 
-        return requests.parallelStream()
-                .map(request -> request.go())
-                .filter(response -> response != null)
-                .map(response -> response.getBody())
-                .filter(options -> options != null)
-                .flatMap(options -> options.stream());
+        return sendRequestsInParallel(requests);
     }
 
     /**
@@ -317,22 +341,11 @@ public class MiddlewareService {
             Boolean includeGeoPaths,
             Map<String, String> serviceIdTokenMap
     ) {
-        Map<String, String> tokenMap = serviceIdTokenMap == null ? Map.of() : serviceIdTokenMap;
+        Function<String, String> tokenGetter = (serviceIdTokenMap == null)
+                ? DEFAULT_TOKEN_GETTER
+                : (serviceIdTokenMap::get);
 
-        var ids = tokenMap.keySet();
-
-        var requests = getProviders(modesAllowed, Set.of(OPTIONS_API))
-                .filter(p -> ids.contains(p.getServiceId()))
-                .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenMap.get(p.getServiceId())))
-                .peek(r -> r.callOutgoingRequestAdapters())
-                .collect(toList());
-
-        return requests.parallelStream()
-                .map(request -> request.go())
-                .filter(response -> response != null)
-                .map(response -> response.getBody())
-                .filter(options -> options != null)
-                .flatMap(options -> options.stream());
+        return getOptions(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter);
     }
 
     /**
@@ -362,7 +375,7 @@ public class MiddlewareService {
             Set<String> serviceIds,
             Function<String, String> serviceTokenGetter
     ) {
-        var tokenGetter = serviceTokenGetter == null ? defaultTokenGetter : serviceTokenGetter;
+        var tokenGetter = serviceTokenGetter == null ? DEFAULT_TOKEN_GETTER : serviceTokenGetter;
 
         var requests = getProviders(serviceIds)
                 .filter(p -> p.supportsApi(BOOKING_API))
@@ -370,12 +383,7 @@ public class MiddlewareService {
                 .peek(r -> r.callOutgoingRequestAdapters())
                 .collect(toList());
 
-        return requests.parallelStream()
-                .map(request -> request.go())
-                .filter(response -> response != null)
-                .map(response -> response.getBody())
-                .filter(options -> options != null)
-                .flatMap(options -> options.stream());
+        return sendRequestsInParallel(requests);
     }
 
     /**
@@ -400,7 +408,10 @@ public class MiddlewareService {
      * @return
      */
     public Stream<Booking> getBookings(Map<String, String> serviceIdTokenMap) {
-        Map<String, String> tokenMap = serviceIdTokenMap == null ? Map.of() : serviceIdTokenMap;
+        Map<String, String> tokenMap = (serviceIdTokenMap == null)
+                ? Map.of()
+                : serviceIdTokenMap;
+
         return getBookings(tokenMap.keySet(), tokenMap::get);
     }
 
