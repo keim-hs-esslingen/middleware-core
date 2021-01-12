@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
-import de.hsesslingen.keim.efs.mobility.utils.DefaultRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
 import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;

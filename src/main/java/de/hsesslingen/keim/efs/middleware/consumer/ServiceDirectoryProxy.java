@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import de.hsesslingen.keim.efs.mobility.utils.DefaultRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import java.util.List;
 import java.util.Set;
 
@@ -31,9 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;

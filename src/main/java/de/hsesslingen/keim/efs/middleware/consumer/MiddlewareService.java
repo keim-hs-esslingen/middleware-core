@@ -34,7 +34,7 @@ import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKI
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.PLACES_API;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import static java.util.Collections.disjoint;

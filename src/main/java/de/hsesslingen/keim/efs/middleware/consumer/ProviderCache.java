@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import de.hsesslingen.keim.efs.mobility.utils.DefaultRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import java.util.Collection;

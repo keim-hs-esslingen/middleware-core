@@ -39,7 +39,7 @@ import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildCreat
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingByIdRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingsRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildModifyBookingRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildPerformActionRequest;
@@ -55,7 +55,7 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;

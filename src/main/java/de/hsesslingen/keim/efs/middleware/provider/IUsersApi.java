@@ -29,10 +29,10 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.USERS_PATH;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.SECRET_HEADER;
-import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest.SECRET_HEADER;
+import static de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -51,9 +51,9 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
-import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
