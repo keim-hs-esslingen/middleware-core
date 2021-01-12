@@ -29,8 +29,8 @@ import de.hsesslingen.keim.efs.middleware.model.Option;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import io.swagger.annotations.ApiParam;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
  * class.
  *
  * @author keim
@@ -106,12 +106,12 @@ public interface IAssetsApi {
      * options using the {@link IAssetApi}.
      * @return
      */
-    public static EfsRequest<Asset> buildGetAssetByIdRequest(
+    public static MiddlewareRequest<Asset> buildGetAssetByIdRequest(
             String serviceUrl,
             String assetId,
             String token
     ) {
-        var request = EfsRequest.get(serviceUrl + PATH + "/" + assetId)
+        var request = MiddlewareRequest.get(serviceUrl + PATH + "/" + assetId)
                 .expect(Asset.class);
 
         if (isNotBlank(token)) {

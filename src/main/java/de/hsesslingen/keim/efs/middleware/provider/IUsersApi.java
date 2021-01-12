@@ -29,9 +29,9 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.USERS_PATH;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.SECRET_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -104,13 +104,13 @@ public interface IUsersApi {
      * for the new user and which can be used together with the secret given by
      * the consumer for authentication.
      */
-    public static EfsRequest<UserDetails> buildRegisterUserRequest(
+    public static MiddlewareRequest<UserDetails> buildRegisterUserRequest(
             String serviceUrl,
             Customer customer,
             String secret,
             String superUserToken
     ) {
-        return EfsRequest.post(serviceUrl + USERS_PATH)
+        return MiddlewareRequest.post(serviceUrl + USERS_PATH)
                 .expect(UserDetails.class)
                 .body(customer)
                 .token(superUserToken)

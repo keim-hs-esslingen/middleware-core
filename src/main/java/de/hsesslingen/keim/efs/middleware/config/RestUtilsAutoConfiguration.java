@@ -23,7 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.config;
 
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -48,7 +48,7 @@ public class RestUtilsAutoConfiguration {
 
     @Bean
     public Object efsRequest(@Qualifier("middlewareRestTemplate") RestTemplate restTemplate) {
-        EfsRequest.configureRestTemplate(restTemplate);
+        MiddlewareRequest.configureRestTemplate(restTemplate);
         return null;
     }
 

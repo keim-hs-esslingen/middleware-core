@@ -29,7 +29,7 @@ import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -224,7 +224,7 @@ public class ProviderRegistrator {
     }
 
     private void register(MobilityService service) {
-        EfsRequest.post(baseUrl + "/services").toInternal().body(service).go();
+        MiddlewareRequest.post(baseUrl + "/services").toInternal().body(service).go();
     }
 
 }

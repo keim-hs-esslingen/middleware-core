@@ -25,10 +25,10 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.SECRET_HEADER;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.USER_ID_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.SECRET_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.USER_ID_HEADER;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
@@ -58,7 +58,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
  * class.
  *
  * @author keim
@@ -161,12 +161,12 @@ public interface ICredentialsApi {
      * information and therefore it is required.
      * @return
      */
-    public static EfsRequest<TokenCredentials> buildCreateTokenRequest(
+    public static MiddlewareRequest<TokenCredentials> buildCreateTokenRequest(
             String serviceUrl,
             String userId,
             String secret
     ) {
-        return EfsRequest.post(serviceUrl + TOKEN_PATH)
+        return MiddlewareRequest.post(serviceUrl + TOKEN_PATH)
                 .expect(TokenCredentials.class)
                 .userIdAndSecret(userId, secret);
     }
@@ -184,11 +184,11 @@ public interface ICredentialsApi {
      * @param token The token which should be invalidated.
      * @return
      */
-    public static EfsRequest<Void> buildDeleteTokenRequest(
+    public static MiddlewareRequest<Void> buildDeleteTokenRequest(
             String serviceUrl,
             String token
     ) {
-        return EfsRequest.delete(serviceUrl + TOKEN_PATH)
+        return MiddlewareRequest.delete(serviceUrl + TOKEN_PATH)
                 .expect(Void.class)
                 .token(token);
     }
@@ -207,11 +207,11 @@ public interface ICredentialsApi {
      * @param token The token which should be invalidated.
      * @return
      */
-    public static EfsRequest<Boolean> buildIsTokenValidRequest(
+    public static MiddlewareRequest<Boolean> buildIsTokenValidRequest(
             String serviceUrl,
             String token
     ) {
-        return EfsRequest.get(serviceUrl + TOKEN_PATH)
+        return MiddlewareRequest.get(serviceUrl + TOKEN_PATH)
                 .expect(Boolean.class)
                 .token(token);
     }

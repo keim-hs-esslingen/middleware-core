@@ -29,7 +29,7 @@ import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,7 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
  * class.
  *
  * @author keim
@@ -129,7 +129,7 @@ public interface IPlacesApi {
      * locations using the {@link IPlacesApi}.
      * @return
      */
-    public static EfsRequest<List<Place>> buildSearchRequest(
+    public static MiddlewareRequest<List<Place>> buildSearchRequest(
             String serviceUrl,
             String query,
             ICoordinates areaCenter,
@@ -138,7 +138,7 @@ public interface IPlacesApi {
             String token
     ) {
         // Start build the request object...
-        var request = EfsRequest
+        var request = MiddlewareRequest
                 .get(serviceUrl + PATH + "/search")
                 .query("query", query)
                 .expect(new ParameterizedTypeReference<List<Place>>() {

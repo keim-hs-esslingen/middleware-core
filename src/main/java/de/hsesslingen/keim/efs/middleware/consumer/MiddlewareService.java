@@ -34,7 +34,7 @@ import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.BOOKI
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.OPTIONS_API;
 import static de.hsesslingen.keim.efs.mobility.service.MobilityService.API.PLACES_API;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import static java.util.Collections.disjoint;
@@ -135,7 +135,7 @@ public class MiddlewareService {
      * @param request
      * @return
      */
-    private <T> ResponseEntity<T> sendRequestSafely(EfsRequest<T> request) {
+    private <T> ResponseEntity<T> sendRequestSafely(MiddlewareRequest<T> request) {
         try {
             return request.go();
         } catch (Exception ex) {
@@ -152,7 +152,7 @@ public class MiddlewareService {
      * @param requests
      * @return
      */
-    private <T> Stream<T> sendRequestsInParallel(List<EfsRequest<List<T>>> requests) {
+    private <T> Stream<T> sendRequestsInParallel(List<MiddlewareRequest<List<T>>> requests) {
         return requests.parallelStream()
                 .map(request -> sendRequestSafely(request))
                 .filter(response -> response != null)

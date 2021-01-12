@@ -51,8 +51,8 @@ import de.hsesslingen.keim.efs.middleware.validation.ConsistentBookingDateParams
 import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
@@ -62,7 +62,7 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
  * class.
  *
  * @author k.sivarasah 17 Oct 2019
@@ -215,11 +215,11 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<List<Booking>> buildGetBookingsRequest(
+    public static MiddlewareRequest<List<Booking>> buildGetBookingsRequest(
             String serviceUrl,
             String token
     ) {
-        return EfsRequest
+        return MiddlewareRequest
                 .get(serviceUrl + PATH)
                 .token(token)
                 .expect(new ParameterizedTypeReference<List<Booking>>() {
@@ -244,7 +244,7 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<List<Booking>> buildGetBookingsRequest(
+    public static MiddlewareRequest<List<Booking>> buildGetBookingsRequest(
             String serviceUrl,
             BookingState state,
             String token
@@ -270,12 +270,12 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildGetBookingByIdRequest(
+    public static MiddlewareRequest<Booking> buildGetBookingByIdRequest(
             String serviceUrl,
             String id,
             String token
     ) {
-        return EfsRequest
+        return MiddlewareRequest
                 .get(serviceUrl + PATH + "/" + id)
                 .token(token)
                 .expect(Booking.class);
@@ -299,12 +299,12 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildCreateNewBookingRequest(
+    public static MiddlewareRequest<Booking> buildCreateNewBookingRequest(
             String serviceUrl,
             NewBooking newBooking,
             String token
     ) {
-        return EfsRequest
+        return MiddlewareRequest
                 .post(serviceUrl + PATH)
                 .token(token)
                 .body(newBooking)
@@ -331,7 +331,7 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildCreateNewBookingRequest(
+    public static MiddlewareRequest<Booking> buildCreateNewBookingRequest(
             String serviceUrl,
             NewBooking newBooking,
             String optionReference,
@@ -359,12 +359,12 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildModifyBookingRequest(
+    public static MiddlewareRequest<Booking> buildModifyBookingRequest(
             String serviceUrl,
             Booking booking,
             String token
     ) {
-        return EfsRequest
+        return MiddlewareRequest
                 .put(serviceUrl + PATH + "/" + booking.getId())
                 .token(token)
                 .body(booking)
@@ -392,13 +392,13 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildPerformActionRequest(
+    public static MiddlewareRequest<Booking> buildPerformActionRequest(
             String serviceUrl,
             String bookingId,
             BookingAction action,
             String token
     ) {
-        return EfsRequest
+        return MiddlewareRequest
                 .post(serviceUrl + PATH + "/" + bookingId + "/action/" + action.toString())
                 .token(token)
                 .expect(Booking.class);
@@ -427,7 +427,7 @@ public interface IBookingApi {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public static EfsRequest<Booking> buildPerformActionRequest(
+    public static MiddlewareRequest<Booking> buildPerformActionRequest(
             String serviceUrl,
             String bookingId,
             BookingAction action,

@@ -39,7 +39,7 @@ import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildCreat
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingByIdRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingsRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildModifyBookingRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildPerformActionRequest;
@@ -134,7 +134,7 @@ public class ProviderProxy {
      * options using the {@link IPlacesApi}.
      * @return
      */
-    public EfsRequest<List<Place>> createSearchPlacesRequest(
+    public MiddlewareRequest<List<Place>> createSearchPlacesRequest(
             String query,
             ICoordinates areaCenter,
             Integer radiusMeter,
@@ -190,7 +190,7 @@ public class ProviderProxy {
      * options using the {@link IAssetApi}.
      * @return
      */
-    public EfsRequest<Asset> createGetAssetByIdRequest(
+    public MiddlewareRequest<Asset> createGetAssetByIdRequest(
             String assetId,
             String token
     ) {
@@ -260,7 +260,7 @@ public class ProviderProxy {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public EfsRequest<List<Option>> createGetOptionsRequest(
+    public MiddlewareRequest<List<Option>> createGetOptionsRequest(
             ICoordinates from,
             String fromPlaceId,
             ICoordinates to,
@@ -378,7 +378,7 @@ public class ProviderProxy {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public EfsRequest<List<Option>> createGetOptionsRequest(
+    public MiddlewareRequest<List<Option>> createGetOptionsRequest(
             ICoordinates from,
             ICoordinates to,
             ZonedDateTime startTime,
@@ -460,7 +460,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public EfsRequest<List<Booking>> createGetBookingsRequest(
+    public MiddlewareRequest<List<Booking>> createGetBookingsRequest(
             String token
     ) {
         return buildGetBookingsRequest(service.getServiceUrl(), token);
@@ -495,7 +495,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public EfsRequest<List<Booking>> createGetBookingsRequest(
+    public MiddlewareRequest<List<Booking>> createGetBookingsRequest(
             BookingState state,
             String token
     ) {
@@ -533,7 +533,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The {@link Booking} object
      */
-    public EfsRequest<Booking> createGetBookingByIdRequest(
+    public MiddlewareRequest<Booking> createGetBookingByIdRequest(
             String id,
             String token
     ) {
@@ -574,7 +574,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return {@link Booking} that was created
      */
-    public EfsRequest<Booking> createCreateBookingRequest(
+    public MiddlewareRequest<Booking> createCreateBookingRequest(
             NewBooking newBooking,
             String optionReference,
             String token
@@ -617,7 +617,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the modified {@link Booking} object
      */
-    public EfsRequest<Booking> createModifyBookingRequest(
+    public MiddlewareRequest<Booking> createModifyBookingRequest(
             Booking booking,
             String token
     ) {
@@ -658,7 +658,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public EfsRequest<Booking> createPerformActionRequest(
+    public MiddlewareRequest<Booking> createPerformActionRequest(
             String bookingId,
             BookingAction action,
             String token
@@ -705,7 +705,7 @@ public class ProviderProxy {
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
      */
-    public EfsRequest<Booking> createPerformActionRequest(
+    public MiddlewareRequest<Booking> createPerformActionRequest(
             String bookingId,
             BookingAction action,
             String secret,
@@ -755,7 +755,7 @@ public class ProviderProxy {
      * @return An instance of TokenCredentials that contains a provider specific
      * token, which can be used as is.
      */
-    public EfsRequest<TokenCredentials> createCreateTokenRequest(
+    public MiddlewareRequest<TokenCredentials> createCreateTokenRequest(
             String userId,
             String secret
     ) {
@@ -794,7 +794,7 @@ public class ProviderProxy {
      * with a limited duration of validity.
      * @return
      */
-    public EfsRequest<Void> createDeleteTokenRequest(String token) {
+    public MiddlewareRequest<Void> createDeleteTokenRequest(String token) {
         return buildDeleteTokenRequest(service.getServiceUrl(), token);
     }
 
@@ -819,7 +819,7 @@ public class ProviderProxy {
      * with a limited duration of validity.
      * @return true if valid, false if not.
      */
-    public EfsRequest<Boolean> createIsTokenValidRequest(String token) {
+    public MiddlewareRequest<Boolean> createIsTokenValidRequest(String token) {
         return buildIsTokenValidRequest(service.getServiceUrl(), token);
     }
 
@@ -852,7 +852,7 @@ public class ProviderProxy {
      * {@link getUsersApiProperties()}.
      * @return
      */
-    public EfsRequest<UserDetails> createRegisterUserRequest(Customer customer, String userSecret, String superUserToken) {
+    public MiddlewareRequest<UserDetails> createRegisterUserRequest(Customer customer, String userSecret, String superUserToken) {
         return IUsersApi.buildRegisterUserRequest(
                 service.getServiceUrl(), customer, userSecret, superUserToken
         );

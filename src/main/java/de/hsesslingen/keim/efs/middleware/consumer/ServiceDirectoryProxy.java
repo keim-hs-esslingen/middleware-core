@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -118,13 +118,13 @@ public class ServiceDirectoryProxy {
      * @param excludeInactive
      * @return
      */
-    public static EfsRequest<List<MobilityService>> buildSearchRequest(
+    public static MiddlewareRequest<List<MobilityService>> buildSearchRequest(
             String serviceDirectoryUrl,
             Set<Mode> anyOfTheseModesSupported,
             Set<API> allOfTheseApisSupported,
             boolean excludeInactive
     ) {
-        var request = EfsRequest.get(serviceDirectoryUrl + "/search")
+        var request = MiddlewareRequest.get(serviceDirectoryUrl + "/search")
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
                 .query("excludeInactive", excludeInactive);
@@ -146,7 +146,7 @@ public class ServiceDirectoryProxy {
      * @param serviceDirectoryUrl
      * @return
      */
-    public static EfsRequest<List<MobilityService>> buildGetAllRequest(
+    public static MiddlewareRequest<List<MobilityService>> buildGetAllRequest(
             String serviceDirectoryUrl
     ) {
         return buildSearchRequest(serviceDirectoryUrl, null, null, true);

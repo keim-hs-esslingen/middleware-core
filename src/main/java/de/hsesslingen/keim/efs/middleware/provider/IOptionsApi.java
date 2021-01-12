@@ -34,7 +34,7 @@ import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
-import de.hsesslingen.keim.efs.mobility.utils.EfsRequest;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import io.swagger.annotations.ApiParam;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import static de.hsesslingen.keim.efs.mobility.utils.EfsRequest.TOKEN_HEADER;
+import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import java.util.Set;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -59,7 +59,7 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link EfsRequest}
+ * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
  * class.
  *
  * @author keim
@@ -207,7 +207,7 @@ public interface IOptionsApi {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public static EfsRequest<List<Option>> buildGetOptionsRequest(
+    public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
             String serviceUrl,
             ICoordinates from,
             ICoordinates to,
@@ -277,7 +277,7 @@ public interface IOptionsApi {
      * options using the {@link IOptionsApi}.
      * @return
      */
-    public static EfsRequest<List<Option>> buildGetOptionsRequest(
+    public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
             String serviceUrl,
             ICoordinates from,
             String fromPlaceId,
@@ -293,7 +293,7 @@ public interface IOptionsApi {
             String token
     ) {
         // Start build the request object...
-        var request = EfsRequest
+        var request = MiddlewareRequest
                 .get(serviceUrl + PATH)
                 .query("from", toLatLonString(from))
                 .expect(new ParameterizedTypeReference<List<Option>>() {
