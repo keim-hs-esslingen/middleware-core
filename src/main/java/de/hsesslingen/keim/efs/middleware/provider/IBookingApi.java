@@ -53,6 +53,7 @@ import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
@@ -62,8 +63,8 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
- * class.
+ * match the endpoints defined in it. They are build upon the
+ * {@link MiddlewareRequest} class.
  *
  * @author k.sivarasah 17 Oct 2019
  */
@@ -180,7 +181,7 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
-     * @return 
+     * @return
      */
     @PostMapping(PATH + "/{bookingId}/action/{action}")
     @ResponseStatus(HttpStatus.OK)
@@ -213,13 +214,16 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<List<Booking>> buildGetBookingsRequest(
             String serviceUrl,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest
+        return requestTemplate
                 .get(serviceUrl + PATH)
                 .token(token)
                 .expect(new ParameterizedTypeReference<List<Booking>>() {
@@ -242,14 +246,17 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<List<Booking>> buildGetBookingsRequest(
             String serviceUrl,
             BookingState state,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return buildGetBookingsRequest(serviceUrl, token).query("state", state);
+        return buildGetBookingsRequest(serviceUrl, token, requestTemplate).query("state", state);
     }
 
     /**
@@ -268,14 +275,17 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildGetBookingByIdRequest(
             String serviceUrl,
             String id,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest
+        return requestTemplate
                 .get(serviceUrl + PATH + "/" + id)
                 .token(token)
                 .expect(Booking.class);
@@ -297,14 +307,17 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildCreateNewBookingRequest(
             String serviceUrl,
             NewBooking newBooking,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest
+        return requestTemplate
                 .post(serviceUrl + PATH)
                 .token(token)
                 .body(newBooking)
@@ -329,15 +342,18 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildCreateNewBookingRequest(
             String serviceUrl,
             NewBooking newBooking,
             String optionReference,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return buildCreateNewBookingRequest(serviceUrl, newBooking, token)
+        return buildCreateNewBookingRequest(serviceUrl, newBooking, token, requestTemplate)
                 .query("optionReference", optionReference);
     }
 
@@ -357,14 +373,17 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildModifyBookingRequest(
             String serviceUrl,
             Booking booking,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest
+        return requestTemplate
                 .put(serviceUrl + PATH + "/" + booking.getId())
                 .token(token)
                 .body(booking)
@@ -390,15 +409,18 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildPerformActionRequest(
             String serviceUrl,
             String bookingId,
             BookingAction action,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest
+        return requestTemplate
                 .post(serviceUrl + PATH + "/" + bookingId + "/action/" + action.toString())
                 .token(token)
                 .expect(Booking.class);
@@ -425,6 +447,8 @@ public interface IBookingApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Booking> buildPerformActionRequest(
@@ -432,9 +456,10 @@ public interface IBookingApi {
             String bookingId,
             BookingAction action,
             String secret,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return buildPerformActionRequest(serviceUrl, bookingId, action, token)
+        return buildPerformActionRequest(serviceUrl, bookingId, action, token, requestTemplate)
                 .query("secret", secret);
     }
 }

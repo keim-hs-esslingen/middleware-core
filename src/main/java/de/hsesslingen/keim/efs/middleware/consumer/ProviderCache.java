@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
+import de.hsesslingen.keim.efs.mobility.utils.DefaultRequestTemplate;
 import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import static java.util.stream.Collectors.toMap;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,9 @@ public class ProviderCache {
 
     @Value("${middleware.service-directory-url}")
     private String baseUrl;
+
+    @Autowired
+    private DefaultRequestTemplate rt;
 
     private CompletableFuture<Map<String, ProviderProxy>> providersFuture = new CompletableFuture<>();
 
@@ -78,7 +83,7 @@ public class ProviderCache {
         ResponseEntity<List<MobilityService>> response;
 
         try {
-            response = buildGetAllRequest(baseUrl)
+            response = buildGetAllRequest(baseUrl, rt)
                     .toInternal()
                     .go();
         } catch (Exception ex) {
@@ -130,7 +135,7 @@ public class ProviderCache {
         var services = all.stream()
                 // Sanitize invalid services to prevent null pointers and other stuff.
                 .peek(this::sanitizeMobilityService)
-                .map(ProviderProxy::new)
+                .map(s -> new ProviderProxy(s, rt))
                 .collect(toMap(p -> p.getServiceId(), p -> p));
 
         if (providersFuture.isDone()) {

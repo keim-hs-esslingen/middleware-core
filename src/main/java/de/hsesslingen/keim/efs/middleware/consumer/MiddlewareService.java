@@ -200,7 +200,7 @@ public class MiddlewareService {
         var requests = getProviders().stream()
                 .filter(p -> p.supportsApi(PLACES_API))
                 .map(p -> p.createSearchPlacesRequest(query, areaCenter, radiusMeter, limitToPerProvider, tokenGetter.apply(p.getServiceId())))
-                .peek(r -> r.callOutgoingRequestAdapters())
+                .peek(r -> r.callRequestAdapters())
                 .collect(toList());
 
         return sendRequestsInParallel(requests);
@@ -293,7 +293,7 @@ public class MiddlewareService {
 
         var requests = getProviders(modesAllowed, Set.of(OPTIONS_API))
                 .map(p -> p.createGetOptionsRequest(from, to, startTime, endTime, radiusMeter, sharingAllowed, modesAllowed, limitToPerProvider, includeGeoPaths, tokenGetter.apply(p.getServiceId())))
-                .peek(r -> r.callOutgoingRequestAdapters())
+                .peek(r -> r.callRequestAdapters())
                 .collect(toList());
 
         return sendRequestsInParallel(requests);
@@ -380,7 +380,7 @@ public class MiddlewareService {
         var requests = getProviders(serviceIds)
                 .filter(p -> p.supportsApi(BOOKING_API))
                 .map(p -> p.createGetBookingsRequest(tokenGetter.apply(p.getServiceId())))
-                .peek(r -> r.callOutgoingRequestAdapters())
+                .peek(r -> r.callRequestAdapters())
                 .collect(toList());
 
         return sendRequestsInParallel(requests);

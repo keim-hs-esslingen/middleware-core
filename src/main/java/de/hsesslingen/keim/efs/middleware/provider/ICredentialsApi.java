@@ -29,6 +29,7 @@ import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.SECRET_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.USER_ID_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
@@ -58,8 +59,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
- * class.
+ * match the endpoints defined in it. They are build upon the
+ * {@link MiddlewareRequest} class.
  *
  * @author keim
  */
@@ -159,14 +160,17 @@ public interface ICredentialsApi {
      * same time, if not {@link userId} is applicable for this mobility service
      * provider. In every case this value is the authenticating piece of
      * information and therefore it is required.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<TokenCredentials> buildCreateTokenRequest(
             String serviceUrl,
             String userId,
-            String secret
+            String secret,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest.post(serviceUrl + TOKEN_PATH)
+        return requestTemplate.post(serviceUrl + TOKEN_PATH)
                 .expect(TokenCredentials.class)
                 .userIdAndSecret(userId, secret);
     }
@@ -182,13 +186,16 @@ public interface ICredentialsApi {
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<Void> buildDeleteTokenRequest(
             String serviceUrl,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest.delete(serviceUrl + TOKEN_PATH)
+        return requestTemplate.delete(serviceUrl + TOKEN_PATH)
                 .expect(Void.class)
                 .token(token);
     }
@@ -205,13 +212,16 @@ public interface ICredentialsApi {
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<Boolean> buildIsTokenValidRequest(
             String serviceUrl,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest.get(serviceUrl + TOKEN_PATH)
+        return requestTemplate.get(serviceUrl + TOKEN_PATH)
                 .expect(Boolean.class)
                 .token(token);
     }

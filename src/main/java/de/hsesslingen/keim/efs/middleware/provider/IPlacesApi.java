@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -51,8 +52,8 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
- * class.
+ * match the endpoints defined in it. They are build upon the
+ * {@link MiddlewareRequest} class.
  *
  * @author keim
  */
@@ -104,10 +105,9 @@ public interface IPlacesApi {
 
     /**
      * Assembles a request, matching the {@code GET /places/search} endpoint,
-     * for the service with the given url using the given token. See
+     * for the service with the given url using the given token.See
      * {@link IPlacesApi#search(String, String, Integer, Integer, String)} for
-     * JavaDoc on that endpoint.
-     * <p>
+     * JavaDoc on that endpoint.<p>
      * The params are checked for null values and added only if they are present
      * (i.e. not {@code null} and not blank) and sensible.
      * <p>
@@ -127,6 +127,8 @@ public interface IPlacesApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
      * locations using the {@link IPlacesApi}.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<List<Place>> buildSearchRequest(
@@ -135,10 +137,11 @@ public interface IPlacesApi {
             ICoordinates areaCenter,
             Integer radiusMeter,
             Integer limitTo,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
         // Start build the request object...
-        var request = MiddlewareRequest
+        var request = requestTemplate
                 .get(serviceUrl + PATH + "/search")
                 .query("query", query)
                 .expect(new ParameterizedTypeReference<List<Place>>() {

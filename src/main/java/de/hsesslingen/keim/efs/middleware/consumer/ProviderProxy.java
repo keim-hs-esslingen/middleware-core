@@ -55,6 +55,7 @@ import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
@@ -66,9 +67,11 @@ import java.util.Set;
 public class ProviderProxy {
 
     private final MobilityService service;
+    private final MiddlewareRequestTemplate requestTemplate;
 
-    public ProviderProxy(MobilityService service) {
+    public ProviderProxy(MobilityService service, MiddlewareRequestTemplate requestTemplate) {
         this.service = service;
+        this.requestTemplate = requestTemplate;
     }
 
     /**
@@ -142,7 +145,7 @@ public class ProviderProxy {
             String token
     ) {
         return IPlacesApi.buildSearchRequest(service.getServiceUrl(),
-                query, areaCenter, radiusMeter, limitTo, token
+                query, areaCenter, radiusMeter, limitTo, token, requestTemplate
         );
     }
 
@@ -194,7 +197,7 @@ public class ProviderProxy {
             String assetId,
             String token
     ) {
-        return IAssetsApi.buildGetAssetByIdRequest(service.getServiceUrl(), assetId, token);
+        return IAssetsApi.buildGetAssetByIdRequest(service.getServiceUrl(), assetId, token, requestTemplate);
     }
 
     /**
@@ -277,7 +280,7 @@ public class ProviderProxy {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, fromPlaceId, to, toPlaceId, startTime, endTime,
                 radiusMeter, sharingAllowed, modesAllowed,
-                limitTo, includeGeoPaths, token
+                limitTo, includeGeoPaths, token, requestTemplate
         );
     }
 
@@ -392,7 +395,7 @@ public class ProviderProxy {
     ) {
         return buildGetOptionsRequest(service.getServiceUrl(),
                 from, to, startTime, endTime, radiusMeter, sharingAllowed,
-                modesAllowed, limitTo, includeGeoPaths, token
+                modesAllowed, limitTo, includeGeoPaths, token, requestTemplate
         );
     }
 
@@ -463,7 +466,7 @@ public class ProviderProxy {
     public MiddlewareRequest<List<Booking>> createGetBookingsRequest(
             String token
     ) {
-        return buildGetBookingsRequest(service.getServiceUrl(), token);
+        return buildGetBookingsRequest(service.getServiceUrl(), token, requestTemplate);
     }
 
     /**
@@ -499,7 +502,7 @@ public class ProviderProxy {
             BookingState state,
             String token
     ) {
-        return buildGetBookingsRequest(service.getServiceUrl(), state, token);
+        return buildGetBookingsRequest(service.getServiceUrl(), state, token, requestTemplate);
     }
 
     /**
@@ -537,7 +540,7 @@ public class ProviderProxy {
             String id,
             String token
     ) {
-        return buildGetBookingByIdRequest(service.getServiceUrl(), id, token);
+        return buildGetBookingByIdRequest(service.getServiceUrl(), id, token, requestTemplate);
     }
 
     /**
@@ -579,7 +582,7 @@ public class ProviderProxy {
             String optionReference,
             String token
     ) {
-        return buildCreateNewBookingRequest(service.getServiceUrl(), newBooking, optionReference, token);
+        return buildCreateNewBookingRequest(service.getServiceUrl(), newBooking, optionReference, token, requestTemplate);
     }
 
     /**
@@ -621,7 +624,7 @@ public class ProviderProxy {
             Booking booking,
             String token
     ) {
-        return buildModifyBookingRequest(service.getServiceUrl(), booking, token);
+        return buildModifyBookingRequest(service.getServiceUrl(), booking, token, requestTemplate);
     }
 
     /**
@@ -663,7 +666,7 @@ public class ProviderProxy {
             BookingAction action,
             String token
     ) {
-        return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, token);
+        return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, token, requestTemplate);
     }
 
     /**
@@ -711,7 +714,7 @@ public class ProviderProxy {
             String secret,
             String token
     ) {
-        return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, secret, token);
+        return buildPerformActionRequest(service.getServiceUrl(), bookingId, action, secret, token, requestTemplate);
     }
 
     /**
@@ -759,7 +762,7 @@ public class ProviderProxy {
             String userId,
             String secret
     ) {
-        return buildCreateTokenRequest(service.getServiceUrl(), userId, secret);
+        return buildCreateTokenRequest(service.getServiceUrl(), userId, secret, requestTemplate);
     }
 
     /**
@@ -795,7 +798,7 @@ public class ProviderProxy {
      * @return
      */
     public MiddlewareRequest<Void> createDeleteTokenRequest(String token) {
-        return buildDeleteTokenRequest(service.getServiceUrl(), token);
+        return buildDeleteTokenRequest(service.getServiceUrl(), token, requestTemplate);
     }
 
     /**
@@ -820,7 +823,7 @@ public class ProviderProxy {
      * @return true if valid, false if not.
      */
     public MiddlewareRequest<Boolean> createIsTokenValidRequest(String token) {
-        return buildIsTokenValidRequest(service.getServiceUrl(), token);
+        return buildIsTokenValidRequest(service.getServiceUrl(), token, requestTemplate);
     }
 
     /**
@@ -854,7 +857,7 @@ public class ProviderProxy {
      */
     public MiddlewareRequest<UserDetails> createRegisterUserRequest(Customer customer, String userSecret, String superUserToken) {
         return IUsersApi.buildRegisterUserRequest(
-                service.getServiceUrl(), customer, userSecret, superUserToken
+                service.getServiceUrl(), customer, userSecret, superUserToken, requestTemplate
         );
     }
 

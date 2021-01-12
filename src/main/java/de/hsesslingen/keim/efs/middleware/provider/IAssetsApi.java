@@ -31,6 +31,7 @@ import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import io.swagger.annotations.ApiParam;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.springframework.http.HttpStatus;
@@ -49,8 +50,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
- * class.
+ * match the endpoints defined in it. They are build upon the
+ * {@link MiddlewareRequest} class.
  *
  * @author keim
  */
@@ -104,14 +105,17 @@ public interface IAssetsApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IAssetApi}.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Asset> buildGetAssetByIdRequest(
             String serviceUrl,
             String assetId,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        var request = MiddlewareRequest.get(serviceUrl + PATH + "/" + assetId)
+        var request = requestTemplate.get(serviceUrl + PATH + "/" + assetId)
                 .expect(Asset.class);
 
         if (isNotBlank(token)) {

@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import java.util.Set;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -59,8 +60,8 @@ import org.springframework.http.ResponseEntity;
  * <p>
  * <h3>Additional note:</h3>
  * This interface also provides static methods for building HTTP requests, that
- * match the endpoints defined in it. They are build upon the {@link MiddlewareRequest}
- * class.
+ * match the endpoints defined in it. They are build upon the
+ * {@link MiddlewareRequest} class.
  *
  * @author keim
  */
@@ -205,6 +206,8 @@ public interface IOptionsApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
@@ -218,12 +221,13 @@ public interface IOptionsApi {
             Set<Mode> modesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
         return buildGetOptionsRequest(
                 serviceUrl, from, null, to, null, startTime, endTime,
                 radiusMeter, sharingAllowed, modesAllowed,
-                limitTo, includeGeoPaths, token
+                limitTo, includeGeoPaths, token, requestTemplate
         );
     }
 
@@ -275,6 +279,8 @@ public interface IOptionsApi {
      * with a limited duration of validity. See {@link ICredentialsApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return
      */
     public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
@@ -290,10 +296,11 @@ public interface IOptionsApi {
             Set<Mode> modesAllowed,
             Integer limitTo,
             Boolean includeGeoPaths,
-            String token
+            String token,
+            MiddlewareRequestTemplate requestTemplate
     ) {
         // Start build the request object...
-        var request = MiddlewareRequest
+        var request = requestTemplate
                 .get(serviceUrl + PATH)
                 .query("from", toLatLonString(from))
                 .expect(new ParameterizedTypeReference<List<Option>>() {

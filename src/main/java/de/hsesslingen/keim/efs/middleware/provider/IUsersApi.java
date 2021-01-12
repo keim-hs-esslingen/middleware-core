@@ -32,6 +32,7 @@ import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.SECRET_HEADER;
 import static de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest.TOKEN_HEADER;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +101,8 @@ public interface IUsersApi {
      * the user that is about to be created. Therefore the {@link secret} of
      * this new user is also not the same as used to create
      * {@link superUserToken}.
+     * @param requestTemplate The template that should be used as foundation
+     * for building the request.
      * @return An object that contains the user-id which was set by the provider
      * for the new user and which can be used together with the secret given by
      * the consumer for authentication.
@@ -108,9 +111,10 @@ public interface IUsersApi {
             String serviceUrl,
             Customer customer,
             String secret,
-            String superUserToken
+            String superUserToken,
+            MiddlewareRequestTemplate requestTemplate
     ) {
-        return MiddlewareRequest.post(serviceUrl + USERS_PATH)
+        return requestTemplate.post(serviceUrl + USERS_PATH)
                 .expect(UserDetails.class)
                 .body(customer)
                 .token(superUserToken)

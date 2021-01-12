@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
+import de.hsesslingen.keim.efs.mobility.utils.DefaultRequestTemplate;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +33,10 @@ import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequest;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
+import de.hsesslingen.keim.efs.mobility.utils.MiddlewareRequestTemplate;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
@@ -54,6 +57,9 @@ public class ServiceDirectoryProxy {
     @Value("${middleware.service-directory-url}")
     public String baseUrl;
 
+    @Autowired
+    private DefaultRequestTemplate rt;
+
     public ServiceDirectoryProxy() {
         // Used for tracing lazy loading of beans.
         logger.debug("Initializing ServiceDirectoryProxy.");
@@ -66,7 +72,7 @@ public class ServiceDirectoryProxy {
      */
     public List<MobilityService> getAll() {
         logger.info("Querying service directory for all available mobility services...");
-        return buildGetAllRequest(baseUrl).go().getBody();
+        return buildGetAllRequest(baseUrl, rt).go().getBody();
     }
 
     /**
@@ -103,7 +109,7 @@ public class ServiceDirectoryProxy {
             Set<API> allOfTheseApisSupported
     ) {
         logger.info("Querying service directory for specific set of available mobility services...");
-        return buildSearchRequest(baseUrl, anyOfTheseModesSupported, allOfTheseApisSupported, true)
+        return buildSearchRequest(baseUrl, anyOfTheseModesSupported, allOfTheseApisSupported, true, rt)
                 .go()
                 .getBody();
     }
@@ -116,15 +122,17 @@ public class ServiceDirectoryProxy {
      * @param anyOfTheseModesSupported
      * @param allOfTheseApisSupported
      * @param excludeInactive
+     * @param template
      * @return
      */
     public static MiddlewareRequest<List<MobilityService>> buildSearchRequest(
             String serviceDirectoryUrl,
             Set<Mode> anyOfTheseModesSupported,
             Set<API> allOfTheseApisSupported,
-            boolean excludeInactive
+            boolean excludeInactive,
+            MiddlewareRequestTemplate template
     ) {
-        var request = MiddlewareRequest.get(serviceDirectoryUrl + "/search")
+        var request = template.get(serviceDirectoryUrl + "/search")
                 .expect(new ParameterizedTypeReference<List<MobilityService>>() {
                 })
                 .query("excludeInactive", excludeInactive);
@@ -144,11 +152,13 @@ public class ServiceDirectoryProxy {
      * directory at the given URL.
      *
      * @param serviceDirectoryUrl
+     * @param template
      * @return
      */
     public static MiddlewareRequest<List<MobilityService>> buildGetAllRequest(
-            String serviceDirectoryUrl
+            String serviceDirectoryUrl,
+            MiddlewareRequestTemplate template
     ) {
-        return buildSearchRequest(serviceDirectoryUrl, null, null, true);
+        return buildSearchRequest(serviceDirectoryUrl, null, null, true, template);
     }
 }
