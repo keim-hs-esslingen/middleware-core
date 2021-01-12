@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.config;
 
-import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,11 +34,6 @@ import org.springframework.web.client.ResponseErrorHandler;
  */
 @Configuration
 public class RestUtilsAutoConfiguration {
-
-    @Bean
-    public DefaultRequestTemplate defaultRequestTemplate() {
-        return new DefaultRequestTemplate();
-    }
 
     @Bean
     @ConditionalOnMissingBean
