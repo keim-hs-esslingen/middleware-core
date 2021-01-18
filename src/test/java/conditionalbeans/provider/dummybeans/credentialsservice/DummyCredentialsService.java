@@ -27,6 +27,7 @@ import conditionalbeans.provider.dummybeans.DummyBean;
 import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class DummyCredentialsService extends DummyBean implements ICredentialsService<AbstractCredentials> {
 
     @Override
-    public TokenCredentials createToken(String userId, String secret) {
+    public TokenCredentials createToken(String userId, String secret, Map<String, String> credentials) {
         throw new UnsupportedOperationException("This should never be called.");
     }
 

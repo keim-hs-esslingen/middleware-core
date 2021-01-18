@@ -28,6 +28,8 @@ import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import static de.hsesslingen.keim.efs.mobility.exception.HttpException.internalServerError;
 import io.swagger.annotations.Api;
+import java.util.Map;
+import static java.util.stream.Collectors.toMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
@@ -47,13 +49,34 @@ public class CredentialsApi extends ApiBase implements ICredentialsApi {
     private ICredentialsService service;
 
     @Override
-    public TokenCredentials createToken(String userId, String secret) {
-        logParams("createToken", () -> array(
-                "userId", obfuscateConditional(userId),
-                "secret", obfuscateConditional(secret)
-        ));
+    public TokenCredentials createToken(String userId, String secret, Map<String, String> credentials) {
 
-        var token = service.createToken(userId, secret);
+        //<editor-fold defaultstate="collapsed" desc="Slightly longer logParams section.">
+        if (!logger.isTraceEnabled()) {
+            // The credentials body is only logged if trace is enabled.
+
+            logParams("createToken", () -> array(
+                    "userId", obfuscateConditional(userId),
+                    "secret", obfuscateConditional(secret)
+            ));
+        } else {
+            var obfuscatedCredentialMap = credentials == null
+                    ? null // If body is null, use null are value for logging.
+                    // Make a copy of the credentials with obfuscated values...
+                    : credentials.entrySet().stream()
+                            .collect(toMap( // Collecting map entries with values obfuscated.
+                                    e -> e.getKey(),
+                                    e -> obfuscateConditional(e.getValue())
+                            ));
+
+            logParamsWithBody("createToken", obfuscatedCredentialMap, () -> array(
+                    "userId", obfuscateConditional(userId),
+                    "secret", obfuscateConditional(secret)
+            ));
+        }
+        //</editor-fold>
+
+        var token = service.createToken(userId, secret, credentials);
 
         //<editor-fold defaultstate="collapsed" desc="Checking output and doing debug-logging.">
         if (token == null) {
