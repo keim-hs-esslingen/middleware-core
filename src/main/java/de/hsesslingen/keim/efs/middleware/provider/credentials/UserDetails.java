@@ -46,8 +46,10 @@ public class UserDetails {
     private String serviceId;
 
     /**
-     * The ID of the customer as known to the provider. Use this value to
-     * identify a user when creating tokens.
+     * The ID of the customer as it should be used for generating tokens. This
+     * might be the ID that was provided by the consumer, when registering this
+     * user. It also might be a different ID, that was assigned automatically by
+     * the provider.
      */
     private String userId;
 
