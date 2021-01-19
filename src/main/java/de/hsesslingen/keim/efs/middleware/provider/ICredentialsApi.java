@@ -50,11 +50,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <h3>Further details:</h3>
  * <ul>
  * <li>See {@link ICredentialsApi#createToken(String, String)} for details on
- * how to create token.</li>
+ * how to create token.
  * <li>See {@link ICredentialsApi#deleteToken(String)} for details on how to
- * delete (invalidate) tokens.</li>
+ * delete (invalidate) tokens.
  * <li>See {@link ICredentialsApi#isTokenValid(String)} for details on how to
- * check the validity of tokens.</li>
+ * check the validity of tokens.
  * </ul>
  * <p>
  * <h3>Additional note:</h3>
@@ -67,7 +67,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ICredentialsApi {
 
-    public static final String TOKEN_PATH = "/credentials/token";
+    @Deprecated(forRemoval = true)
+    public static final String TOKEN_PATH = "/credentials/token"; // Kept for backward compatibility.
+    public static final String TOKENS_PATH = "/credentials/tokens";
     public static final String USERS_PATH = "/credentials/users";
 
     public static final String USER_ID_DESCRIPTION = "A string value that uniquely identifies a user. (e.g. an email adress, a username, ...)";
@@ -101,7 +103,7 @@ public interface ICredentialsApi {
      * @return An instance of TokenCredentials that contains a provider specific
      * token, which can be used as is.
      */
-    @PostMapping(TOKEN_PATH)
+    @PostMapping({TOKEN_PATH, TOKENS_PATH})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Create tokens.", notes = "Allows creation of tokens based on the given user-id and secret. The content of this token is provider specific and can be used as is.")
     public TokenCredentials createToken(
@@ -118,7 +120,7 @@ public interface ICredentialsApi {
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
      */
-    @DeleteMapping(TOKEN_PATH)
+    @DeleteMapping({TOKEN_PATH, TOKENS_PATH})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Invalidate tokens.", notes = "Invalidates (e.g. logs out) the given token.")
     public void deleteToken(
@@ -134,7 +136,7 @@ public interface ICredentialsApi {
      * with a limited duration of validity.
      * @return true if valid, false if not.
      */
-    @GetMapping(TOKEN_PATH)
+    @GetMapping({TOKEN_PATH, TOKENS_PATH})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Check validity of credentials.", notes = "Checks whether the given token is still valid.")
     public boolean isTokenValid(
@@ -160,8 +162,8 @@ public interface ICredentialsApi {
      * same time, if not {@link userId} is applicable for this mobility service
      * provider. In every case this value is the authenticating piece of
      * information and therefore it is required.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<TokenCredentials> buildCreateTokenRequest(
@@ -186,8 +188,8 @@ public interface ICredentialsApi {
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Void> buildDeleteTokenRequest(
@@ -212,8 +214,8 @@ public interface ICredentialsApi {
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token The token which should be invalidated.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<Boolean> buildIsTokenValidRequest(
