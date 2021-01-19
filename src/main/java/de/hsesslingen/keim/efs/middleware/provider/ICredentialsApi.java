@@ -67,10 +67,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ICredentialsApi {
 
-    @Deprecated(forRemoval = true)
-    public static final String TOKEN_PATH = "/credentials/token"; // Kept for backward compatibility.
-    public static final String TOKENS_PATH = "/credentials/tokens";
-    public static final String USERS_PATH = "/credentials/users";
+    @Deprecated(forRemoval = true) // Kept for backward compatibility for a while. Remove in future version.
+    public static final String TOKEN_PATH = "/credentials/token";
+    public static final String TOKENS_PATH = "/tokens";
+    public static final String USERS_PATH = "/users";
 
     public static final String USER_ID_DESCRIPTION = "A string value that uniquely identifies a user. (e.g. an email adress, a username, ...)";
     public static final String SECRET_DESCRIPTION = "The secret that authenticates a user.";
@@ -172,7 +172,7 @@ public interface ICredentialsApi {
             String secret,
             MiddlewareRequestTemplate requestTemplate
     ) {
-        return requestTemplate.post(serviceUrl + TOKEN_PATH)
+        return requestTemplate.post(serviceUrl + TOKENS_PATH)
                 .expect(TokenCredentials.class)
                 .userIdAndSecret(userId, secret);
     }
@@ -197,7 +197,7 @@ public interface ICredentialsApi {
             String token,
             MiddlewareRequestTemplate requestTemplate
     ) {
-        return requestTemplate.delete(serviceUrl + TOKEN_PATH)
+        return requestTemplate.delete(serviceUrl + TOKENS_PATH)
                 .expect(Void.class)
                 .token(token);
     }
@@ -223,7 +223,7 @@ public interface ICredentialsApi {
             String token,
             MiddlewareRequestTemplate requestTemplate
     ) {
-        return requestTemplate.get(serviceUrl + TOKEN_PATH)
+        return requestTemplate.get(serviceUrl + TOKENS_PATH)
                 .expect(Boolean.class)
                 .token(token);
     }
