@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
@@ -59,6 +60,7 @@ import org.springframework.http.ResponseEntity;
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api/places", produces = MediaType.APPLICATION_JSON_VALUE)
+@GenerateRequestClass
 public interface IPlacesApi {
 
     public static final String PATH = "/places";

@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import static de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration.FLEX_DATETIME_DESC;
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValidAndNotNull;
@@ -67,6 +68,7 @@ import org.springframework.http.ResponseEntity;
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@GenerateRequestClass
 public interface IOptionsApi {
 
     public static final String PATH = "/options";

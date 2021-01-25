@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,7 @@ import org.springframework.http.ResponseEntity;
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@GenerateRequestClass
 public interface IBookingApi {
 
     public static final String PATH = "/bookings";

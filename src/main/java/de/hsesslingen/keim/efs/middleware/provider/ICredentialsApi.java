@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
@@ -65,6 +66,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author keim
  */
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@GenerateRequestClass
 public interface ICredentialsApi {
 
     @Deprecated(forRemoval = true) // Kept for backward compatibility for a while. Remove in future version.

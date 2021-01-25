@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.SECRET_DESCRIPTION;
 import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  *
  * @author ben
  */
+@GenerateRequestClass
 public interface IUsersApi {
 
     /**
@@ -101,8 +103,8 @@ public interface IUsersApi {
      * the user that is about to be created. Therefore the {@link secret} of
      * this new user is also not the same as used to create
      * {@link superUserToken}.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return An object that contains the user-id which was set by the provider
      * for the new user and which can be used together with the secret given by
      * the consumer for authentication.
