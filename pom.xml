@@ -54,6 +54,12 @@
             <artifactId>mobility-commons</artifactId>
             <version>3.3.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.keim-hs-esslingen.efs</groupId>
+            <artifactId>api-client-generator</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 		
         <dependency>
             <groupId>org.springframework.boot</groupId>

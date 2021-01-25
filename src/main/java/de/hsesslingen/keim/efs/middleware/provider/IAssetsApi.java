@@ -23,6 +23,7 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider;
 
+import de.hsesslingen.keim.efs.annotations.GenerateRequestClass;
 import de.hsesslingen.keim.efs.middleware.model.Asset;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Option;
@@ -57,6 +58,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @EfsSwaggerApiResponseSupport
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@GenerateRequestClass
 public interface IAssetsApi {
 
     public static final String PATH = "/assets";
