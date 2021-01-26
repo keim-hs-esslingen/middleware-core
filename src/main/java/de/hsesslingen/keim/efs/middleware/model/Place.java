@@ -26,7 +26,6 @@ package de.hsesslingen.keim.efs.middleware.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.assertPositionIsValid;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValid;
 import java.io.Serializable;
 import javax.validation.constraints.DecimalMax;
@@ -171,11 +170,7 @@ public class Place implements ICoordinates, Serializable {
     }
 
     public static Place fromCoordinates(String latCommaLonString) {
-        assertPositionIsValid(latCommaLonString);
-
-        var split = latCommaLonString.split(",");
-
-        return fromCoordinates(Double.valueOf(split[0]), Double.valueOf(split[1]));
+        return ICoordinates.parseAndValidate(latCommaLonString, Place::fromCoordinates);
     }
 
 }

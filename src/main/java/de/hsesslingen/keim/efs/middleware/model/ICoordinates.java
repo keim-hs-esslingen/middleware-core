@@ -24,6 +24,8 @@
 package de.hsesslingen.keim.efs.middleware.model;
 
 import static java.lang.Math.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import static org.springframework.util.StringUtils.countOccurrencesOf;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -117,35 +119,202 @@ public interface ICoordinates {
         return rad * D180_BY_PI;
     }
 
-    public static boolean positionIsValid(String latLonString) {
-        return !isEmpty(latLonString) && countOccurrencesOf(latLonString, ",") == 1;
-    }
-
-    public static boolean isValidAndNotNull(ICoordinates coordinates) {
-        return coordinates != null && isValid(coordinates);
-    }
-
-    public static boolean isValid(ICoordinates coordinates) {
-        return isValid(coordinates.getLat(), coordinates.getLon());
-    }
-
+    /**
+     * Checks whether the given lat and lon values are not null and within their
+     * allowed boundaries.
+     *
+     * @param lat
+     * @param lon
+     * @return
+     */
     public static boolean isValid(Double lat, Double lon) {
         return lat != null && lon != null
                 && lat >= -90.0 && lat <= 90.0
                 && lon >= -180.0 && lon <= 180.0;
     }
 
-    public static void assertPositionIsValid(String latLonString) {
-        if (!positionIsValid(latLonString)) {
-            throw new IllegalArgumentException("Invalid format for position \"" + latLonString + "\".");
-        }
+    /**
+     * Checks whether the lat and lon values of the given coordinates are not
+     * null and within their allowed boundaries.
+     *
+     * @param coordinates
+     * @return
+     */
+    public static boolean isValid(ICoordinates coordinates) {
+        return isValid(coordinates.getLat(), coordinates.getLon());
     }
 
+    /**
+     * Checks whether coordinates are not null and then whether the lat and lon
+     * values of the given coordinates are not null and within their allowed
+     * boundaries.
+     *
+     * @param coordinates
+     * @return
+     */
+    public static boolean isValidAndNotNull(ICoordinates coordinates) {
+        return coordinates != null && isValid(coordinates);
+    }
+
+    /**
+     * Converts {@link coordinates} to a lat,lon string with no space after the
+     * comma.
+     *
+     * @param coordinates
+     * @return
+     */
     public static String toLatLonString(ICoordinates coordinates) {
         return toLatLonString(coordinates, false);
     }
 
+    /**
+     * Converts {@link coordinates} to a lat,lon string with an optional space
+     * after the comma.
+     *
+     * @param coordinates
+     * @param includeSpace
+     * @return
+     */
     public static String toLatLonString(ICoordinates coordinates, boolean includeSpace) {
         return coordinates.getLat() + "," + (includeSpace ? " " : "") + coordinates.getLon();
+    }
+
+    /**
+     * Tries to parse the given coordinates string and if successful passes the
+     * parse latitude and longitude to the given {@link utilizer}. Upon fail,
+     * the {@link fallbackOnFail} supplier is called and its value returned.
+     * <p>
+     * The {@link fallbackOnFail} supplier can also be used to throw an
+     * exception.
+     *
+     * @param <C>
+     * @param latCommaLonString
+     * @param utilizer
+     * @param onFailValueSupplier
+     * @return
+     */
+    public static <C> C parse(String latCommaLonString, BiFunction<Double, Double, C> utilizer, Supplier<C> onFailValueSupplier) {
+        if (isEmpty(latCommaLonString) || countOccurrencesOf(latCommaLonString, ",") != 1) {
+            return onFailValueSupplier.get();
+        }
+
+        String[] split = latCommaLonString.split(",");
+
+        try {
+            return utilizer.apply(Double.valueOf(split[0]), Double.valueOf(split[1]));
+        } catch (NumberFormatException ex) {
+            return onFailValueSupplier.get();
+        }
+    }
+
+    /**
+     * Parses the given coordinates and passes them to the given
+     * {@link utilizer} for further handling. If the string is incorrectly
+     * formatted, an exception is thrown. This method does not detect whether
+     * latitude or longitude exceed their allowed boundaries. Use
+     * {@link ICoordinates#parseVali(String, BiFunction)} for this.
+     *
+     * @param <C>
+     * @param latCommaLonString
+     * @param utilizer
+     * @return
+     */
+    public static <C> C parse(String latCommaLonString, BiFunction<Double, Double, C> utilizer) {
+        return parse(latCommaLonString, utilizer, () -> {
+            throw new IllegalArgumentException("Invalid format for position \"" + latCommaLonString + "\".");
+        });
+    }
+
+    /**
+     * Tries to parse the given coordinates string and validate the result and
+     * if successful passes the parse latitude and longitude to the given
+     * {@link utilizer}.Upon fail, the {@link fallbackOnFail} supplier is called
+     * and its value returned.
+     * <p>
+     * The {@link fallbackOnFail} supplier can also be used to throw an
+     * exception.
+     *
+     * @param <C>
+     * @param latCommaLonString
+     * @param utilizer
+     * @param onFailValueSupplier
+     * @return
+     */
+    public static <C> C parseAndValidate(String latCommaLonString, BiFunction<Double, Double, C> utilizer, Supplier<C> onFailValueSupplier) {
+        return parse(latCommaLonString, (lat, lon) -> {
+            if (!isValid(lat, lon)) {
+                return onFailValueSupplier.get();
+            }
+
+            return utilizer.apply(lat, lon);
+        }, onFailValueSupplier);
+    }
+
+    /**
+     * Parses the given coordinates and passes them to the given
+     * {@link utilizer} for further handling. If the string is incorrectly
+     * formatted, or if the values of latitude or longitude exceed their allowed
+     * boundaries, an exception is thrown.
+     *
+     * @param <C>
+     * @param latCommaLonString
+     * @param utilizer
+     * @return
+     */
+    public static <C> C parseAndValidate(String latCommaLonString, BiFunction<Double, Double, C> utilizer) {
+        return parse(latCommaLonString, (lat, lon) -> {
+            if (!isValid(lat, lon)) {
+                throw new IllegalArgumentException("The values of either latitude or longitude or both exceed their allowed boundaries.");
+            }
+
+            return utilizer.apply(lat, lon);
+        });
+    }
+
+    /**
+     * Parses the given lat,lon string to an anonymous implementation of
+     * {@link ICoordinates}.
+     *
+     * @param latLonString
+     * @return
+     */
+    public static ICoordinates parse(String latLonString) {
+        return parse(latLonString, (lat, lon) -> {
+            return new ICoordinates() {
+                @Override
+                public Double getLat() {
+                    return lat;
+                }
+
+                @Override
+                public Double getLon() {
+                    return lon;
+                }
+            };
+        });
+    }
+
+    /**
+     * Parses the given lat,lon string to an anonymous implementation of
+     * {@link ICoordinates}.
+     *
+     * @param latLonString
+     * @param onFailValueSupplier
+     * @return
+     */
+    public static ICoordinates parseAndValidate(String latLonString, Supplier<ICoordinates> onFailValueSupplier) {
+        return parseAndValidate(latLonString, (lat, lon) -> {
+            return new ICoordinates() {
+                @Override
+                public Double getLat() {
+                    return lat;
+                }
+
+                @Override
+                public Double getLon() {
+                    return lon;
+                }
+            };
+        }, onFailValueSupplier);
     }
 }

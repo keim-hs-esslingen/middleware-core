@@ -37,6 +37,7 @@ import java.time.ZonedDateTime;
  *
  * @author k.sivarasah 3 Oct 2019
  */
+@Deprecated(forRemoval = true) // Epoch Millis aren't used in the Middleware anymore.
 public class ZonedDateTimeEpochMilliSerializer extends JsonSerializer<ZonedDateTime> {
 
     @Override

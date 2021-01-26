@@ -24,8 +24,7 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
-import de.hsesslingen.keim.efs.middleware.model.Coordinates;
-import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.parseAndValidate;
 import de.hsesslingen.keim.efs.middleware.model.Place;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -63,7 +62,7 @@ public class PlacesApi extends ApiBase implements IPlacesApi {
         ));
 
         // Convert input params...
-        var coordinates = positionIsValid(areaCenter) ? Coordinates.parse(areaCenter) : null;
+        var coordinates = parseAndValidate(areaCenter, () -> null);
 
         // Delegate search to user implemented PlacesService...
         var places = service.search(

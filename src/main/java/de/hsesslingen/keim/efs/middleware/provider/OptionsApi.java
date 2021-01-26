@@ -24,7 +24,7 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
-import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.positionIsValid;
+import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.parseAndValidate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,14 +111,10 @@ public class OptionsApi extends ApiBase implements IOptionsApi {
             placeFrom.setId(fromPlaceId);
         }
 
-        Place placeTo = null;
+        Place placeTo = parseAndValidate(toPlaceId, Place::fromCoordinates, () -> null);
 
-        if (positionIsValid(to)) {
-            placeTo = Place.fromCoordinates(to);
-
-            if (isNotBlank(toPlaceId)) {
-                placeTo.setId(toPlaceId);
-            }
+        if (placeTo != null && isNotBlank(toPlaceId)) {
+            placeTo.setId(toPlaceId);
         }
 
         // Getting options from user implemented OptionsService.

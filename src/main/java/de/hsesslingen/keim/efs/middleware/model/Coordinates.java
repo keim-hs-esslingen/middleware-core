@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.model;
 
-import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.assertPositionIsValid;
 import java.io.Serializable;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -67,9 +66,7 @@ public class Coordinates implements Serializable, ICoordinates {
     private Double lon;
 
     public static Coordinates parse(String latCommaLonString) {
-        assertPositionIsValid(latCommaLonString);
-        String[] split = latCommaLonString.split(",");
-        return new Coordinates(Double.valueOf(split[0]), Double.valueOf(split[1]));
+        return ICoordinates.parse(latCommaLonString, Coordinates::new);
     }
 
     public static Coordinates copy(ICoordinates other) {
