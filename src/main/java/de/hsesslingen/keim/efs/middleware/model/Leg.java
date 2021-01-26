@@ -29,13 +29,11 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hsesslingen.keim.efs.middleware.validation.OnCreate;
 import de.hsesslingen.keim.efs.mobility.service.Mode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -65,10 +63,8 @@ public class Leg implements Serializable {
         this.startTime = startTime;
     }
 
-    @IsInFutureOrNull(groups = OnCreate.class)
     private ZonedDateTime startTime;
 
-    @IsInFutureOrNull(groups = OnCreate.class)
     private ZonedDateTime endTime;
 
     @NotNull

@@ -160,17 +160,6 @@ public class BookingAndOptionsApiTest extends MiddlewareTestBase {
     }
 
     @Test
-    public void postBooking_Invalid_Time_400() throws Exception {
-        NewBooking newBooking = getDummyNewBooking();
-        newBooking.getLeg().setStartTime(now().minus(1, HOURS));
-        mockMvc.perform(post(BOOKINGS_PATH).content(mapper.writeValueAsBytes(newBooking)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code", is("400")))
-                .andExpect(content().string(containsString("startTime")))
-                .andDo(print());
-    }
-
-    @Test
     public void postBooking_Valid_Booking_200() throws Exception {
         NewBooking newBooking = getDummyNewBooking();
 
