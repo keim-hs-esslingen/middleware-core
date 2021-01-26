@@ -39,12 +39,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Validated
 @RestController
-@ConditionalOnBean(ICredentialsService.class)
+@ConditionalOnBean(ITokensService.class)
 @Api(tags = {SwaggerAutoConfiguration.CREDENTIALS_API_TAG})
-public class CredentialsApi extends ApiBase implements ICredentialsApi {
+public class TokensApi extends ApiBase implements ITokensApi {
 
     @Autowired
-    private ICredentialsService service;
+    private ITokensService service;
 
     @Override
     public TokenCredentials createToken(String userId, String secret) {

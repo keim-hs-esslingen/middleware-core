@@ -26,7 +26,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 import de.hsesslingen.keim.efs.middleware.model.Asset;
 import de.hsesslingen.keim.efs.middleware.model.Leg;
 import de.hsesslingen.keim.efs.middleware.model.Option;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
@@ -72,7 +72,7 @@ public interface IAssetsApi {
      * @param assetId The ID of the asset which shall be retrieved, which can be
      * found in other objects e.g. of type {@link Leg}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IAssetApi}.
      * @return
@@ -102,7 +102,7 @@ public interface IAssetsApi {
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param assetId The ID of the asset which shall be retrieved.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IAssetApi}.
      * @param requestTemplate The template that should be used as foundation for

@@ -38,7 +38,7 @@ import de.hsesslingen.keim.efs.middleware.model.BookingState;
 import de.hsesslingen.keim.efs.middleware.model.BookingAction;
 import de.hsesslingen.keim.efs.middleware.model.NewBooking;
 import de.hsesslingen.keim.efs.middleware.model.Option;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -80,7 +80,7 @@ public interface IBookingApi {
      *
      * @param state An optional state by which to filter the bookings.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return List of {@link Booking}
@@ -101,7 +101,7 @@ public interface IBookingApi {
      *
      * @param id The ID of the booking which shall be retrieved.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The {@link Booking} object
@@ -125,7 +125,7 @@ public interface IBookingApi {
      * unambiguously references this option for booking. This reference is
      * sometimes given in instances of {@link Option}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return {@link Booking} that was created
@@ -150,7 +150,7 @@ public interface IBookingApi {
      * @param id The ID of the booking that shall be modified.
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the modified {@link Booking} object
@@ -178,7 +178,7 @@ public interface IBookingApi {
      * @param secret An optional secret that might be required by some mobility
      * service providers to perform this action. (e.g. a PIN)
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -211,7 +211,7 @@ public interface IBookingApi {
      * @param serviceUrl The base url of the mobility service that should be
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -243,7 +243,7 @@ public interface IBookingApi {
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param state An optional state by which to filter the bookings.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -272,7 +272,7 @@ public interface IBookingApi {
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param id The ID of the booking which shall be retrieved.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -304,7 +304,7 @@ public interface IBookingApi {
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param newBooking The {@link NewBooking} that should be created.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -339,7 +339,7 @@ public interface IBookingApi {
      * unambiguously references this option for booking. This reference is
      * sometimes given in instances of {@link Option}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -370,7 +370,7 @@ public interface IBookingApi {
      * queried. Use {@link MobilityService#getServiceUrl()} to get this url.
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -406,7 +406,7 @@ public interface IBookingApi {
      * @param action The action that should be performed on the booking with the
      * given {@link bookingId}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for
@@ -444,7 +444,7 @@ public interface IBookingApi {
      * @param secret An optional secret that might be required by some mobility
      * service providers to perform this action. (e.g. a PIN)
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @param requestTemplate The template that should be used as foundation for

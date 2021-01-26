@@ -37,7 +37,7 @@ import org.springframework.lang.Nullable;
  * @author ben
  * @param <C>
  */
-public interface ICredentialsService<C extends AbstractCredentials> {
+public interface ITokensService<C extends AbstractCredentials> {
 
     /**
      * Allows creation of tokens based on the given user-id and secret. The

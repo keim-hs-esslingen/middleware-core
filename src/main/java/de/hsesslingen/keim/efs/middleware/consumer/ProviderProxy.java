@@ -43,10 +43,9 @@ import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildGetBookingsRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildModifyBookingRequest;
 import static de.hsesslingen.keim.efs.middleware.provider.IBookingApi.buildPerformActionRequest;
-import de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.buildCreateTokenRequest;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.buildDeleteTokenRequest;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.buildIsTokenValidRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.buildCreateTokenRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.buildDeleteTokenRequest;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.buildIsTokenValidRequest;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsApi;
 import static de.hsesslingen.keim.efs.middleware.provider.IOptionsApi.buildGetOptionsRequest;
 import de.hsesslingen.keim.efs.middleware.provider.IPlacesApi;
@@ -59,6 +58,7 @@ import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
+import de.hsesslingen.keim.efs.middleware.provider.ITokensApi;
 
 /**
  *
@@ -132,7 +132,7 @@ public class ProviderProxy {
      * {@link areaCenter}.
      * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IPlacesApi}.
      * @return
@@ -163,7 +163,7 @@ public class ProviderProxy {
      * {@link areaCenter}.
      * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IPlacesApi}.
      * @return
@@ -188,7 +188,7 @@ public class ProviderProxy {
      * @param assetId The ID of the asset which shall be retrieved, which can be
      * found in other objects e.g. of type {@link Leg}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IAssetApi}.
      * @return
@@ -208,7 +208,7 @@ public class ProviderProxy {
      * @param assetId The ID of the asset which shall be retrieved, which can be
      * found in other objects e.g. of type {@link Leg}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IAssetApi}.
      * @return
@@ -258,7 +258,7 @@ public class ProviderProxy {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @return
@@ -321,7 +321,7 @@ public class ProviderProxy {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @return
@@ -376,7 +376,7 @@ public class ProviderProxy {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @return
@@ -430,7 +430,7 @@ public class ProviderProxy {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @return
@@ -458,7 +458,7 @@ public class ProviderProxy {
      * {@link IBookingApi#getBookings(de.hsesslingen.keim.efs.middleware.model.BookingState, java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -475,7 +475,7 @@ public class ProviderProxy {
      * {@link IBookingApi#getBookings(de.hsesslingen.keim.efs.middleware.model.BookingState, java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -493,7 +493,7 @@ public class ProviderProxy {
      *
      * @param state An optional state by which to filter the bookings.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -512,7 +512,7 @@ public class ProviderProxy {
      *
      * @param state An optional state by which to filter the bookings.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -531,7 +531,7 @@ public class ProviderProxy {
      *
      * @param id The ID of the booking which shall be retrieved.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The {@link Booking} object
@@ -550,7 +550,7 @@ public class ProviderProxy {
      *
      * @param id The ID of the booking which shall be retrieved.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The {@link Booking} object
@@ -572,7 +572,7 @@ public class ProviderProxy {
      * unambiguously references this option for booking. This reference is
      * sometimes given in instances of {@link Option}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return {@link Booking} that was created
@@ -595,7 +595,7 @@ public class ProviderProxy {
      * unambiguously references this option for booking. This reference is
      * sometimes given in instances of {@link Option}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return {@link Booking} that was created
@@ -615,7 +615,7 @@ public class ProviderProxy {
      *
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the modified {@link Booking} object
@@ -634,7 +634,7 @@ public class ProviderProxy {
      *
      * @param booking The {@link Booking} object containing modified data
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return the modified {@link Booking} object
@@ -656,7 +656,7 @@ public class ProviderProxy {
      * @param action The action that should be performed on the booking with the
      * given {@link bookingId}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -678,7 +678,7 @@ public class ProviderProxy {
      * @param action The action that should be performed on the booking with the
      * given {@link bookingId}.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The state of the booking after applying the requested action.
@@ -703,7 +703,7 @@ public class ProviderProxy {
      * @param secret An optional secret that might be required by some mobility
      * service providers to perform this action. (e.g. a PIN)
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return
@@ -728,7 +728,7 @@ public class ProviderProxy {
      * @param secret An optional secret that might be required by some mobility
      * service providers to perform this action. (e.g. a PIN)
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. This value is almost certainly required by all
      * mobility service providers for querying the {@link IBookingApi}.
      * @return The state of the booking after applying the requested action.
@@ -745,7 +745,7 @@ public class ProviderProxy {
     /**
      * Assembles a request for creating a new token at this provider using the
      * given arguments. For more information see:
-     * {@link ICredentialsApi#createToken(java.lang.String, java.lang.String)}
+     * {@link ITokensApi#createToken(java.lang.String, java.lang.String)}
      *
      * @param userId A string value that uniquely identifies a user. (e.g. an
      * email adress, a username, ...). This value can be left out if applicable
@@ -768,7 +768,7 @@ public class ProviderProxy {
     /**
      * Sends a create-token request to this provider using the given arguments.
      * For more information see:
-     * {@link ICredentialsApi#createToken(java.lang.String, java.lang.String)}
+     * {@link ITokensApi#createToken(java.lang.String, java.lang.String)}
      *
      * @param userId A string value that uniquely identifies a user. (e.g. an
      * email adress, a username, ...). This value can be left out if applicable
@@ -791,7 +791,7 @@ public class ProviderProxy {
     /**
      * Assembles a request for deleting (invalidating) an existing token this
      * provider using the given arguments. For more information see:
-     * {@link ICredentialsApi#deleteToken(java.lang.String)}
+     * {@link ITokensApi#deleteToken(java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
@@ -804,7 +804,7 @@ public class ProviderProxy {
     /**
      * Sends a delete-token (invalidate-token) request to this provider using
      * the given arguments. For more information see:
-     * {@link ICredentialsApi#deleteToken(java.lang.String)}
+     * {@link ITokensApi#deleteToken(java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
@@ -816,7 +816,7 @@ public class ProviderProxy {
     /**
      * Assembles a request for checking the validity of an existing token at
      * this provider using the given arguments. For more information see:
-     * {@link ICredentialsApi#isTokenValid(java.lang.String)}
+     * {@link ITokensApi#isTokenValid(java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.
@@ -829,7 +829,7 @@ public class ProviderProxy {
     /**
      * Sends a is-token-valid request to this provider using the given
      * arguments. For more information see:
-     * {@link ICredentialsApi#isTokenValid(java.lang.String)}
+     * {@link ITokensApi#isTokenValid(java.lang.String)}
      *
      * @param token A token that identifies and authenticates a user, sometimes
      * with a limited duration of validity.

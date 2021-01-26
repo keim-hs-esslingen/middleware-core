@@ -25,7 +25,7 @@ package de.hsesslingen.keim.efs.middleware.config;
 
 import de.hsesslingen.keim.efs.middleware.provider.AssetsApi;
 import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
-import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
+import de.hsesslingen.keim.efs.middleware.provider.TokensApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi;
@@ -93,7 +93,7 @@ public class SwaggerAutoConfiguration {
     private BookingApi bookingApi;
 
     @Autowired(required = false)
-    private CredentialsApi credentialsApi;
+    private TokensApi credentialsApi;
 
     @Autowired(required = false)
     private UsersApi usersApi;

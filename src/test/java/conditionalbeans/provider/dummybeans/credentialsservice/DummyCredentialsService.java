@@ -24,17 +24,17 @@
 package conditionalbeans.provider.dummybeans.credentialsservice;
 
 import conditionalbeans.provider.dummybeans.DummyBean;
-import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.AbstractCredentials;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.TokenCredentials;
 import org.springframework.stereotype.Component;
+import de.hsesslingen.keim.efs.middleware.provider.ITokensService;
 
 /**
  *
  * @author keim
  */
 @Component
-public class DummyCredentialsService extends DummyBean implements ICredentialsService<AbstractCredentials> {
+public class DummyCredentialsService extends DummyBean implements ITokensService<AbstractCredentials> {
 
     @Override
     public TokenCredentials createToken(String userId, String secret) {

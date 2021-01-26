@@ -24,12 +24,11 @@
 package conditionalbeans;
 
 import de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy;
-import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
+import de.hsesslingen.keim.efs.middleware.provider.TokensApi;
 import de.hsesslingen.keim.efs.middleware.provider.IAssetsApi;
 import de.hsesslingen.keim.efs.middleware.provider.IAssetsService;
 import de.hsesslingen.keim.efs.middleware.provider.IBookingApi;
 import de.hsesslingen.keim.efs.middleware.provider.IBookingService;
-import de.hsesslingen.keim.efs.middleware.provider.ICredentialsService;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.IOptionsService;
 import de.hsesslingen.keim.efs.middleware.provider.IPlacesApi;
@@ -37,6 +36,7 @@ import de.hsesslingen.keim.efs.middleware.provider.IPlacesService;
 import de.hsesslingen.keim.efs.middleware.provider.ServiceInfoApi;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.ICredentialsDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import de.hsesslingen.keim.efs.middleware.provider.ITokensService;
 
 /**
  *
@@ -65,9 +65,9 @@ public abstract class BeansCollector {
     protected IBookingService bookingService;
 
     @Autowired(required = false)
-    protected CredentialsApi credentialsApi;
+    protected TokensApi credentialsApi;
     @Autowired(required = false)
-    protected ICredentialsService credentialsService;
+    protected ITokensService credentialsService;
     @Autowired(required = false)
     protected ICredentialsDeserializer credentialsDeserializer;
 

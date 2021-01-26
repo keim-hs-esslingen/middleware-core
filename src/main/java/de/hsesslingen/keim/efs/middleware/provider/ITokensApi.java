@@ -49,11 +49,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * <p>
  * <h3>Further details:</h3>
  * <ul>
- * <li>See {@link ICredentialsApi#createToken(String, String)} for details on
+ * <li>See {@link ITokensApi#createToken(String, String)} for details on
  * how to create token.
- * <li>See {@link ICredentialsApi#deleteToken(String)} for details on how to
+ * <li>See {@link ITokensApi#deleteToken(String)} for details on how to
  * delete (invalidate) tokens.
- * <li>See {@link ICredentialsApi#isTokenValid(String)} for details on how to
+ * <li>See {@link ITokensApi#isTokenValid(String)} for details on how to
  * check the validity of tokens.
  * </ul>
  * <p>
@@ -65,7 +65,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author keim
  */
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-public interface ICredentialsApi {
+public interface ITokensApi {
 
     @Deprecated(forRemoval = true) // Kept for backward compatibility for a while. Remove in future version.
     public static final String TOKEN_PATH = "/credentials/token";
@@ -146,7 +146,7 @@ public interface ICredentialsApi {
     /**
      * Assembles a request, matching the {@code POST /credentials/token}
      * endpoint, for the service with the given url using the given token. See
-     * {@link ICredentialsApi#createToken(String, String)} for JavaDoc on that
+     * {@link ITokensApi#createToken(String, String)} for JavaDoc on that
      * endpoint.
      * <p>
      * The returned request can be sent using {@code request.go()} which will
@@ -180,7 +180,7 @@ public interface ICredentialsApi {
     /**
      * Assembles a request, matching the {@code DELETE /credentials/token}
      * endpoint, for the service with the given url using the given token. See
-     * {@link ICredentialsApi#deleteToken(String)} for JavaDoc on that endpoint.
+     * {@link ITokensApi#deleteToken(String)} for JavaDoc on that endpoint.
      * <p>
      * The returned request can be sent using {@code request.go()} which will
      * return a {@link ResponseEntity}.
@@ -205,7 +205,7 @@ public interface ICredentialsApi {
     /**
      * Assembles a request, matching the {@code GET /credentials/token}
      * endpoint, for the service with the given url using the given token. See
-     * {@link ICredentialsApi#isTokenValid(String)} for JavaDoc on that
+     * {@link ITokensApi#isTokenValid(String)} for JavaDoc on that
      * endpoint.
      * <p>
      * The returned request can be sent using {@code request.go()} which will

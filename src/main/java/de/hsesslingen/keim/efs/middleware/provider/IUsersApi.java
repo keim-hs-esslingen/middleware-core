@@ -24,9 +24,9 @@
 package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.model.Customer;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.SECRET_DESCRIPTION;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.USERS_PATH;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.SECRET_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.USERS_PATH;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest;
@@ -84,7 +84,7 @@ public interface IUsersApi {
     /**
      * Assembles a request, matching the {@code POST /credentials/users}
      * endpoint, for the service with the given url.See
-     * {@link ICredentialsApi#registerUser(Customer, String)} for JavaDoc on
+     * {@link ITokensApi#registerUser(Customer, String)} for JavaDoc on
      * that endpoint.<p>
      * The returned request can be sent using {@code request.go()} which will
      * return a {@link ResponseEntity}.

@@ -25,7 +25,7 @@ package de.hsesslingen.keim.efs.middleware.provider;
 
 import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import de.hsesslingen.keim.efs.middleware.model.Place;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
@@ -79,7 +79,7 @@ public interface IPlacesApi {
      * {@link areaCenter}.
      * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IPlacesApi}.
      * @return
@@ -124,7 +124,7 @@ public interface IPlacesApi {
      * for param {@link areaCenter}. Only applied together with areaCenter.
      * @param limitTo An optional upper limit of results for the response.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * locations using the {@link IPlacesApi}.
      * @param requestTemplate The template that should be used as foundation

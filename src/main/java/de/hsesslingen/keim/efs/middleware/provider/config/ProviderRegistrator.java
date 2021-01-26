@@ -26,7 +26,7 @@ package de.hsesslingen.keim.efs.middleware.provider.config;
 import de.hsesslingen.keim.efs.middleware.provider.AssetsApi;
 import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
-import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
+import de.hsesslingen.keim.efs.middleware.provider.TokensApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.UsersApi;
@@ -84,7 +84,7 @@ public class ProviderRegistrator {
     @Autowired(required = false)
     private BookingApi bookingApi;
     @Autowired(required = false)
-    private CredentialsApi tokensApi;
+    private TokensApi tokensApi;
     @Autowired(required = false)
     private UsersApi usersApi;
 

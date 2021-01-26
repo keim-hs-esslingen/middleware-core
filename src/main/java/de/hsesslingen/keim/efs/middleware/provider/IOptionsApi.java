@@ -28,7 +28,7 @@ import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.isValidAndNotNull;
 import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.toLatLonString;
 import de.hsesslingen.keim.efs.middleware.model.Option;
-import static de.hsesslingen.keim.efs.middleware.provider.ICredentialsApi.TOKEN_DESCRIPTION;
+import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
@@ -119,7 +119,7 @@ public interface IOptionsApi {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @return List of {@link Option}
@@ -203,7 +203,7 @@ public interface IOptionsApi {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @param requestTemplate The template that should be used as foundation
@@ -276,7 +276,7 @@ public interface IOptionsApi {
      * @param includeGeoPaths Whether detailed information about the path of
      * legs or about free floating areas should be included, if available.
      * @param token A token that identifies and authenticates a user, sometimes
-     * with a limited duration of validity. See {@link ICredentialsApi} for more
+     * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
      * @param requestTemplate The template that should be used as foundation
