@@ -23,38 +23,22 @@
  */
 package de.hsesslingen.keim.efs.middleware.validation;
 
+import de.hsesslingen.keim.efs.middleware.model.ICoordinates;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.springframework.util.StringUtils;
-
 /**
- * Validates Position given as String in format latitude,longitude. Example {@code 49.123,17.234}
- * Null values are considered as valid!
- * 
- * @author k.sivarasah
- * 1 Oct 2019
+ * Validates Position given as String in format latitude,longitude. Example
+ * {@code 49.123,17.234} Null values are considered as valid!
+ *
+ * @author k.sivarasah 1 Oct 2019
  */
-
 public class PositionValidator implements ConstraintValidator<PositionAsString, String> {
 
-	@Override
-	public boolean isValid(String pos, ConstraintValidatorContext context) {
-		if(pos == null) {
-			return true;
-		}
-		
-		Double lat;
-		Double lon;
-		try {
-			lat = Double.valueOf(pos.split(",")[0]);
-			lon = Double.valueOf(pos.split(",")[1]);
-		} catch (NumberFormatException e ) {
-			return false;
-		}
-			
-		return !StringUtils.isEmpty(pos) && StringUtils.countOccurrencesOf(pos, ",") == 1 &&
-				 lat >= -90 && lat<= 90 && lon >= -180 && lon <= 180;
-	}
+    @Override
+    public boolean isValid(String pos, ConstraintValidatorContext context) {
+        // Parses and returns true upon success and false upon failure.
+        return ICoordinates.parseAndValidate(pos, (a, b) -> true, () -> false);
+    }
 
 }
