@@ -27,8 +27,6 @@ import de.hsesslingen.keim.efs.middleware.config.SwaggerAutoConfiguration;
 import de.hsesslingen.keim.efs.middleware.model.Customer;
 import de.hsesslingen.keim.efs.middleware.provider.credentials.UserDetails;
 import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.validation.annotation.Validated;
@@ -43,8 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 @ConditionalOnBean(IUsersService.class)
 @Api(tags = {SwaggerAutoConfiguration.USERS_API_TAG})
 public class UsersApi extends ApiBase implements IUsersApi {
-
-    private static final Logger logger = getLogger(UsersApi.class);
 
     @Autowired
     private IUsersService usersService;

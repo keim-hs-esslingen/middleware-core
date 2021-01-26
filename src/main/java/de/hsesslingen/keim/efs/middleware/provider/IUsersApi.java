@@ -34,15 +34,18 @@ import static de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest.SECRET
 import static de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequest.TOKEN_HEADER;
 import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * @author ben
  */
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IUsersApi {
 
     /**

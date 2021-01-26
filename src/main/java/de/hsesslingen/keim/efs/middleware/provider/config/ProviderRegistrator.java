@@ -23,11 +23,13 @@
  */
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
+import de.hsesslingen.keim.efs.middleware.provider.AssetsApi;
 import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
 import de.hsesslingen.keim.efs.middleware.provider.CredentialsApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
+import de.hsesslingen.keim.efs.middleware.provider.UsersApi;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import java.time.Instant;
@@ -74,13 +76,17 @@ public class ProviderRegistrator {
 
     // Requires the available rest controllers to check whether they exists or not.
     @Autowired(required = false)
+    private AssetsApi assetsApi;
+    @Autowired(required = false)
     private PlacesApi placesApi;
     @Autowired(required = false)
     private OptionsApi optionsApi;
     @Autowired(required = false)
     private BookingApi bookingApi;
     @Autowired(required = false)
-    private CredentialsApi credentialsApi;
+    private CredentialsApi tokensApi;
+    @Autowired(required = false)
+    private UsersApi usersApi;
 
     @Autowired
     private DefaultRequestTemplate rt;
@@ -129,25 +135,33 @@ public class ProviderRegistrator {
      * @return
      */
     private Set<API> getAvailableApis() {
-        var list = EnumSet.noneOf(API.class);
+        var col = EnumSet.noneOf(API.class);
+
+        if (assetsApi != null) {
+            col.add(API.ASSETS_API);
+        }
 
         if (placesApi != null) {
-            list.add(MobilityService.API.PLACES_API);
+            col.add(API.PLACES_API);
         }
 
         if (optionsApi != null) {
-            list.add(MobilityService.API.OPTIONS_API);
+            col.add(API.OPTIONS_API);
         }
 
         if (bookingApi != null) {
-            list.add(MobilityService.API.BOOKING_API);
+            col.add(API.BOOKING_API);
         }
 
-        if (credentialsApi != null) {
-            list.add(MobilityService.API.CREDENTIALS_API);
+        if (tokensApi != null) {
+            col.add(API.TOKENS_API);
         }
 
-        return list;
+        if (usersApi != null) {
+            col.add(API.USERS_API);
+        }
+
+        return col;
     }
 
     /**
