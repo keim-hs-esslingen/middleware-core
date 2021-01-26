@@ -37,8 +37,8 @@ public class PositionValidator implements ConstraintValidator<PositionAsString, 
 
     @Override
     public boolean isValid(String pos, ConstraintValidatorContext context) {
-        // Parses and returns true upon success and false upon failure.
-        return ICoordinates.parseAndValidate(pos, (a, b) -> true, () -> false);
+        // parseAndValidate parses and returns true upon success and false upon failure.
+        return pos == null || ICoordinates.parseAndValidate(pos, (lat, lon) -> true, () -> false);
     }
 
 }
