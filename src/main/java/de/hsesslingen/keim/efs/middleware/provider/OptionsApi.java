@@ -111,7 +111,7 @@ public class OptionsApi extends ApiBase implements IOptionsApi {
             placeFrom.setId(fromPlaceId);
         }
 
-        Place placeTo = parseAndValidate(toPlaceId, Place::fromCoordinates, () -> null);
+        Place placeTo = parseAndValidate(to, Place::fromCoordinates, () -> null);
 
         if (placeTo != null && isNotBlank(toPlaceId)) {
             placeTo.setId(toPlaceId);
