@@ -23,8 +23,8 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import static de.hsesslingen.keim.efs.middleware.consumer.ServiceDirectoryProxy.buildGetAllRequest;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import java.util.Collection;
 import static java.util.Collections.unmodifiableCollection;
@@ -59,7 +59,7 @@ public class ProviderCache {
     private String baseUrl;
 
     @Autowired
-    private DefaultRequestTemplate rt;
+    private MiddlewareRequestTemplate rt;
 
     private CompletableFuture<Map<String, ProviderProxy>> providersFuture = new CompletableFuture<>();
 

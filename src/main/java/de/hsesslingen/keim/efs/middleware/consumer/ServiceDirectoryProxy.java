@@ -23,7 +23,6 @@
  */
 package de.hsesslingen.keim.efs.middleware.consumer;
 
-import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +57,7 @@ public class ServiceDirectoryProxy {
     public String baseUrl;
 
     @Autowired
-    private DefaultRequestTemplate rt;
+    private MiddlewareRequestTemplate rt;
 
     public ServiceDirectoryProxy() {
         // Used for tracing lazy loading of beans.

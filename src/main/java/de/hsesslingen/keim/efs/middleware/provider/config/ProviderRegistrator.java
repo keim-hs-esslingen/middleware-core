@@ -24,12 +24,12 @@
 package de.hsesslingen.keim.efs.middleware.provider.config;
 
 import de.hsesslingen.keim.efs.middleware.provider.AssetsApi;
-import de.hsesslingen.keim.efs.mobility.requests.DefaultRequestTemplate;
 import de.hsesslingen.keim.efs.middleware.provider.BookingApi;
 import de.hsesslingen.keim.efs.middleware.provider.TokensApi;
 import de.hsesslingen.keim.efs.middleware.provider.OptionsApi;
 import de.hsesslingen.keim.efs.middleware.provider.PlacesApi;
 import de.hsesslingen.keim.efs.middleware.provider.UsersApi;
+import de.hsesslingen.keim.efs.mobility.requests.MiddlewareRequestTemplate;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService.API;
 import java.time.Instant;
@@ -89,7 +89,7 @@ public class ProviderRegistrator {
     private UsersApi usersApi;
 
     @Autowired
-    private DefaultRequestTemplate rt;
+    private MiddlewareRequestTemplate rt;
 
     private ScheduledExecutorService executor;
     private TaskScheduler scheduler;
