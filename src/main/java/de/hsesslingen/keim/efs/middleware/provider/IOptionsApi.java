@@ -30,6 +30,7 @@ import static de.hsesslingen.keim.efs.middleware.model.ICoordinates.toLatLonStri
 import de.hsesslingen.keim.efs.middleware.model.Option;
 import static de.hsesslingen.keim.efs.middleware.provider.ITokensApi.TOKEN_DESCRIPTION;
 import de.hsesslingen.keim.efs.middleware.utils.FlexibleZonedDateTimeParser;
+import de.hsesslingen.keim.efs.middleware.validation.IsInFutureOrNull;
 import de.hsesslingen.keim.efs.middleware.validation.PositionAsString;
 import de.hsesslingen.keim.efs.mobility.config.EfsSwaggerApiResponseSupport;
 import de.hsesslingen.keim.efs.mobility.service.MobilityService;
@@ -140,10 +141,10 @@ public interface IOptionsApi {
             @RequestParam(required = false) String toPlaceId,
             //
             @ApiParam("Desired departure time of mobility. Format: " + FLEX_DATETIME_DESC)
-            @RequestParam(required = false) ZonedDateTime startTime,
+            @RequestParam(required = false) @IsInFutureOrNull ZonedDateTime startTime,
             //
             @ApiParam("Desired arrival time of mobility. Format: " + FLEX_DATETIME_DESC)
-            @RequestParam(required = false) ZonedDateTime endTime,
+            @RequestParam(required = false) @IsInFutureOrNull ZonedDateTime endTime,
             //
             @ApiParam("Allowed search radius around \"from\" in meter.")
             @RequestParam(required = false) Integer radiusMeter,
@@ -206,8 +207,8 @@ public interface IOptionsApi {
      * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
@@ -279,8 +280,8 @@ public interface IOptionsApi {
      * with a limited duration of validity. See {@link ITokensApi} for more
      * details on tokens. Most providers do not require a token for querying
      * options using the {@link IOptionsApi}.
-     * @param requestTemplate The template that should be used as foundation
-     * for building the request.
+     * @param requestTemplate The template that should be used as foundation for
+     * building the request.
      * @return
      */
     public static MiddlewareRequest<List<Option>> buildGetOptionsRequest(
